@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2012-08-24T21:52:42</date>
+  <millis>1345816362615</millis>
+  <sequence>0</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverController</class>
+  <method>startServer</method>
+  <thread>10</thread>
+  <message>selenium server started with result OK!</message>
+</record>
+<record>
+  <date>2012-08-24T21:52:45</date>
+  <millis>1345816365014</millis>
+  <sequence>6</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverController</class>
+  <method>startWebDriver</method>
+  <thread>10</thread>
+  <message>webdriver new session started with result OK!</message>
+</record>
+<record>
+  <date>2012-08-24T21:52:46</date>
+  <millis>1345816366936</millis>
+  <sequence>9</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>get</method>
+  <thread>10</thread>
+  <message>navigate to url [ http://www.baidu.com/ ] with result OK!</message>
+</record>
+<record>
+  <date>2012-08-24T21:52:47</date>
+  <millis>1345816367428</millis>
+  <sequence>14</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>sendKeys</method>
+  <thread>10</thread>
+  <message>find WebElement [ By.id: kw ] and input text [ 刘毅 ] with result OK!</message>
+</record>
+<record>
+  <date>2012-08-24T21:52:47</date>
+  <millis>1345816367954</millis>
+  <sequence>19</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>click</method>
+  <thread>10</thread>
+  <message>find WebElement [ By.id: su ] and click with result OK!</message>
+</record>
+<record>
+  <date>2012-08-24T21:52:52</date>
+  <millis>1345816372995</millis>
+  <sequence>44</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>alertExists</method>
+  <thread>10</thread>
+  <message>class org.openqa.selenium.TimeoutException:
+Timed out after 5 seconds waiting for alert to be present
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: unknown</message>
+</record>
+<record>
+  <date>2012-08-24T21:52:53</date>
+  <millis>1345816373931</millis>
+  <sequence>47</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>takeScreenShot</method>
+  <thread>10</thread>
+  <message>take a screenshot and saved with result OK!</message>
+</record>
+<record>
+  <date>2012-08-24T21:52:54</date>
+  <millis>1345816374296</millis>
+  <sequence>49</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverController</class>
+  <method>stopServer</method>
+  <thread>10</thread>
+  <message>selenium server stopped with result OK!</message>
+</record>
+</log>

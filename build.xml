@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="STAR" basedir="." default="run">
+
+	<!-- ==================================================================== -->
+	<!-- build.xml在根目录下                                                  -->
+	<!-- ==================================================================== -->
+
+	<property environment="env" />
+	<property name="debug" value="false" />
+	<property name="optimize" value="false" />
+	<property name="env.choice" value="${environment}" />
+	<property file="config/config_${env.choice}.properties" />
+	<tstamp>
+		<format property="now" pattern="yyyy-MM-dd_HH-mm-ss" locale="zh"/>
+	</tstamp>
+	<property name="runmark" value="${env.USERNAME}@${env.COMPUTERNAME}" />
+	<property name="backdir" value="${history}\${runmark}@${now}" />
+
+	<!-- ==================================================================== -->
+	<!-- 准备构建                                                             -->
+	<!-- ==================================================================== -->
+
+	<target name="clear" description="清理构建">	
+		<echo message="……清理历史构建……" />
+		<delete dir="${dest}" />
+		<delete dir="${log}" />
+		<delete dir="${output}" />
+		<echo message="……准备新的构建……" />
+		<mkdir dir="${dest}" />
+		<mkdir dir="${log}" />
+		<mkdir dir="${output}" />
+		<mkdir dir="${backdir}" />
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- 编译用例                                                             -->
+	<!-- ==================================================================== -->
+
+	<path id="compile.cp">
+		<fileset dir="${lib}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="compile" description="编译构建">
+		<echo message="……编译测试用例……" />
+		<javac  debug="false"
+				source="1.6"
+				encoding="UTF-8"
+				classpathref="compile.cp"
+				srcdir="${src}"
+				destdir="${dest}"
+				includeantruntime="on"/>
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- 运行定义                                                             -->
+	<!-- ==================================================================== -->
+
+	<path id="runtask.cp">
+		<path refid="compile.cp"/>
+		<pathelement location="${dest}"/>
+	</path>
+
+	<target name="runtask" description="运行构建">				
+		<echo message="……开始测试执行……" />
+		<taskdef name = "testng" classpathref="compile.cp" classname="com.beust.testng.TestNGAntTask"/>
+		<testng classpathref="runtask.cp"		
+				outputdir="${output}"
+				haltOnfailure="false"
+				useDefaultListeners="false"
+				timeOut = "180000000"
+				listeners="com.star.reportng.HTMLReporter,com.star.reportng.JUnitXMLReporter,org.testng.reporters.FailedReporter">
+			<xmlfileset dir="${task}" includes="TestNG.xml" />
+			<sysproperty key="environment" value="${env.choice}" />
+			<sysproperty key="com.star.reportng.title" value="Star AutoTest Report" />
+		</testng>
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- 日志上传                                                             -->
+	<!-- ==================================================================== -->
+
+	<target name="resupload" description="编译构建">
+		<echo message="……上传运行日志开始……" />
+		<copy todir="${backdir}\log" overwrite="true">
+			<fileset dir="${log}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${backdir}\report" overwrite="true">
+			<fileset dir="${output}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<echo message="……上传运行日志完成……" />
+	</target>
+
+	<!-- ==================================================================== -->
+	<!-- 运行任务                                                             -->
+	<!-- ==================================================================== -->
+
+	<target name="run" description="运行构建">
+		<echo message="……本次构建开始……" />
+		<sequential>
+			<antcall target="clear"/>
+			<antcall target="compile"/>
+			<sequential>
+				<antcall target="runtask"/>								
+				<echo message="===============================================" />
+				<echo message="……构建完毕,请到【${output}】中查看测试报告……" />
+				<echo message="===============================================" />
+			</sequential>
+			<antcall target="resupload"/>	
+	 	</sequential>
+	</target>
+</project>

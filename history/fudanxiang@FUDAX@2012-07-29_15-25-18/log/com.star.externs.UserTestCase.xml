@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2012-07-29T15:25:21</date>
+  <millis>1343546721208</millis>
+  <sequence>0</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverController</class>
+  <method>startServer</method>
+  <thread>10</thread>
+  <message>selenium server started successful!</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:22</date>
+  <millis>1343546722982</millis>
+  <sequence>6</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverController</class>
+  <method>startWebDriver</method>
+  <thread>10</thread>
+  <message>webdriver new session started successful!</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:23</date>
+  <millis>1343546723066</millis>
+  <sequence>9</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>maximizeWindow</method>
+  <thread>10</thread>
+  <message>maximize window successful!</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:24</date>
+  <millis>1343546724597</millis>
+  <sequence>12</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>get</method>
+  <thread>10</thread>
+  <message>navigate to url successful: http://www.baidu.com/</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:24</date>
+  <millis>1343546724740</millis>
+  <sequence>15</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>findElement</method>
+  <thread>10</thread>
+  <message>find element by your locator successful!</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:25</date>
+  <millis>1343546725007</millis>
+  <sequence>18</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>sendKeys</method>
+  <thread>10</thread>
+  <message>sendkeys to WebElement successful, your input is: 刘毅</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:25</date>
+  <millis>1343546725134</millis>
+  <sequence>21</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>findElement</method>
+  <thread>10</thread>
+  <message>find element by your locator successful!</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:26</date>
+  <millis>1343546726671</millis>
+  <sequence>24</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>click</method>
+  <thread>10</thread>
+  <message>click on WebElement successful!</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:26</date>
+  <millis>1343546726802</millis>
+  <sequence>27</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverWebPublic</class>
+  <method>findElement</method>
+  <thread>10</thread>
+  <message>find element by your locator successful!</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:27</date>
+  <millis>1343546727015</millis>
+  <sequence>30</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverController</class>
+  <method>quitWebDriver</method>
+  <thread>10</thread>
+  <message>quit all webdriver session successful!</message>
+</record>
+<record>
+  <date>2012-07-29T15:25:27</date>
+  <millis>1343546727321</millis>
+  <sequence>32</sequence>
+  <logger>com.star.externs.UserTestCase</logger>
+  <level>INFO</level>
+  <class>com.star.toolapi.webdriver.IEWebDriverController</class>
+  <method>stopServer</method>
+  <thread>10</thread>
+  <message>selenium server stopped successful!</message>
+</record>
+</log>

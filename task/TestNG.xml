@@ -1,0 +1,7 @@
+<suite name="webdriver autotest suite" verbose="2"> 
+	<test name="test baidu example">
+		<classes>
+			<class name="com.star.externs.UserTestCase" />
+		</classes>
+	</test>
+</suite>

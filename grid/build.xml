@@ -1,0 +1,58 @@
+<project name="Selenium Grid" basedir=".." >
+
+	<property name="rootdir" value="${basedir}/grid" />
+	<property file="${basedir}/config/config.properties" />
+	<property name="hubPollerIntervalInSeconds" value="30" />
+	
+	<path id="rc.cp">
+		<fileset dir="${lib.dir}">
+			<include name="selenium-server-*.jar" />
+		</fileset>
+		<fileset dir="${rootdir}/lib">
+			<include name="selenium-grid-rc.jar" />
+		</fileset>
+		<pathelement path="${java.class.path}/" />
+	</path>
+
+	<path id="hub.cp">
+		<pathelement path="${rootdir}/" />
+		<fileset dir="${rootdir}/lib">
+			<include name="selenium-grid-hub.jar" />
+		</fileset>
+		<pathelement path="${java.class.path}/" />
+	</path>
+
+	<target name="launch-hub" description="Launch Selenium Hub">
+		<java classname="com.thoughtworks.selenium.grid.hub.HubServer" classpathref="hub.cp" fork="true" failonerror="true">
+			<sysproperty key="http.proxyHost" value="${http.proxyHost}" />
+			<sysproperty key="http.proxyPort" value="${http.proxyPort}" />
+			<sysproperty key="https.proxyHost" value="${https.proxyHost}" />
+			<sysproperty key="https.proxyPort" value="${https.proxyPort}" />
+		</java>
+	</target>
+
+	<property name="host" value="localhost" />
+	<property name="port" value="5555" />
+	<property name="hubURL" value="http://10.50.135.42:4444" />
+	<property name="environment" value="*iehta" />
+	<property name="seleniumArgs" value="" />
+	<target name="launch-rc" description="Launch Remote Control">
+		<java classpathref="rc.cp" classname="com.thoughtworks.selenium.grid.remotecontrol.SelfRegisteringRemoteControlLauncher" fork="true" failonerror="true">
+			<sysproperty key="http.proxyHost" value="${http.proxyHost}" />
+			<sysproperty key="http.proxyPort" value="${http.proxyPort}" />
+			<sysproperty key="https.proxyHost" value="${https.proxyHost}" />
+			<sysproperty key="https.proxyPort" value="${https.proxyPort}" />
+			<arg value="-port" />
+			<arg value="${port}" />
+			<arg value="-host" />
+			<arg value="${host}" />
+			<arg value="-hubURL" />
+			<arg value="${hubURL}" />
+			<arg value="-env" />
+			<arg value="${environment}" />
+			<arg value="-hubPollerIntervalInSeconds" />
+			<arg value="${hubPollerIntervalInSeconds}" />
+			<arg line="${seleniumArgs}" />
+		</java>
+	</target>
+</project>

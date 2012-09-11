@@ -1,0 +1,33 @@
+12:18:15.238 INFO [10] com.star.externs.UserTestCase - selenium server started successful!
+12:18:15.472 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [new session: {platform=WINDOWS, ensureCleanSession=true, browserName=internet explorer, version=}] at URL: /session)
+12:18:15.816 WARN [12] org.openqa.selenium.ie.InternetExplorerDriverServer - This method of starting the IE driver is deprecated and will be removed in selenium 2.26. Please download the IEDriverServer.exe from http://code.google.com/p/selenium/downloads/list and ensure that it is in your PATH.
+12:18:16.950 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session
+12:18:16.965 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: org.openqa.selenium.remote.server.handler.GetSessionCapabilities@49cf9f at URL: /session/1343535495159)
+12:18:16.965 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1343535495159
+12:18:16.965 INFO [10] com.star.externs.UserTestCase - webdriver new session started successful!
+12:18:16.981 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [execute script: if(document.all) { self.moveTo(0, 0); self.resizeTo(screen.availWidth, screen.availHeight); }, []] at URL: /session/1343535495159/execute)
+12:18:17.067 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1343535495159/execute
+12:18:17.067 INFO [10] com.star.externs.UserTestCase - maximize window successful!
+12:18:17.082 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get: http://www.baidu.com/] at URL: /session/1343535495159/url)
+12:18:18.474 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1343535495159/url
+12:18:18.474 INFO [10] com.star.externs.UserTestCase - navigate to url successful: http://www.baidu.com/
+12:18:18.490 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [find element: By.id: kw] at URL: /session/1343535495159/element)
+12:18:18.615 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1343535495159/element
+12:18:18.615 INFO [10] com.star.externs.UserTestCase - find element by your locator successful!
+12:18:18.630 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [send keys: 0 org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringWebElement@80ca6746, [Сѕву]] at URL: /session/1343535495159/element/0/value)
+12:18:18.927 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1343535495159/element/0/value
+12:18:18.927 INFO [10] com.star.externs.UserTestCase - sendkeys to WebElement successful, your input is: Сѕву
+12:18:18.943 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [find element: By.id: su] at URL: /session/1343535495159/element)
+12:18:19.115 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1343535495159/element
+12:18:19.115 INFO [10] com.star.externs.UserTestCase - find element by your locator successful!
+12:18:19.130 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [click: 1 org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringWebElement@f06b5fe7] at URL: /session/1343535495159/element/1/click)
+12:18:20.584 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1343535495159/element/1/click
+12:18:20.584 INFO [10] com.star.externs.UserTestCase - click on WebElement successful!
+12:18:20.600 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [find element: By.xpath: //span[@class='nums']] at URL: /session/1343535495159/element)
+12:18:20.741 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1343535495159/element
+12:18:20.741 INFO [10] com.star.externs.UserTestCase - find element by your locator successful!
+12:18:20.756 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [delete session: 1343535495159] at URL: /session/1343535495159)
+12:18:20.959 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1343535495159
+12:18:20.959 INFO [10] com.star.externs.UserTestCase - quit all webdriver session successful!
+12:18:21.256 INFO [13] org.openqa.selenium.remote.server.DriverServlet - Exiting session cleaner thread
+12:18:21.256 INFO [10] com.star.externs.UserTestCase - selenium server stopped successful!

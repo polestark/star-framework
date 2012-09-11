@@ -1,0 +1,317 @@
+21:54:52.587 INFO [10] com.star.externs.UserTestCase - selenium server started with result OK!
+21:54:52.843 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [new session: {platform=WINDOWS, ensureCleanSession=true, browserName=internet explorer, version=}] at URL: /session)
+21:54:53.085 WARN [12] org.openqa.selenium.ie.InternetExplorerDriverServer - This method of starting the IE driver is deprecated and will be removed in selenium 2.26. Please download the IEDriverServer.exe from http://code.google.com/p/selenium/downloads/list and ensure that it is in your PATH.
+21:54:54.199 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session
+21:54:54.205 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: org.openqa.selenium.remote.server.handler.GetSessionCapabilities@15c998a at URL: /session/1345816492520)
+21:54:54.205 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1345816492520
+21:54:54.208 INFO [10] com.star.externs.UserTestCase - webdriver new session started with result OK!
+21:54:54.211 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get: http://www.baidu.com/] at URL: /session/1345816492520/url)
+21:54:55.753 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1345816492520/url
+21:54:55.755 INFO [10] com.star.externs.UserTestCase - navigate to url [ http://www.baidu.com/ ] with result OK!
+21:54:55.759 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [find element: By.id: kw] at URL: /session/1345816492520/element)
+21:54:55.886 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1345816492520/element
+21:54:55.894 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [send keys: 0 org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringWebElement@9017b28d, [Сѕву]] at URL: /session/1345816492520/element/0/value)
+21:54:56.181 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1345816492520/element/0/value
+21:54:56.183 INFO [10] com.star.externs.UserTestCase - find WebElement [ By.id: kw ] and input text [ Сѕву ] with result OK!
+21:54:56.185 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [find element: By.id: su] at URL: /session/1345816492520/element)
+21:54:56.290 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1345816492520/element
+21:54:56.294 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [click: 1 org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringWebElement@d6df9c3e] at URL: /session/1345816492520/element/1/click)
+21:54:57.787 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1345816492520/element/1/click
+21:54:57.787 INFO [10] com.star.externs.UserTestCase - find WebElement [ By.id: su ] and click with result OK!
+21:54:57.793 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get alert text] at URL: /session/1345816492520/alert_text)
+21:54:57.900 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception thrown
+org.openqa.selenium.NoAlertPresentException: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 105 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:188)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:145)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:498)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:502)
+	at org.openqa.selenium.remote.RemoteWebDriver$RemoteTargetLocator.alert(RemoteWebDriver.java:774)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringTargetLocator.alert(EventFiringWebDriver.java:592)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:31)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:1)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:150)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+21:54:57.924 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 105 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+21:54:58.441 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get alert text] at URL: /session/1345816492520/alert_text)
+21:54:58.549 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception thrown
+org.openqa.selenium.NoAlertPresentException: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 106 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:188)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:145)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:498)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:502)
+	at org.openqa.selenium.remote.RemoteWebDriver$RemoteTargetLocator.alert(RemoteWebDriver.java:774)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringTargetLocator.alert(EventFiringWebDriver.java:592)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:31)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:1)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:150)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+21:54:58.658 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 106 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+21:54:59.225 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get alert text] at URL: /session/1345816492520/alert_text)
+21:54:59.332 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception thrown
+org.openqa.selenium.NoAlertPresentException: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 105 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:188)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:145)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:498)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:502)
+	at org.openqa.selenium.remote.RemoteWebDriver$RemoteTargetLocator.alert(RemoteWebDriver.java:774)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringTargetLocator.alert(EventFiringWebDriver.java:592)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:31)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:1)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:150)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+21:54:59.395 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 105 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+21:54:59.910 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get alert text] at URL: /session/1345816492520/alert_text)
+21:55:00.020 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception thrown
+org.openqa.selenium.NoAlertPresentException: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 108 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:188)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:145)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:498)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:502)
+	at org.openqa.selenium.remote.RemoteWebDriver$RemoteTargetLocator.alert(RemoteWebDriver.java:774)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringTargetLocator.alert(EventFiringWebDriver.java:592)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:31)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:1)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:150)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+21:55:00.133 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 108 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+21:55:00.645 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get alert text] at URL: /session/1345816492520/alert_text)
+21:55:00.752 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception thrown
+org.openqa.selenium.NoAlertPresentException: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 105 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:188)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:145)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:498)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:502)
+	at org.openqa.selenium.remote.RemoteWebDriver$RemoteTargetLocator.alert(RemoteWebDriver.java:774)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringTargetLocator.alert(EventFiringWebDriver.java:592)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:31)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:1)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:150)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+21:55:00.768 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 105 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+21:55:01.279 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get alert text] at URL: /session/1345816492520/alert_text)
+21:55:01.387 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception thrown
+org.openqa.selenium.NoAlertPresentException: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 106 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:188)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:145)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:498)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:502)
+	at org.openqa.selenium.remote.RemoteWebDriver$RemoteTargetLocator.alert(RemoteWebDriver.java:774)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringTargetLocator.alert(EventFiringWebDriver.java:592)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:31)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:1)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:150)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+21:55:01.416 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 106 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+21:55:01.924 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get alert text] at URL: /session/1345816492520/alert_text)
+21:55:02.031 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception thrown
+org.openqa.selenium.NoAlertPresentException: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 107 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:188)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:145)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:498)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:502)
+	at org.openqa.selenium.remote.RemoteWebDriver$RemoteTargetLocator.alert(RemoteWebDriver.java:774)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringTargetLocator.alert(EventFiringWebDriver.java:592)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:31)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:1)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:150)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+21:55:02.139 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 107 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+21:55:02.650 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get alert text] at URL: /session/1345816492520/alert_text)
+21:55:02.758 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception thrown
+org.openqa.selenium.NoAlertPresentException: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 108 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:188)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:145)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:498)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:502)
+	at org.openqa.selenium.remote.RemoteWebDriver$RemoteTargetLocator.alert(RemoteWebDriver.java:774)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringTargetLocator.alert(EventFiringWebDriver.java:592)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:31)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:1)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:150)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+21:55:02.777 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 108 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+21:55:03.291 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [get alert text] at URL: /session/1345816492520/alert_text)
+21:55:03.398 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception thrown
+org.openqa.selenium.NoAlertPresentException: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 107 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+	at sun.reflect.GeneratedConstructorAccessor9.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:188)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:145)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:498)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:502)
+	at org.openqa.selenium.remote.RemoteWebDriver$RemoteTargetLocator.alert(RemoteWebDriver.java:774)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$EventFiringTargetLocator.alert(EventFiringWebDriver.java:592)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:31)
+	at org.openqa.selenium.remote.server.handler.GetAlertText.call(GetAlertText.java:1)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:150)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:619)
+21:55:03.512 WARN [11] org.openqa.selenium.remote.server.DriverServlet - Exception: No alert is active (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 107 milliseconds
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: RemoteWebDriver
+Session ID: be0f55cf-d9bc-44e3-b5eb-0f69603dd3a9
+21:55:03.523 INFO [10] com.star.externs.UserTestCase - class org.openqa.selenium.TimeoutException:
+Timed out after 5 seconds waiting for alert to be present
+Build info: version: '2.25.0', revision: '17482', time: '2012-07-18 21:08:56'
+System info: os.name: 'Windows Vista', os.arch: 'x86', os.version: '6.1', java.version: '1.6.0_10-rc2'
+Driver info: driver.version: unknown
+21:55:03.742 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Executing: [take screenshot] at URL: /session/1345816492520/screenshot)
+21:55:04.215 INFO [11] org.openqa.selenium.remote.server.DriverServlet - Done: /session/1345816492520/screenshot
+21:55:04.373 INFO [10] com.star.externs.UserTestCase - take a screenshot and saved with result OK!
+21:55:04.703 INFO [13] org.openqa.selenium.remote.server.DriverServlet - Exiting session cleaner thread
+21:55:04.703 INFO [10] com.star.externs.UserTestCase - selenium server stopped with result OK!

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite verbose="2" name="Failed suite [webdriver autotest suite]">
+  <test name="test baidu example(failed)" preserve-order="true">
+    <classes>
+      <class name="com.star.externs.UserTestCase">
+        <methods>
+          <include name="testSetup"/>
+          <include name="tearDown"/>
+          <include name="testBaidu"/>
+        </methods>
+      </class> <!-- com.star.externs.UserTestCase -->
+    </classes>
+  </test> <!-- test baidu example(failed) -->
+</suite> <!-- Failed suite [webdriver autotest suite] -->
