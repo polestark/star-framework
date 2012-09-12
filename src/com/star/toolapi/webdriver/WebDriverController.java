@@ -1,6 +1,6 @@
 package com.star.toolapi.webdriver;
 
-/**======================================================================================
+/**
  * 框架说明：
  * 1、使用RemoteWebDriver代替WebDriver，可直接使用JavascriptExecutor、TakesScreenshot，使用
  * 	  RemoteControlConfiguration配置SeleniumServer，截取HttpClient日志，便于测试开发调试；
@@ -51,7 +51,7 @@ public class WebDriverController {
 	private static long startTime;
 	private static long endTime;
 
-	/**======================================================================================
+	/**
 	 * choose a port to start the selenium server.
 	 * 
 	 * @param clsName
@@ -182,7 +182,7 @@ public class WebDriverController {
 		}
 	}
 
-	/**======================================================================================
+	/**
 	 * get a new distinct filename only if the file exists already
 	 * 
 	 * @param dir
@@ -226,7 +226,7 @@ public class WebDriverController {
 		html.xmlTansToHtml(startTime, endTime);
 	}
 
-	/**======================================================================================
+	/**
 	 * user defined log to append standard server log.
 	 * 
 	 * @param clsName
@@ -315,6 +315,6 @@ public class WebDriverController {
 		log4wd.info(traceClass + System.getProperty("SMARK") 
 				+ methodName + System.getProperty("SMARK")
 				+ status + System.getProperty("SMARK")
-				+ message.replace(System.getProperty("SMARK"), "-").replace("&", "&"));
+				+ message.replace(System.getProperty("SMARK"), "-").replace("&", "&amp;"));
 	}
 }

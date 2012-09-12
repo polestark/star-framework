@@ -162,12 +162,12 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * judge if the alert is present in specified seconds.
 	 * 
-	 * @param senconds timeout in senconds
+	 * @param seconds timeout in seconds
 	 * @throws RuntimeException
 	 */
-	protected boolean alertExists(int senconds) {
+	protected boolean alertExists(int seconds) {
 		long start = System.currentTimeMillis();
-		while ((System.currentTimeMillis() - start) < senconds * 1000) {
+		while ((System.currentTimeMillis() - start) < seconds * 1000) {
 			try {
 				driver.switchTo().alert();
 				return true;
@@ -195,13 +195,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * judge if the element is present in specified seconds.
 	 * 
 	 * @param by the element locator By
-	 * @param senconds timeout in senconds
+	 * @param seconds timeout in seconds
 	 * @throws RuntimeException
 	 */
-	protected boolean elementExists(final By by, int senconds) {
+	protected boolean elementExists(final By by, int seconds) {
 		long start = System.currentTimeMillis();
 		boolean exists = false;
-		while (!exists && ((System.currentTimeMillis() - start) < senconds * 1000)) {
+		while (!exists && ((System.currentTimeMillis() - start) < seconds * 1000)) {
 			exists = elementExists(by);
 		}
 		return exists;
@@ -238,13 +238,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * judge if the browser is present by title reg pattern in specified seconds.
 	 * 
 	 * @param browserTitle part of the title to see if browser exists
-	 * @param senconds timeout in senconds
+	 * @param seconds timeout in seconds
 	 * @throws RuntimeException
 	 */
-	protected boolean browserExists(String browserTitle, int senconds) {
+	protected boolean browserExists(String browserTitle, int seconds) {
 		long start = System.currentTimeMillis();
 		boolean isExist = false;
-		while (!isExist && (System.currentTimeMillis() - start) < senconds * 1000) {
+		while (!isExist && (System.currentTimeMillis() - start) < seconds * 1000) {
 			isExist = browserExists(browserTitle);
 		}
 		return isExist;
@@ -1105,6 +1105,33 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
+	 * find elements displayed on the page.
+	 * 
+	 * @param by the way to locate webelement
+	 * @return the first displayed webelement
+	 * @throws RuntimeException
+	 */
+	protected WebElement findDisplayedElment(By by) {
+		boolean isSucceed = false;
+		WebElement element, retElement = null;
+		List<WebElement> elements = null;
+		try {
+			elements = driver.findElements(by);
+			Iterator<WebElement> it = elements.iterator();
+			while ((element = it.next()) != null && element.isDisplayed()) {
+				retElement = element;
+			}
+			isSucceed = true;
+		} catch (WebDriverException e) {
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+		return retElement;
+	}
+
+	/**
 	 * override the findElements method, adding user defined log.
 	 * 
 	 * @param by the locator of the elements to be find
@@ -1149,33 +1176,6 @@ public class WebDriverWebPublic extends WebDriverController {
 		}
 		operationCheck(isSucceed);
 		return element;
-	}
-
-	/**
-	 * find elements displayed on the page.
-	 * 
-	 * @param by the way to locate webelement
-	 * @return the first displayed webelement
-	 * @throws RuntimeException
-	 */
-	protected WebElement findDisplayedElment(By by) {
-		boolean isSucceed = false;
-		WebElement element, retElement = null;
-		List<WebElement> elements = null;
-		try {
-			elements = driver.findElements(by);
-			Iterator<WebElement> it = elements.iterator();
-			while ((element = it.next()) != null && element.isDisplayed()) {
-				retElement = element;
-			}
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
-		return retElement;
 	}
 
 	/**
@@ -1304,13 +1304,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * wait for the element visiable in timeout setting.
 	 * 
 	 * @param by the element locator By
-	 * @param senconds timeout in senconds
+	 * @param seconds timeout in seconds
 	 * @throws RuntimeException
 	 */
-	protected boolean waitForElementVisible(By by, int senconds) {
+	protected boolean waitForElementVisible(By by, int seconds) {
 		boolean isSucceed = false;
 		boolean isExists = false;
-		WebDriverWait wait = new WebDriverWait(driver, senconds);
+		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
 			if (wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null) {
 				isExists = true;
@@ -1329,13 +1329,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * wait for the element clickable in timeout setting.
 	 * 
 	 * @param by the element locator By
-	 * @param senconds timeout in senconds
+	 * @param seconds timeout in seconds
 	 * @throws RuntimeException
 	 */
-	protected boolean waitForElementClickable(By by, int senconds) {
+	protected boolean waitForElementClickable(By by, int seconds) {
 		boolean isSucceed = false;
 		boolean isExists = false;
-		WebDriverWait wait = new WebDriverWait(driver, senconds);
+		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
 			if (wait.until(ExpectedConditions.elementToBeClickable(by)) != null) {
 				isExists = true;
@@ -1355,13 +1355,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the element locator By
 	 * @param text the text to be found of element
-	 * @param senconds timeout in senconds
+	 * @param seconds timeout in seconds
 	 * @throws RuntimeException
 	 */
-	protected boolean waitForTextOnElement(By by, String text, int senconds) {
+	protected boolean waitForTextOnElement(By by, String text, int seconds) {
 		boolean isSucceed = false;
 		boolean isExists = false;
-		WebDriverWait wait = new WebDriverWait(driver, senconds);
+		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
 			if (wait.until(ExpectedConditions.textToBePresentInElement(by, text)) != null) {
 				isExists = true;
@@ -1381,13 +1381,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the element locator By
 	 * @param text the text to be found in element attributes
-	 * @param senconds timeout in senconds
+	 * @param seconds timeout in seconds
 	 * @throws RuntimeException
 	 */
-	protected boolean waitForTextOfElementAttr(By by, String text, int senconds) {
+	protected boolean waitForTextOfElementAttr(By by, String text, int seconds) {
 		boolean isSucceed = false;
 		boolean isExists = false;
-		WebDriverWait wait = new WebDriverWait((WebDriver) driver, senconds);
+		WebDriverWait wait = new WebDriverWait((WebDriver) driver, seconds);
 		try {
 			if (wait.until(ExpectedConditions.textToBePresentInElementValue(by, text)) != null) {
 				isExists = true;
@@ -1400,6 +1400,26 @@ public class WebDriverWebPublic extends WebDriverController {
 		}
 		operationCheck(isSucceed);
 		return isExists;
+	}
+
+	/**
+	 * wait for alert disappears in the time united by seconds.
+	 * 
+	 * @throws RuntimeException
+	 */
+	protected boolean waitForAlertDisappear(int seconds) {
+		long start = System.currentTimeMillis();
+		while ((System.currentTimeMillis() - start) < seconds * 1000) {
+			try {
+				driver.switchTo().alert();
+			} catch (NoAlertPresentException ne) {
+				return true;
+			} catch (Exception e) {
+				LOG.error(e);
+				throw new RuntimeException(e.getMessage());
+			}
+		}
+		return false;
 	}
 
 	/**
