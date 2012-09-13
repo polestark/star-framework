@@ -1,0 +1,14 @@
+com.star.frame.basecase
+com.star.logging.frame
+com.star.logging.selenium
+com.star.logging.webdriver
+com.star.reportng
+com.star.support.config
+com.star.support.externs
+com.star.testdata.fileio
+com.star.testdata.jdbc
+com.star.testdata.string
+com.star.toolapi.selenium
+com.star.toolapi.watij
+com.star.toolapi.webdriver
+com.star.toolapi.webdriver.group
