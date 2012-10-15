@@ -39,8 +39,9 @@ public class WebDriverController {
 	protected static final StringBufferUtils STRUTIL = new StringBufferUtils();
 	protected static final ParseProperties property = new ParseProperties("config/config.properties");
 	protected static final String ROOT_DIR = System.getProperty("user.dir");
-	protected static final String LOG_MARK = new File(property.get("log")).getName();
-	protected static final String LOG_DIR = ROOT_DIR + "/" + LOG_MARK + "/";
+	protected static final String LOG_NAME = new File(property.get("log")).getName();
+	protected static final String LOG_REL = "./" + LOG_NAME + "/";
+	protected static final String LOG_ABS = ROOT_DIR + "/" + LOG_NAME + "/";
 
 	private static final LoggingManager LOG = new LoggingManager(WebDriverController.class.getName());
 	private static final RemoteControlConfiguration RCC = new RemoteControlConfiguration();
@@ -54,8 +55,7 @@ public class WebDriverController {
 	/**
 	 * choose a port to start the selenium server.
 	 * 
-	 * @param clsName
-	 *            the runtime class name
+	 * @param clsName the runtime class name
 	 * @throws RuntimeException
 	 */
 	protected void startServer(String clsName) {
@@ -73,7 +73,7 @@ public class WebDriverController {
 					RCC.setServerLogDebugMode(false);
 					RCC.setBrowserSideLogEnabled(true);
 					RCC.setOutputEncoding("gbk");
-					RCC.setLogOutFileName(distinctName(LOG_DIR, clsName, ".log"));
+					RCC.setLogOutFileName(distinctName(LOG_ABS, clsName, ".log"));
 				}
 				RCC.setTrustAllSSLCertificates(true);
 				server = new SeleniumServer(false, RCC);
@@ -185,12 +185,9 @@ public class WebDriverController {
 	/**
 	 * get a new distinct filename only if the file exists already
 	 * 
-	 * @param dir
-	 *            file location
-	 * @param fileName
-	 *            file name to judge
-	 * @param fileType
-	 *            file type such as ".html"
+	 * @param dir file location
+	 * @param fileName file name to judge
+	 * @param fileType file type such as ".html"
 	 * @return if file exists then add mark by time
 	 * @throws RuntimeException
 	 */
@@ -204,12 +201,11 @@ public class WebDriverController {
 	/**
 	 * prepare to start tests, for testng beforetest.
 	 * 
-	 * @param className
-	 *            the class name for log record file name
+	 * @param className the class name for log record file name
 	 * @throws RuntimeException
 	 */
 	protected void testCunstruction(String className) {
-		fName = LOG_DIR + className + ".xml";
+		fName = LOG_ABS + className + ".xml";
 		html = new HtmlFormatter4WD(fName, "date;millis;method;status;message;class");
 		startTime = System.currentTimeMillis();
 		startServer(className);
@@ -229,15 +225,14 @@ public class WebDriverController {
 	/**
 	 * user defined log to append standard server log.
 	 * 
-	 * @param clsName
-	 *            extra log filename to append
+	 * @param clsName extra log filename to append
 	 * @return Logger
 	 * @throws RuntimeException
 	 */
 	protected Logger xmlLogForWebRiver(String clsName) {
 		Logger logger = Logger.getLogger(this.getClass().getName());
 		try {
-			handler = new FileHandler(LOG_DIR + clsName + ".xml", false);
+			handler = new FileHandler(LOG_ABS + clsName + ".xml", false);
 			handler.setLevel(Level.FINE);
 			handler.setFormatter(new XMLFormatter4WD());
 			logger.addHandler(handler);
@@ -251,8 +246,7 @@ public class WebDriverController {
 	/**
 	 * wait milli seconds.
 	 * 
-	 * @param millis
-	 *            time to wait, in millisecond
+	 * @param millis time to wait, in millisecond
 	 */
 	protected void pause(long millis) {
 		try {
@@ -264,8 +258,7 @@ public class WebDriverController {
 	/**
 	 * record to logs with fail info messages.
 	 * 
-	 * @param message
-	 *            the message to be recroded to logs
+	 * @param message the message to be recroded to logs
 	 */
 	protected void pass(String message) {
 		report("passed", message);
@@ -274,18 +267,26 @@ public class WebDriverController {
 	/**
 	 * record to logs with fail info messages.
 	 * 
-	 * @param message
-	 *            the message to be recroded to logs
+	 * @param message the message to be recroded to logs
 	 */
 	protected void fail(String message) {
 		report("failed", message);
 	}
 
 	/**
+	 * record to logs with fail info messages and exit run.
+	 * 
+	 * @param message the message to be recroded to logs
+	 */
+	protected void failAndExit(String message) {
+		report("failed", message);
+		throw new RuntimeException(message);
+	}
+
+	/**
 	 * record to logs with fail info messages.
 	 * 
-	 * @param message
-	 *            the message to be recroded to logs
+	 * @param message the message to be recroded to logs
 	 */
 	protected void warn(String message) {
 		report("warned", message);
@@ -294,10 +295,8 @@ public class WebDriverController {
 	/**
 	 * record to logs with fail info messages.
 	 * 
-	 * @param status
-	 *            the result status to be logged
-	 * @param message
-	 *            the message to be recroded to logs
+	 * @param status the result status to be logged
+	 * @param message the message to be recroded to logs
 	 */
 	private void report(String status, String message) {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
@@ -315,6 +314,6 @@ public class WebDriverController {
 		log4wd.info(traceClass + System.getProperty("SMARK") 
 				+ methodName + System.getProperty("SMARK")
 				+ status + System.getProperty("SMARK")
-				+ message.replace(System.getProperty("SMARK"), "-").replace("&", "&amp;"));
+				+ message.replace(System.getProperty("SMARK"), "-").replace("&", "&"));
 	}
 }

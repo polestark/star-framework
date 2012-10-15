@@ -31,7 +31,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.apache.commons.io.FileUtils;
 import com.star.logging.frame.LoggingManager;
 import com.star.support.externs.Win32GuiByAu3;
-import com.star.toolapi.webdriver.group.WebTable;
+import com.star.toolapi.webdriver.group.WebDriverWebTable;
 import static org.testng.AssertJUnit.assertTrue;
 
 public class WebDriverWebPublic extends WebDriverController {
@@ -42,7 +42,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	private static long maxWaitfor = 10000;
 	private static long sleepUnit = 500;
 	private static By tabFinder = null;
-	private static WebTable webTable = null;
+	private static WebDriverWebTable webTable = null;
 
 	/**
 	 * set sleep interval for loop wait.
@@ -101,14 +101,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	private void operationCheck(boolean isSucceed) {
-		String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-		String timeMark = STRUTIL.formatedTime(FORMATTER);
-		String fileName = "./" + LOG_MARK + "/" + this.getClass().getName() + timeMark + ".png";
+		String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+		String file = LOG_REL + this.getClass().getName() + STRUTIL.formatedTime(FORMATTER) + ".png";
 		try {
 			assertTrue(isSucceed);
 		} catch (AssertionError ae) {
-			takeScreenShot(fileName);
-			fail("method [" + methodName + "] failed, screenshot is: [" + fileName + "]");
+			takeScreenShot(file);
+			fail("method [" + method + "] failed, screenshot is: [" + file + "]");
 			throw new RuntimeException("Test Run Failed:" + ae.getMessage());
 		}
 	}
@@ -136,7 +135,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void takeScreenShot() {
 		String time = STRUTIL.formatedTime(FORMATTER);
-		String fileName = LOG_DIR + this.getClass().getName() + time + ".png";
+		String fileName = LOG_ABS + this.getClass().getName() + time + ".png";
 		takeScreenShot(fileName);
 		pass("screenshot saved, you can see: " + fileName);
 	}
@@ -258,7 +257,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected void maximizeWindow() {
 		boolean isSucceed = false;
 		String js = "if(document.all) { " + "self.moveTo(0, 0); "
-				+ "self.resizeTo(screen.availWidth, screen.availHeight); " + "}";
+				+ "self.resizeTo(screen.availWidth, screen.availHeight); self.focus();" + "}";
 		try {
 			driver.executeScript(js);
 			isSucceed = true;
@@ -357,6 +356,61 @@ public class WebDriverWebPublic extends WebDriverController {
 				fail("there is no window named [ " + windowTitle + " ]...");
 			}
 		} catch (WebDriverException e) {
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
+	 * close window by window title, by string full pattern.
+	 * 
+	 * @param windowTitle the title of the window to be closed
+	 * @throws RuntimeException
+	 */
+	protected void closeWindow(String windowTitle) {
+		boolean isSucceed = true;
+		Set<String> windowHandles = driver.getWindowHandles();
+		try {
+			for (String handler : windowHandles) {
+				driver.switchTo().window(handler);
+				String title = driver.getTitle();
+				if (windowTitle.equals(title)) {
+					driver.close();
+					pass("window [ " + windowTitle + " ] closed...");
+					break;
+				}
+			}
+		} catch (WebDriverException e) {
+			isSucceed = false;
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
+	 * close windows except specified window title, by string full pattern.
+	 * 
+	 * @param windowTitle the title of the window not to be closed
+	 * @throws RuntimeException
+	 */
+	protected void closeWindowExcept(String windowTitle){
+		boolean isSucceed = true;
+		Set<String> windowHandles = driver.getWindowHandles();
+		try {
+			for (String handler : windowHandles) {
+				driver.switchTo().window(handler);
+				String title = driver.getTitle();
+				if (!windowTitle.equals(title)) {
+					driver.close();
+				}
+			}
+			pass("all windows closed except [ " + windowTitle + " ]...");
+		} catch (WebDriverException e) {
+			isSucceed = false;
 			LOG.error(e);
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
@@ -813,6 +867,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text you want to input to element
 	 * @param index the index of the elements shared the same attribute value
 	 * @throws RuntimeException
+	 * @throws IllegalArgumentException
 	 */
 	protected void sendKeysByDOM(String by, String byValue, String text, int index) {
 		String js = null;
@@ -831,7 +886,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.executeScript(js);
 			isSucceed = true;
-			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]...");
+			pass("input text [ " + text + " ] to element [ " + by + " ]...");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -846,6 +901,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param elementId the id of the element
 	 * @param text the text you want to input to element
 	 * @throws RuntimeException
+	 * @throws IllegalArgumentException
 	 */
 	protected void sendKeysById(String elementId, String text) {
 		sendKeysByDOM("Id", elementId, text, 0);
@@ -858,6 +914,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text you want to input to element
 	 * @param elementIndex the index of the elements shared the same name, begins with 0
 	 * @throws RuntimeException
+	 * @throws IllegalArgumentException
 	 */
 	protected void sendKeysByName(String elementName, String text, int elementIndex) {
 		sendKeysByDOM("Name", elementName, text, elementIndex);
@@ -870,9 +927,31 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text you want to input to element
 	 * @param elementIndex the index of the elements shared the same tag name, begins with 0
 	 * @throws RuntimeException
+	 * @throws IllegalArgumentException
 	 */
 	protected void sendKeysByTagName(String elementTagName, String text, int elementIndex) {
 		sendKeysByDOM("TagName", elementTagName, text, elementIndex);
+	}
+
+	/**
+	 * edit rich text box created by kindeditor
+	 * 
+	 * @param editorId kindeditor id
+	 * @param text the text you want to input to element
+	 * @throws RuntimeException
+	 */
+	protected void editKindEditor(String editorId, String text) {
+		boolean isSucceed = false;
+		String javascript = "KE.html('" + editorId + "','<p>" + text + "</p>');";
+		try {
+			driver.executeScript(javascript);
+			isSucceed = true;
+		} catch (WebDriverException e) {
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1183,16 +1262,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param tabBy the element locator By
 	 */
-	private synchronized WebTable tableCache(By tabBy) {
+	private synchronized WebDriverWebTable tableCache(By tabBy) {
 		if (tabFinder == null) {
 			tabFinder = tabBy;
-			return new WebTable(driver, tabBy);
+			return new WebDriverWebTable(driver, tabBy);
 		} else {
 			if (tabBy.toString().equals(tabFinder.toString())) {
 				return webTable;
 			} else {
 				tabFinder = tabBy;
-				return new WebTable(driver, tabBy);
+				return new WebDriverWebTable(driver, tabBy);
 			}
 		}
 	}
