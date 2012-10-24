@@ -65,15 +65,16 @@
 	<target name="runtask" description="运行构建">				
 		<echo message="……开始测试执行……" />
 		<taskdef name = "testng" classpathref="compile.cp" classname="com.beust.testng.TestNGAntTask"/>
-		<testng classpathref="runtask.cp"		
-				outputdir="${output}"
+		<testng classpathref="runtask.cp"
 				haltOnfailure="false"
 				useDefaultListeners="false"
-				timeOut = "180000000"
-				listeners="com.star.reportng.HTMLReporter,com.star.reportng.JUnitXMLReporter,org.testng.reporters.FailedReporter">
+				timeOut = "3600000"
+				listeners="com.star.reportng.HTMLReporter,com.star.reportng.JUnitXMLReporter,org.testng.reporters.FailedReporter"
+				outputdir="${output}">
 			<xmlfileset dir="${task}" includes="TestNG.xml" />
 			<sysproperty key="environment" value="${env.choice}" />
-			<sysproperty key="com.star.reportng.title" value="Star AutoTest Report" />
+			<sysproperty key="com.star.reportng.title" value="${project.name} AutoTest Report" />
+			<sysproperty key= "java.util.logging.config.file" value="./config/build-logger.properties" />
 		</testng>
 	</target>
 
