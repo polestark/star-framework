@@ -1,5 +1,13 @@
 package com.star.toolapi.selenium;
 
+/**
+ * 说明：
+ * 1、继承com.star.toolapi.selenium工具原生API接口；
+ * 2、修改selenium-server-standalone.jar/core/scripts/user-extension.js，扩展自定义操作;
+ * 
+ * @author 测试仔刘毅
+ */
+
 import com.thoughtworks.selenium.Selenium;
 
 public interface ExtendSelenium extends Selenium {
@@ -15,9 +23,8 @@ public interface ExtendSelenium extends Selenium {
 	 * 
 	 * @param 	locator the locator of the webtable
 	 * @return 	row count of the current webtable
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	SeleniumException
-	 **/
+	 */
 	public abstract String getTabRowCount(String locator);
 
 	/**
@@ -32,8 +39,7 @@ public interface ExtendSelenium extends Selenium {
 	 * @param 	locator the locator of the webtable
 	 * @param	rowIndex the row index of the table to count
 	 * @return 	column count of the current webtable
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	SeleniumException
-	 **/
+	 */
 	public abstract String getTabColCount(String locator, String rowIndex);
 }

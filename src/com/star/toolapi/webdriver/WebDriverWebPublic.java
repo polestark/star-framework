@@ -184,7 +184,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * judge if the element is existing.
 	 * 
 	 * @param by the element locator By
-	 * @throws RuntimeException
 	 */
 	protected boolean elementExists(By by) {
 		return (driver.findElements(by).size() > 0) ? true : false;
@@ -195,7 +194,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
 	 */
 	protected boolean elementExists(final By by, int seconds) {
 		long start = System.currentTimeMillis();
@@ -364,21 +362,49 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close window by window title, by string full pattern.
+	 * close window by window title and its index if has the same title, by string full pattern.
 	 * 
-	 * @param windowTitle the title of the window to be closed
+	 * @param windowTitle the title of the window to be closed.
+	 * @param index the index of the window which shared the same title, begins with 1.
+	 * @throws RuntimeException
+	 */
+	@SuppressWarnings("null")
+	protected void closeWindow(String windowTitle, int index) {
+		boolean isSucceed = true;
+		Object[] winArray = driver.getWindowHandles().toArray();
+		List<String> winList = null;
+		try {
+			for (int i = 0; i < winArray.length - 1; i++) {
+				driver.switchTo().window(winArray[i].toString());
+				if (windowTitle.equals(driver.getTitle())) {
+					winList.add(winArray[i].toString());
+				}
+			}
+			driver.switchTo().window(winList.get(index - 1));
+			driver.close();
+		} catch (WebDriverException e) {
+			isSucceed = false;
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
+	 * close the last window by the same window title, by string full pattern.
+	 * 
+	 * @param windowTitle the title of the window to be closed.
 	 * @throws RuntimeException
 	 */
 	protected void closeWindow(String windowTitle) {
 		boolean isSucceed = true;
-		Set<String> windowHandles = driver.getWindowHandles();
+		Object[] winArray = driver.getWindowHandles().toArray();
 		try {
-			for (String handler : windowHandles) {
-				driver.switchTo().window(handler);
-				String title = driver.getTitle();
-				if (windowTitle.equals(title)) {
+			for (int i = winArray.length - 1; i > 0; i--) {
+				driver.switchTo().window(winArray[i].toString());
+				if (windowTitle.equals(driver.getTitle())) {
 					driver.close();
-					pass("window [ " + windowTitle + " ] closed...");
 					break;
 				}
 			}
@@ -416,6 +442,36 @@ public class WebDriverWebPublic extends WebDriverController {
 			throw new RuntimeException(e.getMessage());
 		}
 		operationCheck(isSucceed);
+	}
+
+	/**
+	 * wait for new window which has no title in few seconds.
+	 * 
+	 * @param browserCount windows count before new window appears.
+	 * @param seconds time unit in seconds.
+	 */
+	protected boolean isNewWindowExits(int browserCount, int seconds) {
+		boolean isExist = false;
+		long begins = System.currentTimeMillis();
+		while ((System.currentTimeMillis() - begins < seconds * 1000) && !isExist) {
+			isExist = (driver.getWindowHandles().size() > browserCount) ? true : false;
+		}
+		return isExist;
+	}
+
+	/**
+	 * wait for new window which has no title in few seconds.
+	 * 
+	 * @param oldHandlers windows handler Set before new window appears.
+	 * @param seconds time unit in seconds.
+	 */
+	protected boolean isNewWindowExits(Set<String> oldHandlers, int seconds) {
+		boolean isExist = false;
+		long begins = System.currentTimeMillis();
+		while ((System.currentTimeMillis() - begins < seconds * 1000) && !isExist) {
+			isExist = (driver.getWindowHandles().size() > oldHandlers.size()) ? true : false;
+		}
+		return isExist;
 	}
 
 	/**
@@ -683,6 +739,94 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
+	 * doubleclick on the element to be find by By.
+	 * 
+	 * @param element the webelement you want to operate
+	 * @throws RuntimeException
+	 */
+	protected void doubleClick(WebElement element) {
+		boolean isSucceed = false;		
+		try {
+			waitUtilElementVisible(element);
+			actionDriver.doubleClick(element);
+			actionDriver.perform();
+			isSucceed = true;
+			pass("doubleClick on element ...");
+		} catch (WebDriverException e) {
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
+	 * doubleclick on the element.
+	 * 
+	 * @param by the locator you want to find the element
+	 * @throws RuntimeException
+	 */
+	protected void doubleClick(By by) {
+		boolean isSucceed = false;		
+		try {
+			waitUtilElementVisible(driver.findElement(by));
+			actionDriver.doubleClick(findElement(by));
+			actionDriver.perform();
+			isSucceed = true;
+			pass("doubleClick on element [ " + by.toString() + " ] ...");
+		} catch (WebDriverException e) {
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
+	 * right click on the element to be find by By.
+	 * 
+	 * @param element the webelement you want to operate
+	 * @throws RuntimeException
+	 */
+	protected void rightClick(WebElement element) {
+		boolean isSucceed = false;		
+		try {
+			waitUtilElementVisible(element);
+			actionDriver.contextClick(element);
+			actionDriver.perform();
+			isSucceed = true;
+			pass("rightClick on element ...");
+		} catch (WebDriverException e) {
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
+	 * right click on the element.
+	 * 
+	 * @param by the locator you want to find the element
+	 * @throws RuntimeException
+	 */
+	protected void rightClick(By by) {
+		boolean isSucceed = false;		
+		try {
+			waitUtilElementVisible(driver.findElement(by));
+			actionDriver.contextClick(findElement(by));
+			actionDriver.perform();
+			isSucceed = true;
+			pass("rightClick on element [ " + by.toString() + " ] ...");
+		} catch (WebDriverException e) {
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
 	 * override the submit method, adding user defined log.
 	 * 
 	 * @param element the webelement you want to operate
@@ -934,13 +1078,60 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
+	 * sendKeys by using keybord event on element.
+	 * 
+	 * @param element the webelement you want to operate
+	 * @param text the text you want to input to element
+	 * @throws RuntimeException
+	 */
+	protected void sendKeysByKeybord(WebElement element, String text) {
+		boolean isSucceed = false;
+		try {
+			waitUtilElementVisible(element);
+			actionDriver.sendKeys(element, text);
+			actionDriver.perform();
+			isSucceed = true;
+			pass("send text [ " + text + " ] to WebEdit...");
+		} catch (WebDriverException e) {
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
+	 * sendKeys by using keybord event on element to be found by By.
+	 * 
+	 * @param by the locator you want to find the element
+	 * @param text the text you want to input to element
+	 * @throws RuntimeException
+	 */
+	protected void sendKeysByKeybord(By by, String text) {
+		boolean isSucceed = false;
+		try {
+			WebElement element = driver.findElement(by);
+			waitUtilElementVisible(element);
+			actionDriver.sendKeys(element, text);
+			actionDriver.perform();
+			isSucceed = true;
+			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]...");
+		} catch (WebDriverException e) {
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
 	 * edit rich text box created by kindeditor
 	 * 
 	 * @param editorId kindeditor id
 	 * @param text the text you want to input to element
 	 * @throws RuntimeException
 	 */
-	protected void editKindEditor(String editorId, String text) {
+	protected void sendKeysOnKindEditor(String editorId, String text) {
 		boolean isSucceed = false;
 		String javascript = "KE.html('" + editorId + "','<p>" + text + "</p>');";
 		try {
@@ -1546,7 +1737,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @throws RuntimeException
 	 */
-	protected void chooseOKOnConfirm() {
+	protected void ensureBeforeConfirm() {
 		boolean isSucceed = false;
 		try {
 			driver.executeScript("window.confirm = function() {return true}");
@@ -1564,7 +1755,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @throws RuntimeException
 	 */
-	protected void chooseCancelOnConfirm() {
+	protected void dismissBeforeConfirm() {
 		boolean isSucceed = false;
 		try {
 			driver.executeScript("window.confirm = function() {return false}");
@@ -1582,7 +1773,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @throws RuntimeException
 	 */
-	protected void chooseOKOnPrompt() {
+	protected void ensureBeforePrompt() {
 		boolean isSucceed = false;
 		try {
 			driver.executeScript("window.prompt = function() {return true}");
@@ -1600,7 +1791,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @throws RuntimeException
 	 */
-	protected void chooseCancelOnPrompt() {
+	protected void dismisBeforePrompt() {
 		boolean isSucceed = false;
 		try {
 			driver.executeScript("window.prompt = function() {return false}");

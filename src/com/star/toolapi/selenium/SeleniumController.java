@@ -51,7 +51,7 @@ public class SeleniumController {
 	protected static final String SERVPORT = PROPERTY.get("serverPort");
 	protected static final String CLOSETXT = PROPERTY.get("closeTextLog");
 
-	/***************************************************************************************
+	/**
 	 * create LoggingSelenium instance.
 	 * 
 	 * @param 	resName result file name to write logs
@@ -79,7 +79,7 @@ public class SeleniumController {
 		return lSelenium;
 	}
 
-	/***************************************************************************************
+	/**
 	 * choose a port to start the selenium server.
 	 * 
 	 * @param portList the list of port can be used as selenium servers
@@ -185,7 +185,7 @@ public class SeleniumController {
 	 * 
 	 * @throws	RuntimeException
 	 */
-	public void testConstruction(String testClassName){
+	public void testCunstruction(String testClassName){
 		startServer(SERVPORT, testClassName);
 	}
 
@@ -208,7 +208,7 @@ public class SeleniumController {
 		}
 	}
 
-	/***************************************************************************************
+	/**
 	 * choose a port to start the selenium server.
 	 * 
 	 * @param dir file location

@@ -1,5 +1,13 @@
 package com.star.testdata.fileio;
 
+/**
+ * 文本文件读取：
+ * 1、将文本文件内容读取存入Map之后存入List；
+ * 2、将文本文件内容List根据配置得到指定行数读出为Map供运行时使用；
+ * 
+ * @author 测试仔刘毅
+ **/
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +30,6 @@ public class TextParseUtils {
 	 * class construct with initialize parameters.
 	 * 
 	 * @param	fName the file name to be parsed
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	public TextParseUtils(String fName) {
@@ -31,9 +38,9 @@ public class TextParseUtils {
 
 	/**
 	 * add map to arraylist.
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
+	@SuppressWarnings("resource")
 	public List<Map<String, String>> MyList(){
 		File f = new File(fileName);
 		List<Map<String, String>> paraList = new ArrayList<Map<String, String>>();
@@ -58,7 +65,6 @@ public class TextParseUtils {
 	 * 
 	 * @param	keys the keyname array to put into map
 	 * @param	parms the keyvalue array to put into map
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	public Map<String, String> creatParaMap(String[] keys, String[] parms) {
@@ -73,7 +79,6 @@ public class TextParseUtils {
 	 * get datamap from datalist using configed line number.
 	 * 
 	 * @param	index the line number of your file to read
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	public Map<String, String> getConfigedParaMap(String index){
@@ -93,7 +98,6 @@ public class TextParseUtils {
 	/**
 	 * override getConfigedParaMap using default line number 1.
 	 * 
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	public Map<String, String> getConfigedParaMap(){

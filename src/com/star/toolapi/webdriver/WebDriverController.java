@@ -15,23 +15,28 @@ package com.star.toolapi.webdriver;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.SeleniumServer;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import com.star.logging.frame.LoggingManager;
 import com.star.logging.webdriver.HtmlFormatter4WD;
-import com.star.logging.webdriver.XMLFormatter4WD;
 import com.star.support.config.ParseProperties;
 import com.star.testdata.string.StringBufferUtils;
 
 public class WebDriverController {
 
 	protected static RemoteWebDriver driver;
+	protected static Actions actionDriver;
 	protected static SeleniumServer server;
 	protected static Handler handler;
 	protected static Logger log4wd;
@@ -47,6 +52,7 @@ public class WebDriverController {
 	private static final RemoteControlConfiguration RCC = new RemoteControlConfiguration();
 	private static final String PORT = property.get("serverPort");
 	private static final String CLOSETXT = property.get("closeTextLog");
+	private static final String SMARK = "~";
 	private static HtmlFormatter4WD html;
 	private static String fName;
 	private static long startTime;
@@ -59,7 +65,7 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void startServer(String clsName) {
-		log4wd = xmlLogForWebRiver(clsName);
+		log4wd = remoteMessageRecord(clsName);
 		String portStr[] = PORT.split(";");
 		for (int i = 0; i < portStr.length; i++) {
 			try {
@@ -73,6 +79,7 @@ public class WebDriverController {
 					RCC.setServerLogDebugMode(false);
 					RCC.setBrowserSideLogEnabled(true);
 					RCC.setOutputEncoding("gbk");
+					RCC.setServerOutputOn(false);
 					RCC.setLogOutFileName(distinctName(LOG_ABS, clsName, ".log"));
 				}
 				RCC.setTrustAllSSLCertificates(true);
@@ -132,6 +139,7 @@ public class WebDriverController {
 		try {
 			URL url = new URL("http://localhost:" + server.getPort() + "/wd/hub");
 			driver = new RemoteWebDriver(url, capability);
+			actionDriver = new Actions(driver);
 			pass("webdriver new session started");
 		} catch (Throwable t) {
 			LOG.error(t);
@@ -194,8 +202,7 @@ public class WebDriverController {
 	protected String distinctName(String dir, String fileName, String fileType) {
 		String markNow = STRUTIL.formatedTime("-yyyyMMdd-HHmmssSSS");
 		return (new File(dir + fileName + "." + fileType).exists()) 
-				? (dir + fileName + markNow + "." + fileType)
-				: (dir + fileName + "." + fileType);
+				? (dir + fileName + markNow + "." + fileType) : (dir + fileName + "." + fileType);
 	}
 
 	/**
@@ -205,6 +212,7 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void testCunstruction(String className) {
+		
 		fName = LOG_ABS + className + ".xml";
 		html = new HtmlFormatter4WD(fName, "date;millis;method;status;message;class");
 		startTime = System.currentTimeMillis();
@@ -229,12 +237,165 @@ public class WebDriverController {
 	 * @return Logger
 	 * @throws RuntimeException
 	 */
-	protected Logger xmlLogForWebRiver(String clsName) {
+	private Logger remoteMessageRecord(String clsName) {
 		Logger logger = Logger.getLogger(this.getClass().getName());
+
 		try {
+			Formatter xmlFormatter = new Formatter() {
+
+				/**
+				 * user defined format to append xml log files
+				 * 
+				 * @param record currnet thread info
+				 **/
+				@Override
+				public String format(LogRecord record) {
+					String[] msgContent = record.getMessage().split(SMARK);
+					StringBuffer sb = new StringBuffer(500);
+					sb.append("<record>\n");
+					/*
+					 * =========================log current time=========================
+					 */
+					sb.append("  <date>");
+					sb.append(STRUTIL.formatedTime("HH:mm:ss.SSS"));
+					sb.append("</date>\n");
+					/*
+					 * =========================log current milliseconds=========================
+					 */
+					sb.append("  <millis>");
+					sb.append(record.getMillis());
+					sb.append("</millis>\n");
+					/*
+					 * =========================log current method=========================
+					 */
+					sb.append("  <method>");
+					sb.append(msgContent[1]);
+					sb.append("</method>\n");
+					/*
+					 * =========================log current run status=========================
+					 */
+					sb.append("  <status>");
+					sb.append(msgContent[2]);
+					sb.append("</status>\n");
+					/*
+					 * =========================log current message details=========================
+					 */
+					sb.append("  <message>");
+					sb.append(msgContent[3]);
+					sb.append("</message>");
+					sb.append("\n");
+					/*
+					 * =========================log current running classname=========================
+					 */
+					sb.append("  <class>");
+					sb.append(msgContent[0]);
+					sb.append("</class>\n");
+
+					ResourceBundle bundle = record.getResourceBundle();
+					try {
+						if (bundle != null && bundle.getString(record.getMessage()) != null) {
+							sb.append("  <key>");
+							sb.append(record.getMessage());
+							sb.append("</key>\n");
+							sb.append("  <catalog>");
+							sb.append(record.getResourceBundleName());
+							sb.append("</catalog>\n");
+						}
+					} catch (Exception ex) {
+					}
+
+					Object parameters[] = record.getParameters();
+					if (parameters != null && parameters.length != 0
+							&& record.getMessage().indexOf("{") == -1) {
+						for (int i = 0; i < parameters.length; i++) {
+							sb.append("  <param>");
+							try {
+								sb.append(parameters[i].toString());
+							} catch (Exception ex) {
+								sb.append("???");
+							}
+							sb.append("</param>\n");
+						}
+					}
+
+					if (record.getThrown() != null) {
+						Throwable th = record.getThrown();
+						sb.append("  <exception>\n");
+						sb.append("    <message>");
+						sb.append(th.toString());
+						sb.append("</message>\n");
+						StackTraceElement trace[] = th.getStackTrace();
+						for (int i = 0; i < trace.length; i++) {
+							StackTraceElement frame = trace[i];
+							sb.append("    <frame>\n");
+							sb.append("      <class>");
+							sb.append(frame.getClassName());
+							sb.append("</class>\n");
+							sb.append("      <method>");
+							sb.append(frame.getMethodName());
+							sb.append("</method>\n");
+							if (frame.getLineNumber() >= 0) {
+								sb.append("      <line>");
+								sb.append(frame.getLineNumber());
+								sb.append("</line>\n");
+							}
+							sb.append("    </frame>\n");
+						}
+						sb.append("  </exception>\n");
+					}
+
+					sb.append("</record>\n");
+					return sb.toString();
+				}
+
+				/**
+				 * create xml file head
+				 * 
+				 * @param h the logger file handler
+				 **/
+				@Override
+				public String getHead(Handler h) {
+					StringBuffer sb = new StringBuffer();
+					String encoding;
+					sb.append("<?xml version=\"1.0\"");
+
+					if (h != null) {
+						encoding = h.getEncoding();
+					} else {
+						encoding = null;
+					}
+
+					if (encoding == null) {
+						encoding = java.nio.charset.Charset.defaultCharset().name();
+					}
+					try {
+						Charset cs = Charset.forName(encoding);
+						encoding = cs.name();
+					} catch (Exception ex) {
+					}
+
+					sb.append(" encoding=\"");
+					sb.append(encoding);
+					sb.append("\"");
+					sb.append(" standalone=\"no\"?>\n");
+					sb.append("<!DOCTYPE log SYSTEM \"logger.dtd\">\n");
+					sb.append("<log>\n");
+					return sb.toString();
+				}
+
+				/**
+				 * create xml file tail
+				 * 
+				 * @param h the logger file handler
+				 **/
+				@Override
+				public String getTail(Handler h) {
+					return "</log>\n";
+				}
+			};
 			handler = new FileHandler(LOG_ABS + clsName + ".xml", false);
 			handler.setLevel(Level.FINE);
-			handler.setFormatter(new XMLFormatter4WD());
+			handler.setFormatter(xmlFormatter);
 			logger.addHandler(handler);
 		} catch (Exception ex) {
 			LOG.error("can not create logger for remotewebdriver!");
@@ -300,20 +461,17 @@ public class WebDriverController {
 	 */
 	private void report(String status, String message) {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		System.setProperty("SMARK", "~");
 		int first = 3, last = 3;
 		String methodName = trace[first].getMethodName();
-		
-		for (int i = first; i < trace.length; i ++){
-			if (trace[i].getClassName().contains(".reflect.")){
+
+		for (int i = first; i < trace.length; i++) {
+			if (trace[i].getClassName().contains(".reflect.")) {
 				last = ((i - 1) <= first) ? first : (i - 1);
 				break;
 			}
-		}		
-		String traceClass = trace[last].getClassName() + " # " + trace[last].getLineNumber();		
-		log4wd.info(traceClass + System.getProperty("SMARK") 
-				+ methodName + System.getProperty("SMARK")
-				+ status + System.getProperty("SMARK")
-				+ message.replace(System.getProperty("SMARK"), "-").replace("&", "&"));
+		}
+		String traceClass = trace[last].getClassName() + " # " + trace[last].getLineNumber();
+		log4wd.info(traceClass + SMARK + methodName + SMARK + status + SMARK
+				+ message.replace(SMARK, "-").replace("&", "&amp;"));
 	}
 }

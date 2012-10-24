@@ -91,7 +91,6 @@ public abstract class AbstractReporter implements IReporter {
 	 * Generate the specified output file by merging the specified Velocity Engine
 	 * template with the supplied context.
 	 * 
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	Exception
 	 ****************************************************************************************/
 	protected void generateFile(File file, String templateName, VelocityContext context) throws Exception {

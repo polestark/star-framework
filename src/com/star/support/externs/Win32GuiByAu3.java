@@ -8,7 +8,6 @@ package com.star.support.externs;
  * @author 测试仔刘毅
  **/
 
-import com.star.support.externs.Win32GuiByAu3;
 import com.star.logging.frame.LoggingManager;
 
 public class Win32GuiByAu3 {
@@ -26,14 +25,16 @@ public class Win32GuiByAu3 {
 	 * @throws	RuntimeException
 	 **/
 	public void fileUpload(String title, String fileName, int timeout){
-		String execute_file = ASSIST + "Upload.exe";
-		String cmd = "\"" + execute_file + "\" \"" + title + "\" \"" + fileName + "\"" + timeout + "\"";
+		String fileExec = ASSIST + "Upload.exe";
+		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" + fileName + "\" \"" + timeout + "\"";
 		try {
 			Process process = Runtime.getRuntime().exec(cmd);
 			process.waitFor();
 		} catch (Exception e) {
 			LOG.error(e);
-			throw new RuntimeException("execute extern file failed:" + e.getMessage());
+			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
+		}finally{
+			closeWindow(title, 1);
 		}
 	}
 	/**
@@ -60,8 +61,8 @@ public class Win32GuiByAu3 {
 	 * @throws	RuntimeException
 	 **/
 	public void fileDownload(String fstTitle, String sndTitle, String saveAs, int timeout){
-		String execute_file = ASSIST + "Download.exe";
-		String cmd = "\"" + execute_file + "\" \"" + fstTitle + "\" \"" 
+		String fileExec = ASSIST + "Download.exe";
+		String cmd = "\"" + fileExec + "\" \"" + fstTitle + "\" \"" 
 					+ sndTitle + "\" \"" + saveAs + "\" \"" + timeout + "\"";
 		System.out.println(cmd);
 		try {
@@ -69,7 +70,10 @@ public class Win32GuiByAu3 {
 			process.waitFor();
 		} catch (Exception e) {
 			LOG.error(e);
-			throw new RuntimeException("execute extern file failed:" + e.getMessage());
+			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
+		}finally{
+			closeWindow(fstTitle, 1);
+			closeWindow(sndTitle, 1);
 		}
 	}
 
@@ -97,15 +101,17 @@ public class Win32GuiByAu3 {
 	 * @throws	RuntimeException
 	 **/
 	public void clickAlert(String dialogTitle, String buttonName, int timeout){
-		String execute_file = ASSIST + "ClickAlert.exe";
-		String command = "\"" + execute_file + "\" \"" + dialogTitle + "\" \""
-				+ buttonName + "\"" + timeout + "\"";
+		String fileExec = ASSIST + "ClickAlert.exe";
+		String command = "\"" + fileExec + "\" \"" + dialogTitle + "\" \""
+				+ buttonName + "\" \"" + timeout + "\"";
 		try {
 			Process process = Runtime.getRuntime().exec(command);
 			process.waitFor();
 		} catch (Exception e) {
 			LOG.error(e);
-			throw new RuntimeException("execute extern file failed:" + e.getMessage());
+			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
+		}finally{
+			closeWindow(dialogTitle, 1);
 		}
 	}
 
@@ -132,15 +138,17 @@ public class Win32GuiByAu3 {
 	 * @throws	RuntimeException
 	 **/
 	public void typeAlert(String title, String locator, String text, int timeout){
-		String execute_file = ASSIST + "TypeAlert.exe";
-		String cmd = "\"" + execute_file + "\" \"" + title + "\" \"" + locator + "\""
-				+ " " + "\"" + text + "\"" + timeout + "\"";
+		String fileExec = ASSIST + "TypeAlert.exe";
+		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" 
+					+ locator + "\" \"" + text + "\" \"" + timeout + "\"";
 		try {
 			Process process = Runtime.getRuntime().exec(cmd);
 			process.waitFor();
 		} catch (Exception e) {
 			LOG.error(e);
-			throw new RuntimeException("execute extern file failed:" + e.getMessage());
+			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
+		}finally{
+			closeWindow(title, 1);
 		}
 	}
 
@@ -167,14 +175,14 @@ public class Win32GuiByAu3 {
 	 * @throws	RuntimeException
 	 **/
 	public void closeWindow(String title, int timeout){
-		String execute_file = ASSIST + "CloseWindow.exe";
-		String cmd = "\"" + execute_file + "\" \"" + title + "\"" + timeout + "\"";
+		String fileExec = ASSIST + "CloseWindow.exe";
+		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" + timeout + "\"";
 		try {
 			Process process = Runtime.getRuntime().exec(cmd);
 			process.waitFor();
 		} catch (Exception e) {
 			LOG.error(e);
-			throw new RuntimeException("execute extern file failed:" + e.getMessage());
+			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
 		}
 	}
 
@@ -188,6 +196,28 @@ public class Win32GuiByAu3 {
 	 **/
 	public void closeWindow(String title){
 		closeWindow(title, 5);
+	}
+
+	/**
+	 * sendkeys to textarea in ie using autoit compiled exe.
+	 * you can use it like this: typeTextArea("窗口标题", "id", "nameEdit", "输入内容");
+	 * 
+	 * @param	ieTitle ie window title
+	 * @param	findBy name or id
+	 * @param	nameOrId id value or name value of edit
+	 * @param	text content to be input to the edit
+	 * @throws	RuntimeException
+	 **/
+	public void typeTextArea(String ieTitle, String findBy, String nameOrId, String text){
+		String fileExec = ASSIST + "EditTextArea.exe";
+		String cmd = "\"" + fileExec + "\" \"" + ieTitle + "\" \"" + findBy + "\" \"" + nameOrId + "\" \"" + text + "\"";
+		try {
+			Process process = Runtime.getRuntime().exec(cmd);
+			process.waitFor();
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
+		}
 	}
 
 	/**
@@ -210,7 +240,7 @@ public class Win32GuiByAu3 {
 			process.waitFor();
 		} catch (Exception e) {
 			LOG.error(e);
-			throw new RuntimeException("execute extern file failed:" + e.getMessage());
+			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
 		}
 	}
 }

@@ -1,5 +1,13 @@
 package com.star.toolapi.selenium;
 
+/**
+ * 说明：
+ * 1、继承DefaultSelenium，实现ExtendSelenium；
+ * 2、修改selenium-server-standalone.jar/core/scripts/user-extension.js，扩展自定义操作;
+ * 
+ * @author 测试仔刘毅
+ */
+
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.star.toolapi.selenium.ExtendSelenium;
@@ -21,9 +29,8 @@ public class ExtendDefaultSelenium extends DefaultSelenium implements ExtendSele
 			
 	 * @param 	locator the locator of the webtable
 	 * @return 	row count of the current webtable
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	SeleniumException
-	 **/
+	 */
 	public String getTabRowCount(String locator) {
 		return this.commandProcessor.getString("getTabRowCount", new String[] { locator });
 	}
@@ -40,9 +47,8 @@ public class ExtendDefaultSelenium extends DefaultSelenium implements ExtendSele
 	 * @param 	locator	the locator of the webtable
 	 * @param	rowIndex the row index of the table to count
 	 * @return 	column count of the current webtable
-	 * @author 	PAICDOM/LIUYI027
 	 * @throws	SeleniumException
-	 **/
+	 */
 	public String getTabColCount(String locator, String rowIndex) {
 		return this.commandProcessor.getString("getTabColCount", new String[] { locator, rowIndex });
 	}

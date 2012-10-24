@@ -11,9 +11,7 @@ public class StringBufferUtils {
 
 	/**
 	 * get current time format with pattern : formatedTime("yyyy-MM-dd HH:mm:ss").
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public String formatedTime(String dateFormat) {
 		SimpleDateFormat sdt = new SimpleDateFormat(dateFormat);
 		String sysDate = sdt.format(new Date());
@@ -22,9 +20,7 @@ public class StringBufferUtils {
 
 	/**
 	 * get the system current milliseconds.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public String getMilSecNow() {
 		String sysDateStr = String.valueOf(System.currentTimeMillis());
 		return sysDateStr;
@@ -32,9 +28,7 @@ public class StringBufferUtils {
 
 	/**
 	 * count the times for a string appears in anothor string.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public int countStrRepeat(String myString, String myChar) {
 		int count = 0, start = 0;
 		while ((start = myString.indexOf(myChar, start)) >= 0) {
@@ -46,9 +40,7 @@ public class StringBufferUtils {
 
 	/**
 	 * generate specified length string with numbers.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public String getRndNumByLen(int rndLen) {
 		int i, count = 0;
 
@@ -68,9 +60,7 @@ public class StringBufferUtils {
 
 	/**
 	 * generate specified length string with chars.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public String getRndStrByLen(int rndLen) {
 		int i, count = 0;
 		final String chars = "1,2,3,4,5,6,7,8,9,0,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
@@ -89,9 +79,7 @@ public class StringBufferUtils {
 
 	/**
 	 * oracle lpad method in java.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public String strLeftExpand(String appointedStr, int finalLen, char fillWith) {
 		String tempStr = appointedStr;
 		while (tempStr.length() < finalLen) {
@@ -102,9 +90,7 @@ public class StringBufferUtils {
 
 	/**
 	 * oracle rpad method in java.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public String strRightExpand(String appointedStr, int finalLen, char fillWith) {
 		String tempStr = appointedStr;
 		while (tempStr.length() < finalLen) {
@@ -115,9 +101,7 @@ public class StringBufferUtils {
 
 	/**
 	 * generate idnos.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	static {
 		StringBufferUtils.areaCode.put("北京市", 110000);
 		StringBufferUtils.areaCode.put("天津市", 120000);
@@ -156,9 +140,7 @@ public class StringBufferUtils {
 
 	/**
 	 * generate random number for idno.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public String getCertiCode(String capCity, String birthDay, String sexCode) {
 		StringBuilder generater = new StringBuilder();
 		generater.append(StringBufferUtils.areaCode.get(capCity));
@@ -170,9 +152,7 @@ public class StringBufferUtils {
 
 	/**
 	 * generate verify no for idno.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public char veriCodeCalc(char[] chars) {
 		if (chars.length < 17) {
 			return ' ';
@@ -192,9 +172,7 @@ public class StringBufferUtils {
 
 	/**
 	 * generate sex number for idno.
-	 * 
-	 * @author 	PAICDOM/LIUYI027
-	 */
+	 **/
 	public String rndCodeWithSex(String sexCode) {
 		String rndString = "";
 		StringBufferUtils sbu = new StringBufferUtils();

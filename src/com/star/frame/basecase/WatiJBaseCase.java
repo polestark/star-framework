@@ -9,22 +9,20 @@ public class WatiJBaseCase extends IEWebTestByWatiJ {
 	/**
 	 * start new watij ie test.
 	 * 
-	 * @author 	PAICDOM\LIUYI027
-	 * @throws		RuntimeException
-	 */
+	 * @throws	RuntimeException
+	 **/
 	@BeforeClass(alwaysRun = true)
 	public void testSetup(){
-		testConstruct();
+		testCunstruction();
 	}
 
 	/**
 	 * close watij ie test.
 	 * 
-	 * @author 	PAICDOM\LIUYI027
-	 * @throws		RuntimeException
-	 */
+	 * @throws	RuntimeException
+	 **/
 	@AfterClass(alwaysRun = true)
 	public void tearDown(){
-		testTerminate();
+		testTermination();
 	}
 }

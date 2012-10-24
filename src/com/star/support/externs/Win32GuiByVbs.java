@@ -1,5 +1,14 @@
 package com.star.support.externs;
 
+/**
+ * 说明：
+ * 1、通过动态生成vbs，由vbs进行一系列的win32操作，可自定义返回否不返回；
+ * 2、执行cmd命令，截取返回流信息；
+ * 3、可读取指定的注册表信息、杀进程、读取指定的系统环境变量等。
+ * 
+ * @author 测试仔刘毅
+ **/
+
 import java.io.File;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
@@ -31,7 +40,6 @@ public class Win32GuiByVbs{
 	 * 
 	 * @param 	vbs vbs string to be executed
 	 * @return	the vbs returned values: string
-	 * @author  PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	public String getVbsResult(String vbs) {
@@ -68,8 +76,7 @@ public class Win32GuiByVbs{
 	/**
 	 * execute a vbs file.
 	 * 
-	 * @param	fileName whole name whitch vbs file to be executed
-	 * @author  PAICDOM/LIUYI027
+	 * @param	vbsfileName whole name whitch vbs file to be executed
 	 * @throws	RuntimeException
 	 **/
 	private void executeVbsFile(String vbsfileName){
@@ -88,7 +95,6 @@ public class Win32GuiByVbs{
 	 * 
 	 * @param	vbs string content to be written into file
 	 * @param	vbsfileName whole name whitch vbs file to be saved
-	 * @author  PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	private void createVbsFile(String vbs, String vbsfileName){
@@ -110,7 +116,6 @@ public class Win32GuiByVbs{
 	 * 
 	 * @param	regKey whole path and keyname of regedit key
 	 * @return	the regedit key value
-	 * @author  PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	public String regRead(String regKey){
@@ -125,7 +130,6 @@ public class Win32GuiByVbs{
 	 * get the ie version under current system.
 	 * 
 	 * @return	the internet explorer version string
-	 * @author  PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	public String ieVersion(){
@@ -139,7 +143,6 @@ public class Win32GuiByVbs{
 	 * 
 	 * @param	virName viriable name to get, such as "classpath", "JAVA_HOME"
 	 * @return	the viriable value
-	 * @author  PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	public String getEnvironment(String virName) {
@@ -160,11 +163,10 @@ public class Win32GuiByVbs{
 	 * kill win32 process using cmd.exe.
 	 * 
 	 * @param	process process name like 'iexplore' or 'iexplore.exe'
-	 * @author  PAICDOM/LIUYI027
 	 * @throws	RuntimeException
 	 **/
 	public void killWin32Process(String process){
-		String cmd = "cmd /c taskkill /f /im " + process.replace(".exe", "") + ".exe";
+		String cmd = "cmd /c taskkill /f /im " + process.toLowerCase().replace(".exe", "") + ".exe";
 		try {
 			Runtime.getRuntime().exec(cmd).waitFor();
 		} catch (Exception e) {

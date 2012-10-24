@@ -51,7 +51,6 @@ public class SeleniumWebPublic extends SeleniumController {
 	 * set step timeout.
 	 * 
 	 * @param 	stepTimeout timeout setting for single steps
-	 * @throws	RuntimeException
 	 */
 	protected void setStepTimeout(long stepTimeout) {
 		this.stepTimeout = stepTimeout;
