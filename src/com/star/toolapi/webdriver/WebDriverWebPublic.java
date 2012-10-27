@@ -306,6 +306,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
+	 * switch to new default content and active element when window transfers.
+	 * 
+	 * @throws RuntimeException
+	 */
+	private void windowTranfer(){
+		driver.switchTo().defaultContent();
+		driver.switchTo().activeElement();
+	}
+
+	/**
 	 * switch to new window supporting, by deleting first hanlder.
 	 * 
 	 * @param firstHandler the first window handle
@@ -313,11 +323,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void selectNewWindow(String firstHandler) {
 		boolean isSucceed = false;
-		Set<String> handlers = driver.getWindowHandles();
-		handlers.remove(firstHandler);
-		Iterator<String> it = handlers.iterator();
-		driver.switchTo().activeElement();
+		Set<String> handlers = null;
+		Iterator<String> it = null;
 		try {
+			handlers = driver.getWindowHandles();
+			handlers.remove(firstHandler);
+			it = handlers.iterator();
+			windowTranfer();
 			if (it.hasNext()) {
 				driver.switchTo().window(it.next());
 				isSucceed = true;
@@ -339,8 +351,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void selectWindow(String windowTitle) {
 		boolean isSucceed = false;
-		Set<String> windowHandles = driver.getWindowHandles();
+		Set<String> windowHandles = null;
 		try {
+			windowTranfer();
+			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
 				String title = driver.getTitle();
@@ -371,9 +385,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	@SuppressWarnings("null")
 	protected void closeWindow(String windowTitle, int index) {
 		boolean isSucceed = true;
-		Object[] winArray = driver.getWindowHandles().toArray();
+		Object[] winArray = null;
 		List<String> winList = null;
 		try {
+			windowTranfer();
+			winArray = driver.getWindowHandles().toArray();
 			for (int i = 0; i < winArray.length - 1; i++) {
 				driver.switchTo().window(winArray[i].toString());
 				if (windowTitle.equals(driver.getTitle())) {
@@ -381,6 +397,7 @@ public class WebDriverWebPublic extends WebDriverController {
 				}
 			}
 			driver.switchTo().window(winList.get(index - 1));
+			windowTranfer();
 			driver.close();
 		} catch (WebDriverException e) {
 			isSucceed = false;
@@ -399,11 +416,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void closeWindow(String windowTitle) {
 		boolean isSucceed = true;
-		Object[] winArray = driver.getWindowHandles().toArray();
+		Object[] winArray = null;
 		try {
+			windowTranfer();
+			winArray = driver.getWindowHandles().toArray();
 			for (int i = winArray.length - 1; i > 0; i--) {
 				driver.switchTo().window(winArray[i].toString());
 				if (windowTitle.equals(driver.getTitle())) {
+					windowTranfer();
 					driver.close();
 					break;
 				}
@@ -423,17 +443,62 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param windowTitle the title of the window not to be closed
 	 * @throws RuntimeException
 	 */
-	protected void closeWindowExcept(String windowTitle){
+	protected void closeWindowExcept(String windowTitle) {
 		boolean isSucceed = true;
-		Set<String> windowHandles = driver.getWindowHandles();
+		Set<String> windowHandles = null;
 		try {
+			windowTranfer();
+			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
 				String title = driver.getTitle();
 				if (!windowTitle.equals(title)) {
+					windowTranfer();
 					driver.close();
 				}
 			}
+			pass("all windows closed except [ " + windowTitle + " ]...");
+		} catch (WebDriverException e) {
+			isSucceed = false;
+			LOG.error(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		operationCheck(isSucceed);
+	}
+
+	/**
+	 * close windows except specified window title, by string full pattern.
+	 * 
+	 * @param windowTitle the title of the window not to be closed
+	 * @param index the index of the window to keep shared the same title with others, begins with 1.
+	 * @throws RuntimeException
+	 */
+	protected void closeWindowExcept(String windowTitle, int index) {
+		boolean isSucceed = true;
+		Set<String> windowHandles = null;
+		Object[] winArray = null;
+		try {
+			windowTranfer();
+			windowHandles = driver.getWindowHandles();
+			for (String handler : windowHandles) {
+				driver.switchTo().window(handler);
+				String title = driver.getTitle();
+				if (!windowTitle.equals(title)) {
+					windowTranfer();
+					driver.close();
+				}
+			}
+
+			winArray = driver.getWindowHandles().toArray();
+			for (int i = 0; i < winArray.length; i++) {
+				driver.switchTo().window(winArray[i].toString());
+				if (i + 1 != index) {
+					windowTranfer();
+					driver.close();
+				}
+			}
+
 			pass("all windows closed except [ " + windowTitle + " ]...");
 		} catch (WebDriverException e) {
 			isSucceed = false;
@@ -1465,6 +1530,14 @@ public class WebDriverWebPublic extends WebDriverController {
 				return new WebDriverWebTable(driver, tabBy);
 			}
 		}
+	}
+
+	/**
+	 * refresh the webtable on the same locator, only if it changes.
+	 */
+	protected synchronized void tableRefresh(){
+		WebDriverWebPublic.tabFinder = null;
+		WebDriverWebPublic.webTable = null;		
 	}
 
 	/**
