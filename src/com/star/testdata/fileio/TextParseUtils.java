@@ -40,7 +40,6 @@ public class TextParseUtils {
 	 * add map to arraylist.
 	 * @throws	RuntimeException
 	 **/
-	@SuppressWarnings("resource")
 	public List<Map<String, String>> MyList(){
 		File f = new File(fileName);
 		List<Map<String, String>> paraList = new ArrayList<Map<String, String>>();

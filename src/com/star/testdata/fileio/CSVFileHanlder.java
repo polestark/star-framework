@@ -2,27 +2,63 @@ package com.star.testdata.fileio;
 
 import java.io.File;
 import java.util.List;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import com.star.logging.frame.LoggingManager;
 
 public class CSVFileHanlder {
 
 	private static final LoggingManager LOG = new LoggingManager(ExcelParseUtils.class.getName());
-	private static File file;
+	private File file;
+	private BufferedReader reader;
+	private BufferedWriter writer;
+	private String charSet = "ISO-8859-1";
+	private String separator = ","; 
 
 	/**
 	 * class construct with initlize to set filename for csv file operations.
 	 * 
-	 * @param	name the file name to be read or write
+	 * @param	fileName the file name to be read or write
+	 * @param	fileEncode the file charset
 	 */
-	public CSVFileHanlder(String fileName){
-		CSVFileHanlder.file = new File(fileName);
+	public CSVFileHanlder(String fileName, String fileEncode) {
+		this.file = new File(fileName);
+		this.charSet = fileEncode;
 	}
 
+	/**
+	 * class construct with initlize to set filename for csv file operations.
+	 * 
+	 * @param	fileName the file name to be read or write
+	 */
+	public CSVFileHanlder(String fileName) {
+		this.file = new File(fileName);
+	}
+
+	/**
+	 * set the separator of the csv file, defaul value is ",".
+	 * 
+	 * @param	spacer the separator of the csv file in each line, such as ",".
+	 */
+	public void setSeparator(String spacer){
+		this.separator = spacer;
+	}
+
+	/**
+	 * set the charset of the csv file, defaul value is "ISO-8859-1".
+	 * used only when user did not set it by class construct.
+	 * 
+	 * @param	fileEncode the charset of the csv file.
+	 */
+	public void setCharSet(String fileEncode){
+		this.charSet = fileEncode;
+	}
+	
 	/**
 	 * read specified row and column value of csv file
 	 * 
@@ -37,15 +73,16 @@ public class CSVFileHanlder {
 
 		try {
 			int i = 1;
-			BufferedReader buffer = new BufferedReader(new FileReader(file));
-			while (buffer.ready() && (line = buffer.readLine()) != null) {
-				chars = line.split(",");
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charSet));
+			reader.read();
+			while (reader.ready() && (line = reader.readLine()) != null) {
+				chars = line.split(separator);
 				if (row == i) {
 					return chars[col - 1];
 				}
 				i++;
 			}
-			buffer.close();
+			reader.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
@@ -62,20 +99,22 @@ public class CSVFileHanlder {
 	 */
 	public String readCSVLineValue(int row) {
 		String line = null;
+		
 		try {
 			int i = 1;
-			BufferedReader buffer = new BufferedReader(new FileReader(file));
-			while (buffer.ready() && (line = buffer.readLine()) != null) {
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charSet));
+			while (reader.ready() && (line = reader.readLine()) != null) {
 				if (row == i) {
 					return line.toString();
 				}
 				i++;
 			}
-			buffer.close();
+			reader.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
+		
 		return null;
 	}
 
@@ -86,18 +125,19 @@ public class CSVFileHanlder {
 	 */
 	public List<String> readCSVToList() {
 		String line = null;
+		
 		List<String> csvList = new ArrayList<String>();
-
 		try {
-			BufferedReader buffer = new BufferedReader(new FileReader(file));
-			while (buffer.ready() && (line = buffer.readLine()) != null) {
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charSet));
+			while (reader.ready() && (line = reader.readLine()) != null) {
 				csvList.add(line.toString());
 			}
-			buffer.close();
+			reader.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
+		
 		return csvList;
 	}
 
@@ -111,7 +151,7 @@ public class CSVFileHanlder {
 	/**
 	 * get the row count of the csv file name.
 	 */
-	public int csvRowCount(){
+	public int csvRowCount() {
 		return readCSVToList().size();
 	}
 
@@ -120,11 +160,12 @@ public class CSVFileHanlder {
 	 */
 	public int csvColumnCount() {
 		List<String> content = readCSVToList();
+		
 		if (content.toString().equals("[]")) {
 			return 0;
 		} else {
-			if (content.get(0).toString().contains(",")) {
-				return content.get(0).toString().split(",").length;
+			if (content.get(0).toString().contains(separator)) {
+				return content.get(0).toString().split(separator).length;
 			} else if (content.get(0).toString().trim().length() != 0) {
 				return 1;
 			} else {
@@ -140,15 +181,17 @@ public class CSVFileHanlder {
 	 * 
 	 * @throws RuntimeException
 	 */
-	public void putListToCSV(List<String> dataList){
+	public void putListToCSV(List<String> dataList) {
 		try {
-			BufferedWriter buffer = new BufferedWriter(new FileWriter(file, false));
-			for (int i = 0; i < dataList.size(); i ++){
-				buffer.write(dataList.get(i));
-				buffer.newLine();
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charSet));
+			for (int i = 0; i < dataList.size(); i++) {
+				writer.write(dataList.get(i));
+				if (i != dataList.size() - 1){
+					writer.newLine();
+				}
 			}
-			buffer.flush();
-			buffer.close();
+			writer.flush();
+			writer.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
@@ -165,18 +208,21 @@ public class CSVFileHanlder {
 	 */
 	public void putLineToCSV(String value, int row) {
 		List<String> original = readCSVToList();
+		
 		try {
-			BufferedWriter buffer = new BufferedWriter(new FileWriter(file, false));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charSet));
 			for (int i = 0; i < original.size(); i++) {
 				if (i != row - 1) {
-					buffer.write(original.get(i));
+					writer.write(original.get(i));
 				} else {
-					buffer.write(value);
+					writer.write(new String(value.getBytes(), charSet));
 				}
-				buffer.newLine();
+				if (i != original.size() - 1){
+					writer.newLine();
+				}
 			}
-			buffer.flush();
-			buffer.close();
+			writer.flush();
+			writer.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
@@ -192,44 +238,47 @@ public class CSVFileHanlder {
 	 * 
 	 * @throws	RuntimeException
 	 */
-	public void putValueToCSV(String cellValue, int row, int col){
+	public void putValueToCSV(String cellValue, int row, int col) {
 		List<String> original = readCSVToList();
 		StringBuffer sb = new StringBuffer();
-		String [] text = null;
+		String[] text = null;
+		
 		try {
-			BufferedWriter buffer = new BufferedWriter(new FileWriter(file, false));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charSet));
 			for (int i = 0; i < original.size(); i++) {
 				if (i != row - 1) {
-					buffer.write(original.get(i));
+					writer.write(original.get(i));
 				} else {
-					text = original.get(i).split(",");
-					for (int j = 0; j < text.length; j ++){
-						if (j != col -1){
-							if (j == text.length - 1){
+					text = original.get(i).split(separator);
+					for (int j = 0; j < text.length; j++) {
+						if (j != col - 1) {
+							if (j == text.length - 1) {
 								sb.append(text[j]);
-							}else {
+							} else {
 								sb.append(text[j]);
-								sb.append(",");
-							}							
-						}else{
-							if (j == text.length - 1){
-								sb.append(cellValue);
-							}else {
-								sb.append(cellValue);
-								sb.append(",");
+								sb.append(separator);
+							}
+						} else {
+							if (j == text.length - 1) {
+								sb.append(cellValue.toString());
+							} else {
+								sb.append(cellValue.toString());
+								sb.append(separator);
 							}
 						}
 					}
-					buffer.write(sb.toString());
+					writer.write(sb.toString());
 				}
-				buffer.newLine();
+				if (i != original.size() - 1){
+					writer.newLine();
+				}
 			}
-			buffer.flush();
-			buffer.close();
+			writer.flush();
+			writer.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
-		}		
+		}
 	}
 
 	/**
@@ -239,17 +288,17 @@ public class CSVFileHanlder {
 	 * 
 	 * @throws	RuntimeException
 	 */
-	public void appendLineToCSV(String text){
+	public void appendLineToCSV(String text) {
 		try {
-			BufferedWriter buffer = new BufferedWriter(new FileWriter(file, true));
-			buffer.newLine();
-			buffer.write(text);
-			buffer.flush();
-			buffer.close();
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), charSet));
+			writer.newLine();
+			writer.write(text);
+			writer.flush();
+			writer.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
-		}		
+		}
 	}
 
 	/**
@@ -259,18 +308,18 @@ public class CSVFileHanlder {
 	 * 
 	 * @throws	RuntimeException
 	 */
-	public void appendListToCSV(List<String> dataList){
+	public void appendListToCSV(List<String> dataList) {
 		try {
-			BufferedWriter buffer = new BufferedWriter(new FileWriter(file, true));
-			for (int i = 0; i < dataList.size(); i ++){
-				buffer.newLine();
-				buffer.write(dataList.get(i));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), charSet));
+			for (int i = 0; i < dataList.size(); i++) {
+				writer.newLine();
+				writer.write(dataList.get(i));
 			}
-			buffer.flush();
-			buffer.close();
+			writer.flush();
+			writer.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
-		}		
+		}
 	}
 }
