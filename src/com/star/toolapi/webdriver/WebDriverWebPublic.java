@@ -329,7 +329,6 @@ public class WebDriverWebPublic extends WebDriverController {
 			handlers = driver.getWindowHandles();
 			handlers.remove(firstHandler);
 			it = handlers.iterator();
-			windowTranfer();
 			if (it.hasNext()) {
 				driver.switchTo().window(it.next());
 				isSucceed = true;
@@ -353,7 +352,6 @@ public class WebDriverWebPublic extends WebDriverController {
 		boolean isSucceed = false;
 		Set<String> windowHandles = null;
 		try {
-			windowTranfer();
 			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
