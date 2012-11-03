@@ -79,9 +79,9 @@ public class DataBaseUtils {
 	/**
 	 * put data into list use webservice.
 	 * 
-	 * @param	sql exam:
+	 * @param	sql the sql statement such as:</BR>
 	 *       		"select plan_code from plan where plan_code like ? and rownum <= ?"
-	 * @param	params exam: "P055%,10".split(",")
+	 * @param	params exam: "P055%,10"
 	 * @throws	RuntimeException
 	 **/
 	public List<?> queryToList(String sql, String params) {
@@ -104,9 +104,9 @@ public class DataBaseUtils {
 	/**
 	 * put data into map use webservice.
 	 * 
-	 * @param	sql exam:
+	 * @param	sql the sql statement such as:</BR>
 	 *       		"select plan_code from plan where plan_code like ? and rownum <= ?"
-	 * @param	params exam: "P055%,10".split(",")
+	 * @param	params exam: "P055%,10"
 	 * @param	lineNum exam: 5
 	 * @throws	RuntimeException
 	 **/
@@ -123,9 +123,9 @@ public class DataBaseUtils {
 	/**
 	 * override queryToMap method use default line number 1.
 	 * 
-	 * @param	sql exam:
+	 * @param	sql the sql statement such as:</BR>
 	 *       		"select plan_code from plan where plan_code like ? and rownum <= ?"
-	 * @param	params exam: "P055%,10".split(",")
+	 * @param	params exam: "P055%,10"
 	 * @throws	RuntimeException
 	 **/
 	public Map<?, ?> queryToMap(String sql, String params) {
@@ -135,7 +135,7 @@ public class DataBaseUtils {
 	/**
 	 * execute dml(insert/delete/update)/ddl sql statement.
 	 * 
-	 * @param	sql exam:
+	 * @param	sql the sql statement such as:</BR>
 	 *       		"update plan set paln_code = plan_code where plan_code like ?"
 	 * @param	params exam: "P055%"
 	 * @throws	RuntimeException
@@ -152,13 +152,13 @@ public class DataBaseUtils {
 	}
 
 	/**
-	 * execute procedure, get output in parameter list.
+	 * execute procedure, get output in parameter list.</BR>
+	 * exams: execProcedure("gpos_package_calculate.calc_susp_days", "iiiooo",</BR>
+	 *        "GP02000000469462,2012-01-01,2012-05-05,null,null,null");
 	 * 
 	 * @param	procName exam: package_name.procedure_name
 	 * @param	paramDesc exam: i:input, o:output; etc: "iiii" means 4 input parameters
 	 * @param	params all out parameter will be put in string typed array.
-	 * exams: execProcedure("gpos_package_calculate.calc_susp_days", "iiiooo",
-	 *         "GP02000000469462,2012-01-01,2012-05-05,null,null,null");
 	 * @throws	RuntimeException
 	 **/
 	public List<String> execProcedure(String procName, String paramDesc, String params) {
@@ -181,12 +181,12 @@ public class DataBaseUtils {
 	}
 
 	/**
-	 * execute function, get output in string.
+	 * execute function, get output in string.</BR>
+	 * exam:execFunction("add_months", "ii", "sysdate,3")
 	 * 
 	 * @param	funcName exam: add_months
 	 * @param	paramDesc exam: i:input, o:output; etc: "iiii" means 4 input parameters
 	 * @param	params out will be a string.
-	 * exams: 	execFunction("add_months", "ii", "sysdate,3")
 	 * @throws	RuntimeException
 	 **/
 	public String execFunction(String funcName, String paramDesc, String params) {

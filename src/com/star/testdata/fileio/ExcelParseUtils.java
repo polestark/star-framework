@@ -55,16 +55,15 @@ public class ExcelParseUtils {
 	}
 
 	/**
-	 * write excel sheet, specified value to specified cell.
+	 * write excel sheet, specified value to specified cell.</BR>
+	 * notice : you can use this method to set cell value both in xls and xlsx,</BR>
+	 * but when xlsx you must use dom4j.jar, otherwise there is a ClassNotFoundException
 	 * 
 	 * @param	sheetName excel sheet name
 	 * @param	row row index which to be changed
 	 * @param	col column index which to be changed
 	 * @param	value value to be put into cell
 	 * @throws	RuntimeException
-	 * notice you can use this method to set cell value both in xls and xlsx,
-	 *         but when xlsx you must use dom4j.jar, otherwise there is a
-	 *         ClassNotFoundException
 	 */
 	public void setExcelValue(String sheetName, int row, int col, String value) {
 		FileOutputStream fileOut = null;
@@ -116,16 +115,15 @@ public class ExcelParseUtils {
 	}
 
 	/**
-	 * get excel cell value of specified cell.
+	 * get excel cell value of specified cell.</BR>
+	 * notice : you can use this method to set cell value both in xls and xlsx,</BR>
+	 * but when xlsx you must use dom4j.jar, otherwise there is a ClassNotFoundException
 	 * 
 	 * @param	sheetName excel sheet name
 	 * @param	row row index which to be changed
 	 * @param	col column index which to be changed
 	 * @return	excel cell value string
 	 * @throws	RuntimeException
-	 * notice you can use this method to get cell value both in xls and xlsx,
-	 *         but when xlsx you must use dom4j.jar, otherwise there is a
-	 *         ClassNotFoundException
 	 */
 	public String getExcelValue(String sheetName, int row, int col) {
 		String text = null;

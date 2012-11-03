@@ -54,7 +54,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * config timeout setting for each step, default is 10 seconds.
+	 * config timeout setting for each step, default is 10 seconds.</BR>
+	 * 配置单个步骤运行的最大超时时间，默认是10秒钟。
 	 * 
 	 * @param 	timeout max wait time setting in seconds
 	 */
@@ -63,8 +64,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait util the element visible in max wait time setting.
-	 * if not visible at last, throw ElementNotVisibleException to the operations.
+	 * wait util the element visible in max wait time setting.</BR>
+	 * if not visible at last, throw ElementNotVisibleException to the operations.</BR>
+	 * 在指定时间内循环等待，直到对象可见，超时之后直接抛出对象不可见异常信息。
 	 * 
 	 * @param element the WebElement to be judged
 	 * @param timeout timeout setting in millisecond unit
@@ -84,8 +86,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait util the element visible in max wait time setting.
-	 * if not visible at last, throw ElementNotVisibleException to the operations.
+	 * wait util the element visible in max wait time setting.</BR>
+	 * if not visible at last, throw ElementNotVisibleException to the operations.</BR>
+	 * 在指定时间内循环等待，直到对象可见，使用用户指定的默认超时设置。
 	 * 
 	 * @param element the WebElement to be judged
 	 * @throws ElementNotVisibleException
@@ -95,7 +98,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * public method for handle assertions and screenshot.
+	 * public method for handle assertions and screenshot.</BR>
+	 * 框架共用的各个操作结果检查和断言，出错则抛出异常并且截图。
 	 * 
 	 * @param isSucceed if your operation success
 	 * @throws RuntimeException
@@ -113,7 +117,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * take a screen shot and save the file by path and name.
+	 * take a screen shot and save the file by path and name.</BR>
+	 * 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
 	 * @param fileName the file path&name of the screenshot to be saved
 	 * @throws RuntimeException
@@ -129,7 +134,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the screenShot method, using default path and name.
+	 * override the screenShot method, using default path and name.</BR>
+	 * 网页截图操作，默认路径为工程日志目录，文件名为运行的class名和时间戳拼接而成。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -141,7 +147,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the alert is existing.
+	 * judge if the alert is existing.</BR>
+	 * 判断弹出的对话框（Dialog）是否存在。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -150,7 +157,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			driver.switchTo().alert();
 			return true;
 		} catch (NoAlertPresentException ne) {
-			warn("no alert is present now...");
+			warn("no alert is present now");
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e.getMessage());
@@ -159,7 +166,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the alert is present in specified seconds.
+	 * judge if the alert is present in specified seconds.</BR>
+	 * 在指定的时间内判断弹出的对话框（Dialog）是否存在。
 	 * 
 	 * @param seconds timeout in seconds
 	 * @throws RuntimeException
@@ -181,7 +189,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the element is existing.
+	 * judge if the element is existing.</BR>
+	 * 判断指定的对象是否存在。
 	 * 
 	 * @param by the element locator By
 	 */
@@ -190,7 +199,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the element is present in specified seconds.
+	 * judge if the element is present in specified seconds.</BR>
+	 * 在指定的时间内判断指定的对象是否存在。
 	 * 
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
@@ -205,7 +215,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the browser is existing, using part of the page title.
+	 * judge if the browser is existing, using part of the page title.</BR>
+	 * 按照网页标题判断页面是否存在，标题可使用部分内容匹配。
 	 * 
 	 * @param browserTitle part of the title to see if browser exists
 	 * @throws RuntimeException
@@ -232,7 +243,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the browser is present by title reg pattern in specified seconds.
+	 * judge if the browser is present by title reg pattern in specified seconds.</BR>
+	 * 在指定时间内按照网页标题判断页面是否存在，标题可使用部分内容匹配。
 	 * 
 	 * @param browserTitle part of the title to see if browser exists
 	 * @param seconds timeout in seconds
@@ -248,7 +260,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * maximize browser window: support ie, ff3.6 and lower.
+	 * maximize browser window: support ie, ff3.6 and lower.</BR>
+	 * 网页窗口最大化操作。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -259,7 +272,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.executeScript(js);
 			isSucceed = true;
-			pass("window maximized...");
+			pass("window maximized");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -269,7 +282,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select default window and default frame.
+	 * select default window and default frame.</BR>
+	 * 在当前页面中自动选择默认的页面框架（frame）。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -278,7 +292,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.switchTo().defaultContent();
 			isSucceed = true;
-			pass("switch to default frame and window...");
+			pass("switch to default frame on window");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -288,7 +302,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to active element.
+	 * switch to active element.</BR>
+	 * 在当前操作的页面和对象时自动选择已被激活的对象。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -297,6 +312,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.switchTo().activeElement();
 			isSucceed = true;
+			pass("switch to active element");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -306,17 +322,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to new default content and active element when window transfers.
-	 * 
-	 * @throws RuntimeException
-	 */
-	private void windowTranfer(){
-		driver.switchTo().defaultContent();
-		driver.switchTo().activeElement();
-	}
-
-	/**
-	 * switch to new window supporting, by deleting first hanlder.
+	 * switch to new window supporting, by deleting first hanlder.</BR>
+	 * 选择最新弹出的窗口，需要预存第一个窗口的handler。
 	 * 
 	 * @param firstHandler the first window handle
 	 * @throws RuntimeException
@@ -332,7 +339,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			if (it.hasNext()) {
 				driver.switchTo().window(it.next());
 				isSucceed = true;
-				pass("switch to new window...");
+				pass("switch to new window");
 			}
 		} catch (WebDriverException e) {
 			LOG.error(e);
@@ -343,7 +350,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to window by title, supporting non-modal windows.
+	 * switch to window by title.</BR>
+	 * 按照网页标题选择窗口，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be switched to
 	 * @throws RuntimeException
@@ -358,12 +366,12 @@ public class WebDriverWebPublic extends WebDriverController {
 				String title = driver.getTitle();
 				if (windowTitle.equals(title)) {
 					isSucceed = true;
-					pass("switch to window [ " + windowTitle + " ]...");
+					pass("switch to window [ " + windowTitle + " ]");
 					break;
 				}
 			}
 			if (!isSucceed){
-				fail("there is no window named [ " + windowTitle + " ]...");
+				fail("there is no window named [ " + windowTitle + " ]");
 			}
 		} catch (WebDriverException e) {
 			LOG.error(e);
@@ -374,7 +382,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close window by window title and its index if has the same title, by string full pattern.
+	 * close window by window title and its index if has the same title, by string full pattern.</BR>
+	 * 按照网页标题选择并且关闭窗口，重名窗口按照指定的重名的序号关闭，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be closed.
 	 * @param index the index of the window which shared the same title, begins with 1.
@@ -386,7 +395,6 @@ public class WebDriverWebPublic extends WebDriverController {
 		Object[] winArray = null;
 		List<String> winList = null;
 		try {
-			windowTranfer();
 			winArray = driver.getWindowHandles().toArray();
 			for (int i = 0; i < winArray.length - 1; i++) {
 				driver.switchTo().window(winArray[i].toString());
@@ -395,8 +403,9 @@ public class WebDriverWebPublic extends WebDriverController {
 				}
 			}
 			driver.switchTo().window(winList.get(index - 1));
-			windowTranfer();
+			driver.switchTo().defaultContent();
 			driver.close();
+			pass("window [ " + windowTitle + " ] closed by index [" + index + "]");
 		} catch (WebDriverException e) {
 			isSucceed = false;
 			LOG.error(e);
@@ -407,7 +416,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close the last window by the same window title, by string full pattern.
+	 * close the last window by the same window title, by string full pattern.</BR>
+	 * 按照网页标题选择窗口，适用于无重名的窗口，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be closed.
 	 * @throws RuntimeException
@@ -416,16 +426,16 @@ public class WebDriverWebPublic extends WebDriverController {
 		boolean isSucceed = true;
 		Object[] winArray = null;
 		try {
-			windowTranfer();
 			winArray = driver.getWindowHandles().toArray();
 			for (int i = winArray.length - 1; i > 0; i--) {
 				driver.switchTo().window(winArray[i].toString());
 				if (windowTitle.equals(driver.getTitle())) {
-					windowTranfer();
+					driver.switchTo().defaultContent();
 					driver.close();
 					break;
 				}
 			}
+			pass("window [ " + windowTitle + " ] closed ");
 		} catch (WebDriverException e) {
 			isSucceed = false;
 			LOG.error(e);
@@ -436,7 +446,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close windows except specified window title, by string full pattern.
+	 * close windows except specified window title, by string full pattern.</BR>
+	 * 关闭除了指定标题页面之外的所有窗口，适用于例外窗口无重名的情况，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window not to be closed
 	 * @throws RuntimeException
@@ -445,17 +456,16 @@ public class WebDriverWebPublic extends WebDriverController {
 		boolean isSucceed = true;
 		Set<String> windowHandles = null;
 		try {
-			windowTranfer();
 			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
 				String title = driver.getTitle();
 				if (!windowTitle.equals(title)) {
-					windowTranfer();
+					driver.switchTo().defaultContent();
 					driver.close();
 				}
 			}
-			pass("all windows closed except [ " + windowTitle + " ]...");
+			pass("all windows closed except [ " + windowTitle + " ]");
 		} catch (WebDriverException e) {
 			isSucceed = false;
 			LOG.error(e);
@@ -466,7 +476,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close windows except specified window title, by string full pattern.
+	 * close windows except specified window title, by string full pattern.</BR>
+	 * 关闭除了指定标题页面之外的所有窗口，例外窗口如果重名，按照指定的重名顺序关闭，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window not to be closed
 	 * @param index the index of the window to keep shared the same title with others, begins with 1.
@@ -477,13 +488,12 @@ public class WebDriverWebPublic extends WebDriverController {
 		Set<String> windowHandles = null;
 		Object[] winArray = null;
 		try {
-			windowTranfer();
 			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
 				String title = driver.getTitle();
 				if (!windowTitle.equals(title)) {
-					windowTranfer();
+					driver.switchTo().defaultContent();
 					driver.close();
 				}
 			}
@@ -492,12 +502,11 @@ public class WebDriverWebPublic extends WebDriverController {
 			for (int i = 0; i < winArray.length; i++) {
 				driver.switchTo().window(winArray[i].toString());
 				if (i + 1 != index) {
-					windowTranfer();
+					driver.switchTo().defaultContent();
 					driver.close();
 				}
 			}
-
-			pass("all windows closed except [ " + windowTitle + " ]...");
+			pass("keep only window [ " + windowTitle + " ] by title index [ " + index + " ]");
 		} catch (WebDriverException e) {
 			isSucceed = false;
 			LOG.error(e);
@@ -508,7 +517,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for new window which has no title in few seconds.
+	 * wait for new window which has no title in few seconds.</BR>
+	 * 判断在指定的时间内是否有新的窗口弹出，无论其是否有标题。
 	 * 
 	 * @param browserCount windows count before new window appears.
 	 * @param seconds time unit in seconds.
@@ -523,7 +533,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for new window which has no title in few seconds.
+	 * wait for new window which has no title in few seconds.</BR>
+	 * 判断在指定的时间内是否有新的窗口弹出，无论其是否有标题。
 	 * 
 	 * @param oldHandlers windows handler Set before new window appears.
 	 * @param seconds time unit in seconds.
@@ -538,7 +549,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by index.
+	 * select a frame by index.</BR>
+	 * 按照序号选择框架（frame）。
 	 * 
 	 * @param index the index of the frame to select
 	 * @throws RuntimeException
@@ -548,7 +560,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.switchTo().frame(index);
 			isSucceed = true;
-			pass("select frame by index [ " + index + " ]...");
+			pass("select frame by index [ " + index + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -558,7 +570,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by name or id.
+	 * select a frame by name or id.</BR>
+	 * 按照名称或者ID选择框架（frame）。
 	 * 
 	 * @param nameOrId the name or id of the frame to select
 	 * @throws RuntimeException
@@ -568,7 +581,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.switchTo().frame(nameOrId);
 			isSucceed = true;
-			pass("select frame by name or id [ " + nameOrId + " ]...");
+			pass("select frame by name or id [ " + nameOrId + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -578,7 +591,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by frameElement.
+	 * select a frame by frameElement.</BR>
+	 * 按照框架对象本身选择框架（frame）。
 	 * 
 	 * @param frameElement the frame element to select
 	 * @throws RuntimeException
@@ -588,7 +602,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.switchTo().frame(frameElement);
 			isSucceed = true;
-			pass("select frame by frameElement...");
+			pass("select frame by frameElement");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -598,7 +612,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by frame element locator: By.
+	 * select a frame by frame element locator: By.</BR>
+	 * 按照指定的元素定位方式选择框架（frame）。
 	 * 
 	 * @param by the frame element locator
 	 * @throws RuntimeException
@@ -608,7 +623,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.switchTo().frame(driver.findElement(by));
 			isSucceed = true;
-			pass("select frame by frame locator [ " + by.toString() + " ]...");
+			pass("select frame by frame locator [ " + by.toString() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -618,7 +633,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * edit a content editable iframe.
+	 * edit a content editable iframe.</BR>
+	 * 编辑指定框架（frame）内的最直接展示文本内容。
 	 * 
 	 * @param by the frame element locaotr
 	 * @param text the text string to be input
@@ -630,7 +646,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			driver.switchTo().frame(driver.findElement(by));
 			driver.switchTo().activeElement().sendKeys(text);
 			isSucceed = true;
-			pass("input text [ " + text + " ] to frame [ " + by.toString() + " ]...");
+			pass("input text [ " + text + " ] to frame [ " + by.toString() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -640,7 +656,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the get method, adding user defined log.
+	 * override the get method, adding user defined log.</BR>
+	 * 地址跳转方法，与WebDriver原生get方法内容完全一致。
 	 * 
 	 * @param url the url you want to open
 	 * @throws RuntimeException
@@ -650,7 +667,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.get(url);
 			isSucceed = true;
-			pass("navigate to url [ " + url + " ]...");
+			pass("navigate to url [ " + url + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -660,7 +677,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * navigate to some where by url.
+	 * navigate to some where by url.</BR>
+	 * 地址跳转方法，与WebDriver原生navigate.to方法内容完全一致。
 	 * 
 	 * @param url the url you want to open
 	 * @throws RuntimeException
@@ -670,7 +688,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.navigate().to(url);
 			isSucceed = true;
-			pass("navigate to url [ " + url + " ]...");
+			pass("navigate to url [ " + url + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -680,7 +698,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * navigate back.
+	 * navigate back.</BR>
+	 * 地址跳转方法，与WebDriver原生navigate.back方法内容完全一致。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -689,7 +708,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.navigate().back();
 			isSucceed = true;
-			pass("navigate back...");
+			pass("navigate back");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -699,7 +718,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * navigate forward.
+	 * navigate forward.</BR>
+	 * 地址跳转方法，与WebDriver原生navigate.forward方法内容完全一致。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -708,7 +728,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.navigate().forward();
 			isSucceed = true;
-			pass("navigate forward...");
+			pass("navigate forward");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -718,7 +738,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the click method, adding user defined log.
+	 * override the click method, adding user defined log.</BR>
+	 * 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @throws RuntimeException
@@ -729,7 +750,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(element);
 			element.click();
 			isSucceed = true;
-			pass("click on WebElement...");
+			pass("click on WebElement");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -739,7 +760,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the click method, click on the element to be find by By.
+	 * override the click method, click on the element to be find by By.</BR>
+	 * 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @throws RuntimeException
@@ -750,7 +772,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(driver.findElement(by));
 			driver.findElement(by).click();
 			isSucceed = true;
-			pass("click on element [ " + by.toString() + " ] ...");
+			pass("click on element [ " + by.toString() + " ] ");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -760,7 +782,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * forcely click, by executing javascript.
+	 * forcely click, by executing javascript.</BR>
+	 * 在等到对象可见之后点击指定的对象，使用JavaScript执行的方式去操作，</BR>
+	 * 这种方法使用过后一般需要调用一次selectDefaultWindowFrame以确保运行稳定。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @throws RuntimeException
@@ -771,7 +795,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(element);
 			driver.executeScript("return arguments[0].click();", element);
 			isSucceed = true;
-			pass("click on element...");
+			pass("click on element");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -781,7 +805,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * forcely click, by executing javascript.
+	 * forcely click, by executing javascript.</BR>
+	 * 在等到对象可见之后点击指定的对象，使用JavaScript执行的方式去操作，</BR>
+	 * 这种方法使用过后一般需要调用一次selectDefaultWindowFrame以确保运行稳定。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @throws RuntimeException
@@ -792,7 +818,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(driver.findElement(by));
 			driver.executeScript("return arguments[0].click();", driver.findElement(by));
 			isSucceed = true;
-			pass("click on element [ " + by.toString() + " ] ...");
+			pass("click on element [ " + by.toString() + " ] ");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -802,7 +828,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * doubleclick on the element to be find by By.
+	 * doubleclick on the element to be find by By.</BR>
+	 * 在等到对象可见之后双击指定的对象.
 	 * 
 	 * @param element the webelement you want to operate
 	 * @throws RuntimeException
@@ -814,7 +841,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			actionDriver.doubleClick(element);
 			actionDriver.perform();
 			isSucceed = true;
-			pass("doubleClick on element ...");
+			pass("doubleClick on element ");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -824,7 +851,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * doubleclick on the element.
+	 * doubleclick on the element.</BR>
+	 * 在等到对象可见之后双击指定的对象.
 	 * 
 	 * @param by the locator you want to find the element
 	 * @throws RuntimeException
@@ -836,7 +864,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			actionDriver.doubleClick(findElement(by));
 			actionDriver.perform();
 			isSucceed = true;
-			pass("doubleClick on element [ " + by.toString() + " ] ...");
+			pass("doubleClick on element [ " + by.toString() + " ] ");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -846,7 +874,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * right click on the element to be find by By.
+	 * right click on the element to be find by By.</BR>
+	 * 在等到对象可见之后鼠标右键点击指定的对象.
 	 * 
 	 * @param element the webelement you want to operate
 	 * @throws RuntimeException
@@ -858,7 +887,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			actionDriver.contextClick(element);
 			actionDriver.perform();
 			isSucceed = true;
-			pass("rightClick on element ...");
+			pass("rightClick on element ");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -868,7 +897,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * right click on the element.
+	 * right click on the element.</BR>
+	 * 在等到对象可见之后鼠标右键点击指定的对象。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @throws RuntimeException
@@ -880,7 +910,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			actionDriver.contextClick(findElement(by));
 			actionDriver.perform();
 			isSucceed = true;
-			pass("rightClick on element [ " + by.toString() + " ] ...");
+			pass("rightClick on element [ " + by.toString() + " ] ");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -890,7 +920,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the submit method, adding user defined log.
+	 * override the submit method, adding user defined log.</BR>
+	 * 在等到指定对象可见之后在该对象上做确认/提交的操作。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @throws RuntimeException
@@ -901,7 +932,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(element);
 			element.submit();
 			isSucceed = true;
-			pass("submit on element...");
+			pass("submit on element");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -911,7 +942,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the submit method, submit on the element to be find by By.
+	 * override the submit method, submit on the element to be find by By.</BR>
+	 * 在等到指定对象可见之后在该对象上做确认/提交的操作。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @throws RuntimeException
@@ -922,7 +954,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(driver.findElement(by));
 			driver.findElement(by).submit();
 			isSucceed = true;
-			pass("submit on element [ " + by.toString() + " ]...");
+			pass("submit on element [ " + by.toString() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -932,7 +964,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the clear method, adding user defined log.
+	 * override the clear method, adding user defined log.</BR>
+	 * 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @throws RuntimeException
@@ -943,7 +976,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(element);
 			element.clear();
 			isSucceed = true;
-			pass("element cleared...");
+			pass("element cleared");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -953,7 +986,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the clear method, clear on the element to be find by By.
+	 * override the clear method, clear on the element to be find by By.</BR>
+	 * 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @throws RuntimeException
@@ -965,7 +999,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(element);
 			element.clear();
 			isSucceed = true;
-			pass("element [ " + by.toString() + " ] cleared...");
+			pass("element [ " + by.toString() + " ] cleared");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -975,7 +1009,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, adding user defined log.
+	 * override the sendKeys method, adding user defined log.</BR>
+	 * 以追加文本的模式在指定可编辑对象中输入文本，操作之前自动等待到对象可见。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param text the text you want to input to element
@@ -987,7 +1022,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(element);
 			element.sendKeys(text);
 			isSucceed = true;
-			pass("send text [ " + text + " ] to element...");
+			pass("send text [ " + text + " ] to element");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -997,7 +1032,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, sendKeys on the element to be find by By.
+	 * override the sendKeys method, sendKeys on the element to be find by By.</BR>
+	 * 以追加文本的模式在指定可编辑对象中输入文本，操作之前自动等待到对象可见。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the text you want to input to element
@@ -1010,7 +1046,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			waitUtilElementVisible(element);
 			element.sendKeys(text);
 			isSucceed = true;
-			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]...");
+			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1020,7 +1056,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, adding user defined log.
+	 * override the sendKeys method, adding user defined log.</BR>
+	 * 清理指定对象中已经输入的内容重新输入，操作之前自动等待到对象可见。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param text the text you want to input to element
@@ -1033,7 +1070,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			element.clear();
 			element.sendKeys(text);
 			isSucceed = true;
-			pass("send text [ " + text + " ] to WebEdit...");
+			pass("send text [ " + text + " ] to WebEdit");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1043,7 +1080,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, sendKeys on the element to be find by By.
+	 * override the sendKeys method, sendKeys on the element to be find by By.</BR>
+	 * 清理指定对象中已经输入的内容重新输入，操作之前自动等待到对象可见。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the text you want to input to element
@@ -1057,7 +1095,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			element.clear();
 			element.sendKeys(text);
 			isSucceed = true;
-			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]...");
+			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1067,7 +1105,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * readonly text box or richtext box input.
+	 * readonly text box or richtext box input.</BR>
+	 * 使用DOM（Documnet Object Modal）修改页面中对象的文本属性值，使用ID定位对象则返回唯一对象，其余返回数组。
 	 * 
 	 * @param by the attribute of the element, default support is TagName/Name/Id
 	 * @param byValue the attribute value of the element
@@ -1093,7 +1132,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.executeScript(js);
 			isSucceed = true;
-			pass("input text [ " + text + " ] to element [ " + by + " ]...");
+			pass("input text [ " + text + " ] to element [ " + by + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1103,7 +1142,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * readonly text box or richtext box input, finding elements by element id.
+	 * readonly text box or richtext box input, finding elements by element id.</BR>
+	 * 按照ID定位页面中对象，并使用DOM（Documnet Object Modal）修改其文本属性值。
 	 * 
 	 * @param elementId the id of the element
 	 * @param text the text you want to input to element
@@ -1115,7 +1155,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * readonly text box or richtext box input, finding elements by element name.
+	 * readonly text box or richtext box input, finding elements by element name.</BR>
+	 * 按照名称（Name）和序号定位页面中对象，并使用DOM（Documnet Object Modal）修改其文本属性值。
 	 * 
 	 * @param elementName the name of the element
 	 * @param text the text you want to input to element
@@ -1128,7 +1169,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * readonly text box or richtext box input, finding elements by element tag name.
+	 * readonly text box or richtext box input, finding elements by element tag name.</BR>
+	 * 按照标签名称（TagName）和序号定位页面中对象，并使用DOM（Documnet Object Modal）修改其文本属性值。
 	 * 
 	 * @param elementTagName the tag name of the element
 	 * @param text the text you want to input to element
@@ -1141,7 +1183,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * sendKeys by using keybord event on element.
+	 * sendKeys by using keybord event on element.</BR>
+	 * 使用键盘模拟的方法在指定的对象上输入指定的文本。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param text the text you want to input to element
@@ -1154,7 +1197,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			actionDriver.sendKeys(element, text);
 			actionDriver.perform();
 			isSucceed = true;
-			pass("send text [ " + text + " ] to WebEdit...");
+			pass("send text [ " + text + " ] to WebEdit");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1164,7 +1207,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * sendKeys by using keybord event on element to be found by By.
+	 * sendKeys by using keybord event on element to be found by By.</BR>
+	 * 使用键盘模拟的方法在指定的对象上输入指定的文本。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the text you want to input to element
@@ -1178,7 +1222,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			actionDriver.sendKeys(element, text);
 			actionDriver.perform();
 			isSucceed = true;
-			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]...");
+			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1188,7 +1232,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * edit rich text box created by kindeditor
+	 * edit rich text box created by kindeditor.</BR>
+	 * 使用JS调用KindEditor对象本身的接口，在页面KindEditor对象中输入指定的文本。
 	 * 
 	 * @param editorId kindeditor id
 	 * @param text the text you want to input to element
@@ -1209,7 +1254,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by index.
+	 * select an item from a picklist by index.</BR>
+	 * 按照指定序号选择下拉列表中的选项。
 	 * 
 	 * @param element the picklist element
 	 * @param index the index of the item to be selected
@@ -1222,7 +1268,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			Select select = new Select(element);
 			select.selectByIndex(index);
 			isSucceed = true;
-			pass("item selected by index [ " + index + " ]...");
+			pass("item selected by index [ " + index + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1232,7 +1278,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by index.
+	 * select an item from a picklist by index.</BR>
+	 * 按照指定序号选择下拉列表中的选项。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param index the index of the item to be selected
@@ -1246,7 +1293,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			Select select = new Select(element);
 			select.selectByIndex(index);
 			isSucceed = true;
-			pass("item selected by index [ " + index + " ] on [ " + by.toString() + " ]...");
+			pass("item selected by index [ " + index + " ] on [ " + by.toString() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1256,7 +1303,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value.
+	 * select an item from a picklist by item value.</BR>
+	 * 按照指定选项的实际值（不是可见文本值，而是对象的“value”属性的值）选择下拉列表中的选项。
 	 * 
 	 * @param element the picklist element
 	 * @param itemValue the item value of the item to be selected
@@ -1269,7 +1317,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			Select select = new Select(element);
 			select.selectByValue(itemValue);
 			isSucceed = true;
-			pass("item selected by item value [ " + itemValue + " ]...");
+			pass("item selected by item value [ " + itemValue + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1279,7 +1327,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value.
+	 * select an item from a picklist by item value.</BR>
+	 * 按照指定选项的实际值（不是可见文本值，而是对象的“value”属性的值）选择下拉列表中的选项。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param itemValue the item value of the item to be selected
@@ -1293,7 +1342,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			Select select = new Select(element);
 			select.selectByValue(itemValue);
 			isSucceed = true;
-			pass("item selected by item value [ " + itemValue + " ] on [ " + by.toString() + " ]...");
+			pass("item selected by item value [ " + itemValue + " ] on [ " + by.toString() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1303,7 +1352,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value.
+	 * select an item from a picklist by item value.</BR>
+	 * 按照指定选项的可见文本值（用户直接可以看到的文本）选择下拉列表中的选项。
 	 * 
 	 * @param element the picklist element
 	 * @param text the item value of the item to be selected
@@ -1316,7 +1366,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			Select select = new Select(element);
 			select.selectByVisibleText(text);
 			isSucceed = true;
-			pass("item selected by visible text [ " + text + " ]...");
+			pass("item selected by visible text [ " + text + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1326,7 +1376,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value.
+	 * select an item from a picklist by item value.</BR>
+	 * 按照指定选项的可见文本值（用户直接可以看到的文本）选择下拉列表中的选项。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the item value of the item to be selected
@@ -1340,7 +1391,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			Select select = new Select(element);
 			select.selectByVisibleText(text);
 			isSucceed = true;
-			pass("item selected by visible text [ " + text + " ] on [ " + by.toString() + " ]...");
+			pass("item selected by visible text [ " + text + " ] on [ " + by.toString() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1350,7 +1401,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * set the checkbox on or off
+	 * set the checkbox on or off</BR>
+	 * 将指定的复选框对象设置为选中或者不选中状态。
 	 * 
 	 * @param element the checkbox element
 	 * @param onOrOff on or off to set the checkbox
@@ -1366,7 +1418,7 @@ public class WebDriverWebPublic extends WebDriverController {
 				element.click();
 			}
 			isSucceed = true;
-			pass("the checkbox is set to [ " + onOrOff.toUpperCase() + " ]...");
+			pass("the checkbox is set to [ " + onOrOff.toUpperCase() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1376,7 +1428,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * set the checkbox on or off
+	 * set the checkbox on or off</BR>
+	 * 将指定的复选框对象设置为选中或者不选中状态。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param onOrOff on or off to set the checkbox
@@ -1394,7 +1447,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			}
 			isSucceed = true;
 			pass("the checkbox [ " + by.toString() + " ] is set to [ " 
-					+ onOrOff.toUpperCase() + " ]...");
+					+ onOrOff.toUpperCase() + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1404,7 +1457,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * find elements displayed on the page.
+	 * find elements displayed on the page.</BR>
+	 * 按照指定的定位方式寻找所有可见的对象。
 	 * 
 	 * @param by the way to locate webelements
 	 * @return displayed webelement list
@@ -1424,9 +1478,9 @@ public class WebDriverWebPublic extends WebDriverController {
 			isSucceed = true;
 			int eleNum = elementList.size();
 			if (eleNum > 0){
-				pass("got" + eleNum + "displayed elements [ " + by.toString() + " ]...");
+				pass("got" + eleNum + "displayed elements [ " + by.toString() + " ]");
 			}else{
-				warn("there is not displayed element found by [" + by.toString() + " ]...");
+				warn("there is not displayed element found by [" + by.toString() + " ]");
 			}
 		} catch (WebDriverException e) {
 			LOG.error(e);
@@ -1438,7 +1492,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * find elements displayed on the page.
+	 * find elements displayed on the page.</BR>
+	 * 按照指定的定位方式寻找第一可见的对象。
 	 * 
 	 * @param by the way to locate webelement
 	 * @return the first displayed webelement
@@ -1465,7 +1520,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the findElements method, adding user defined log.
+	 * override the findElements method, adding user defined log.</BR>
+	 * 按照指定的定位方式寻找象。
 	 * 
 	 * @param by the locator of the elements to be find
 	 * @return the webelements you want to find
@@ -1487,7 +1543,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the findElement method, adding user defined log.
+	 * override the findElement method, adding user defined log.</BR>
+	 * 按照指定的定位方式寻找象。
 	 * 
 	 * @param by the locator of the element to be find
 	 * @return the first element accord your locator
@@ -1512,7 +1569,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * store the WebDriverWebTable object, it only changes on By changing
+	 * store the WebDriverWebTable object, it only changes on By changing</BR>
+	 * 缓存WebTable对象，在WebTable对象不为空的情况下（为空则直接新建对象），</BR>
+	 * 如果定位方式相同则直接返回原有对象，否则重新创建WebTable对象。
 	 * 
 	 * @param tabBy the element locator By
 	 */
@@ -1531,7 +1590,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * refresh the webtable on the same locator, only if it changes.
+	 * refresh the webtable on the same locator, only if it changes.</BR>
+	 * 如果同一定位方式的WebTable内容发生变化需要重新定位，则需要刷新WebTable。
 	 */
 	protected synchronized void tableRefresh(){
 		WebDriverWebPublic.tabFinder = null;
@@ -1539,7 +1599,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get row count of a webtable
+	 * get row count of a webtable.</BR>
+	 * 返回一个WebTable的行的总数。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
 	 * @return the row count of the webTable
@@ -1552,7 +1613,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			webTable = tableCache(tabBy);
 			rowCount = webTable.rowCount();
 			isSucceed = true;
-			pass("the webTable " + tabBy.toString() + "has row count: [ " + rowCount + " ]...");
+			pass("the webTable " + tabBy.toString() + "has row count: [ " + rowCount + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1563,7 +1624,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get column count of a specified webtable row.
+	 * get column count of a specified webtable row.</BR>
+	 * 返回一个WebTable在制定行上的列的总数。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
 	 * @param rowNum row index of your webTable to count
@@ -1578,7 +1640,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			colCount = webTable.colCount(rowNum);
 			isSucceed = true;
 			pass("count columns of the webTable " + tabBy.toString() 
-				+ " on the row [ " + rowNum + " ], got: [ " + colCount + " ]...");
+				+ " on the row [ " + rowNum + " ], got: [ " + colCount + " ]");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1589,12 +1651,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get the element in the webTable cell by row and col index.
+	 * get the element in the webTable cell by row and col index.</BR>
+	 * 返回WebTable中指定行、列和类型的子元素，如按钮、链接、输入框等。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
 	 * @param row row index of the webTable.
 	 * @param col column index of the webTable.
-	 * @param type the element type, such as "img"/"a"/"input"...
+	 * @param type the element type, such as "img"/"a"/"input"
 	 * @param index element index in the specified cell, begins with 1.
 	 * @return the webTable cell WebElement
 	 * @throws RuntimeException
@@ -1616,7 +1679,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get the cell text of the webTable on specified row and column.
+	 * get the cell text of the webTable on specified row and column.</BR>
+	 * 返回WebTable的指定行和列的中的文本内容。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
 	 * @param row row index of the webTable.
@@ -1630,7 +1694,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			webTable = tableCache(tabBy);
 			text = webTable.cellText(row, col);
-			pass("the text of cell[" + row + "," + col + "] is: [ " + text + " ]...");
+			pass("the text of cell[" + row + "," + col + "] is: [ " + text + " ]");
 			isSucceed = true;
 		} catch (WebDriverException e) {
 			LOG.error(e);
@@ -1642,7 +1706,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for the element visiable in timeout setting.
+	 * wait for the element visiable in timeout setting.</BR>
+	 * 在指定时间内等待，直到对象可见。
 	 * 
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
@@ -1667,7 +1732,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for the element clickable in timeout setting.
+	 * wait for the element clickable in timeout setting.</BR>
+	 * 在指定时间内等待，直到对象能够被点击。
 	 * 
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
@@ -1692,7 +1758,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for text appears on element in timeout setting.
+	 * wait for text appears on element in timeout setting.</BR>
+	 * 在指定时间内等待，直到指定对象上出现指定文本。
 	 * 
 	 * @param by the element locator By
 	 * @param text the text to be found of element
@@ -1718,7 +1785,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for text appears in element attributes in timeout setting.
+	 * wait for text appears in element attributes in timeout setting.</BR>
+	 * 在指定时间内等待，直到指定对象的某个属性值等于指定文本。
 	 * 
 	 * @param by the element locator By
 	 * @param text the text to be found in element attributes
@@ -1744,7 +1812,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for alert disappears in the time united by seconds.
+	 * wait for alert disappears in the time united by seconds.</BR>
+	 * 在指定时间内等待，对话框（Dialog）消失，用以缓冲运行，增加健壮性。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -1764,7 +1833,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the alert dialog not to appears.
+	 * make the alert dialog not to appears.</BR>
+	 * 通过JS函数重载，在对话框（Alert）出现之前点击掉它，或者说等价于不让其出现。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -1782,7 +1852,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the warn dialog not to appears when window.close().
+	 * make the warn dialog not to appears when window.close().</BR>
+	 * 通过JS函数重载，在浏览器窗口关闭之前除去它的告警提示。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -1804,7 +1875,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the confirm dialog not to appears choose default option OK.
+	 * make the confirm dialog not to appears choose default option OK.</BR>
+	 * 通过JS函数重载，在确认框（Confirm）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -1822,7 +1894,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the confirm dialog not to appears choose default option Cancel.
+	 * make the confirm dialog not to appears choose default option Cancel.</BR>
+	 * 通过JS函数重载，在确认框（Confirm）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -1840,7 +1913,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the prompt dialog not to appears choose default option OK.
+	 * make the prompt dialog not to appears choose default option OK.</BR>
+	 * 通过JS函数重载，在提示框（Prompt）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -1858,7 +1932,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the prompt dialog not to appears choose default option Cancel.
+	 * make the prompt dialog not to appears choose default option Cancel.</BR>
+	 * 通过JS函数重载，在提示框（Prompt）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -1876,7 +1951,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * choose OK/Cancel button's OK on alerts.
+	 * choose OK/Cancel button's OK on alerts.</BR>
+	 * 在弹出的对话框（Dialog）上点击确认/是等接受性按钮。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -1885,7 +1961,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.switchTo().alert().accept();
 			isSucceed = true;
-			pass("click OK button on alert...");
+			pass("click OK button on alert");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1895,7 +1971,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * choose Cancel on alerts.
+	 * choose Cancel on alerts.</BR>
+	 * 在弹出的对话框（Dialog）上点击取消/否等拒绝性按钮。
 	 * 
 	 * @throws RuntimeException
 	 */
@@ -1904,7 +1981,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.switchTo().alert().dismiss();
 			isSucceed = true;
-			pass("click Cancel on alert dialog...");
+			pass("click Cancel on alert dialog");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1914,7 +1991,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get the text of the alerts.
+	 * get the text of the alerts.</BR>
+	 * 返回对话框（Dialog）上的提示信息文本内容。
 	 * 
 	 * @return alert text string
 	 * @throws RuntimeException
@@ -1925,7 +2003,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			alerts = driver.switchTo().alert().getText();
 			isSucceed = true;
-			pass("the text of the alert is: " + alerts + "...");
+			pass("the text of the alert is: " + alerts);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1936,7 +2014,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * set text on alerts.
+	 * set text on alerts.</BR>
+	 * 向对话框（InputBox）中输入文本。
 	 * 
 	 * @param text the text string you want to input on alerts
 	 * @throws RuntimeException
@@ -1946,7 +2025,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			driver.switchTo().alert().sendKeys(text);
 			isSucceed = true;
-			pass("set text [ " + text + " ] on alert...");
+			pass("set text [ " + text + " ] on alert");
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -1956,7 +2035,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * use js to make the element to be un-hidden.
+	 * use js to make the element to be un-hidden.</BR>
+	 * 使用JS执行的方法强制让某些隐藏的控件显示出来。
 	 * 
 	 * @param element the element to be operate
 	 * @throws RuntimeException
@@ -1979,7 +2059,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * use js to make the element to be un-hidden.
+	 * use js to make the element to be un-hidden.</BR>
+	 * 使用JS执行的方法强制让某些隐藏的控件显示出来。
 	 * 
 	 * @param by the By locator to find the element
 	 * @throws RuntimeException
@@ -2003,7 +2084,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getTitle method, adding user defined log.
+	 * override the getTitle method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the title on your current session
 	 * @throws RuntimeException
@@ -2014,7 +2096,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			title = driver.getTitle();
 			isSucceed = true;
-			pass("current window title is :" + title + "...");
+			pass("current window title is :" + title);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2025,7 +2107,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getCurrentUrl method, adding user defined log.
+	 * override the getCurrentUrl method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the url on your current session
 	 * @throws RuntimeException
@@ -2036,7 +2119,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			url = driver.getCurrentUrl();
 			isSucceed = true;
-			pass("current session url is :" + url + "...");
+			pass("current session url is :" + url);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2047,7 +2130,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getWindowHandles method, adding user defined log.
+	 * override the getWindowHandles method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the window handlers set
 	 * @throws RuntimeException
@@ -2058,7 +2142,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			handler = driver.getWindowHandles();
 			isSucceed = true;
-			pass("window handlers are: " + handler.toString() + "...");
+			pass("window handlers are: " + handler.toString());
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2069,7 +2153,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getWindowHandle method, adding user defined log.
+	 * override the getWindowHandle method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the window handler string
 	 * @throws RuntimeException
@@ -2080,7 +2165,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			handler = driver.getWindowHandle();
 			isSucceed = true;
-			pass("current window handler is:" + handler + "...");
+			pass("current window handler is:" + handler);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2091,7 +2176,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getPageSource method, adding user defined log.
+	 * override the getPageSource method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the page source string
 	 * @throws RuntimeException
@@ -2102,7 +2188,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			source = driver.getPageSource();
 			isSucceed = true;
-			pass("page source begins with: " + source.substring(0, 50) + "...");
+			pass("page source begins with: " + source.substring(0, 50));
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2113,7 +2199,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getSessionId method, adding user defined log.
+	 * override the getSessionId method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return current session id string
 	 * @throws RuntimeException
@@ -2124,7 +2211,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			sessionId = driver.getSessionId().toString();
 			isSucceed = true;
-			pass("current sessionid is:" + sessionId + "...");
+			pass("current sessionid is:" + sessionId);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2135,7 +2222,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getTagName method, adding user defined log.
+	 * override the getTagName method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the tagname string
@@ -2147,7 +2235,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			tagName = element.getTagName();
 			isSucceed = true;
-			pass("element's TagName is: " + tagName + "...");
+			pass("element's TagName is: " + tagName);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2158,7 +2246,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getTagName method, find the element by By and get its tag name.
+	 * override the getTagName method, find the element by By and get its tag name.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the tagname string
@@ -2170,7 +2259,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			tagName = driver.findElement(by).getTagName();
 			isSucceed = true;
-			pass("element [ " + by.toString() + " ]'s TagName is: " + tagName + "...");
+			pass("element [ " + by.toString() + " ]'s TagName is: " + tagName);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2181,7 +2270,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getAttribute method, adding user defined log.
+	 * override the getAttribute method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param attributeName the name of the attribute you want to get
@@ -2194,7 +2284,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			value = element.getAttribute(attributeName);
 			isSucceed = true;
-			pass("element's " + attributeName + "is: " + value + "...");
+			pass("element's " + attributeName + "is: " + value);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2205,8 +2295,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getAttribute method, find the element by By and get its
-	 * attribute value.
+	 * override the getAttribute method, find the element by By and get its attribute value.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param attributeName the name of the attribute you want to get
@@ -2219,7 +2309,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			value = driver.findElement(by).getAttribute(attributeName);
 			isSucceed = true;
-			pass("element [ " + by.toString() + " ]'s " + attributeName + "is: " + value + "...");
+			pass("element [ " + by.toString() + " ]'s " + attributeName + "is: " + value);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2230,7 +2320,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isSelected method, adding user defined log.
+	 * override the isSelected method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the bool value of whether is the WebElement selected
@@ -2242,7 +2333,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			isSelected = element.isSelected();
 			isSucceed = true;
-			pass("element selected? " + String.valueOf(isSelected) + "...");
+			pass("element selected? " + String.valueOf(isSelected));
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2253,7 +2344,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isSelected method, the element to be find by By.
+	 * override the isSelected method, the element to be find by By.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the bool value of whether is the WebElement selected
@@ -2265,7 +2357,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			isSelected = driver.findElement(by).isSelected();
 			isSucceed = true;
-			pass("element [ " + by.toString() + " ] selected? "	+ String.valueOf(isSelected) + "...");
+			pass("element [ " + by.toString() + " ] selected? "	+ String.valueOf(isSelected));
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2276,7 +2368,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isEnabled method, adding user defined log.
+	 * override the isEnabled method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the bool value of whether is the WebElement enabled
@@ -2288,7 +2381,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			isEnabled = element.isEnabled();
 			isSucceed = true;
-			pass("element enabled? " + String.valueOf(isEnabled) + "...");
+			pass("element enabled? " + String.valueOf(isEnabled));
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2299,7 +2392,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isEnabled method, the element to be find by By.
+	 * override the isEnabled method, the element to be find by By.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the bool value of whether is the WebElement enabled
@@ -2311,7 +2405,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			isEnabled = driver.findElement(by).isEnabled();
 			isSucceed = true;
-			pass("element [ " + by.toString() + " ] enabled? " + String.valueOf(isEnabled) + "...");
+			pass("element [ " + by.toString() + " ] enabled? " + String.valueOf(isEnabled));
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2322,7 +2416,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getText method, adding user defined log.
+	 * override the getText method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @throws RuntimeException
@@ -2333,7 +2428,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			text = element.getText();
 			isSucceed = true;
-			pass("element text is:" + text + "...");
+			pass("element text is:" + text);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2344,7 +2439,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getText method, find the element by By and get its own text.
+	 * override the getText method, find the element by By and get its own text.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the text string
@@ -2356,7 +2452,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			text = driver.findElement(by).getText();
 			isSucceed = true;
-			pass("element [ " + by.toString() + " ]'s text is: " + text + "...");
+			pass("element [ " + by.toString() + " ]'s text is: " + text);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2367,7 +2463,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isDisplayed method, adding user defined log.
+	 * override the isDisplayed method, adding user defined log.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the bool value of whether is the WebElement displayed
@@ -2379,7 +2476,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			isDisplayed = element.isDisplayed();
 			isSucceed = true;
-			pass("element displayed? " + String.valueOf(isDisplayed) + "...");
+			pass("element displayed? " + String.valueOf(isDisplayed));
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2390,7 +2487,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isDisplayed method, the element to be find by By.
+	 * override the isDisplayed method, the element to be find by By.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the bool value of whether is the WebElement displayed
@@ -2402,7 +2500,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			isDisplayed = driver.findElement(by).isDisplayed();
 			isSucceed = true;
-			pass("element [ " + by.toString() + " ] displayed? " + String.valueOf(isDisplayed) + "...");
+			pass("element [ " + by.toString() + " ] displayed? " + String.valueOf(isDisplayed));
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2413,7 +2511,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get its css property value.
+	 * get its css property value.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param propertyName the name of the property you want to get
@@ -2426,7 +2525,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			cssValue = element.getCssValue(propertyName);
 			isSucceed = true;
-			pass("element's css [" + propertyName + "] value is:" + cssValue + "...");
+			pass("element's css [" + propertyName + "] value is:" + cssValue);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
@@ -2437,7 +2536,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * find the element by By and get its css property value.
+	 * find the element by By and get its css property value.</BR>
+	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param propertyName the name of the property you want to get
@@ -2451,7 +2551,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			cssValue = driver.findElement(by).getCssValue(propertyName);
 			isSucceed = true;
 			pass("element [ " + by.toString() + " ]'s css[" 
-				+ propertyName + "] value is: " + cssValue + "...");
+				+ propertyName + "] value is: " + cssValue);
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
