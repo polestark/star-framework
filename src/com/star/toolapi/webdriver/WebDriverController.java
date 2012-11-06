@@ -21,16 +21,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
+import java.util.logging.FileHandler;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.server.SeleniumServer;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.server.SeleniumServer;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import com.star.logging.frame.LoggingManager;
-import com.star.logging.webdriver.HtmlFormatter4WD;
 import com.star.support.config.ParseProperties;
+import com.star.logging.webdriver.HtmlFormatter4WD;
 import com.star.testdata.string.StringBufferUtils;
 
 public class WebDriverController {
@@ -253,41 +253,29 @@ public class WebDriverController {
 					String[] msgContent = record.getMessage().split(SMARK);
 					StringBuffer sb = new StringBuffer(500);
 					sb.append("<record>\n");
-					/*
-					 * =========================log current time=========================
-					 */
-					sb.append("  <date>");
+					
+					sb.append("  <date>");// log current time
 					sb.append(STRUTIL.formatedTime("HH:mm:ss.SSS"));
 					sb.append("</date>\n");
-					/*
-					 * =========================log current milliseconds=========================
-					 */
-					sb.append("  <millis>");
+					
+					sb.append("  <millis>");// log current milliseconds
 					sb.append(record.getMillis());
 					sb.append("</millis>\n");
-					/*
-					 * =========================log current method=========================
-					 */
-					sb.append("  <method>");
+					
+					sb.append("  <method>");// log current method
 					sb.append(msgContent[1]);
 					sb.append("</method>\n");
-					/*
-					 * =========================log current run status=========================
-					 */
-					sb.append("  <status>");
+					
+					sb.append("  <status>");// log current run status
 					sb.append(msgContent[2]);
 					sb.append("</status>\n");
-					/*
-					 * =========================log current message details=========================
-					 */
-					sb.append("  <message>");
+					
+					sb.append("  <message>");// log current message details
 					sb.append(msgContent[3]);
 					sb.append("</message>");
 					sb.append("\n");
-					/*
-					 * =========================log current running classname=========================
-					 */
-					sb.append("  <class>");
+					
+					sb.append("  <class>");// log current running classname
 					sb.append(msgContent[0]);
 					sb.append("</class>\n");
 

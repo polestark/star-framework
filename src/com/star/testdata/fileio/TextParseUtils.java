@@ -44,6 +44,7 @@ public class TextParseUtils {
 		File f = new File(fileName);
 		List<Map<String, String>> paraList = new ArrayList<Map<String, String>>();
 		try{
+			@SuppressWarnings("resource")
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
 			String strKey = br.readLine();
 			String[] keys = strKey.split(";");

@@ -54,7 +54,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * config timeout setting for each step, default is 10 seconds.</BR>
+	 * config timeout setting for each step, default is 10 seconds</BR>
 	 * 配置单个步骤运行的最大超时时间，默认是10秒钟。
 	 * 
 	 * @param 	timeout max wait time setting in seconds
@@ -64,8 +64,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait util the element visible in max wait time setting.</BR>
-	 * if not visible at last, throw ElementNotVisibleException to the operations.</BR>
+	 * wait util the element visible in max wait time setting</BR>
+	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
 	 * 在指定时间内循环等待，直到对象可见，超时之后直接抛出对象不可见异常信息。
 	 * 
 	 * @param element the WebElement to be judged
@@ -86,8 +86,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait util the element visible in max wait time setting.</BR>
-	 * if not visible at last, throw ElementNotVisibleException to the operations.</BR>
+	 * wait util the element visible in max wait time setting</BR>
+	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
 	 * 在指定时间内循环等待，直到对象可见，使用用户指定的默认超时设置。
 	 * 
 	 * @param element the WebElement to be judged
@@ -98,7 +98,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * public method for handle assertions and screenshot.</BR>
+	 * public method for handle assertions and screenshot</BR>
 	 * 框架共用的各个操作结果检查和断言，出错则抛出异常并且截图。
 	 * 
 	 * @param isSucceed if your operation success
@@ -117,7 +117,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * take a screen shot and save the file by path and name.</BR>
+	 * take a screen shot and save the file by path and name</BR>
 	 * 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
 	 * @param fileName the file path&name of the screenshot to be saved
@@ -134,7 +134,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the screenShot method, using default path and name.</BR>
+	 * override the screenShot method, using default path and name</BR>
 	 * 网页截图操作，默认路径为工程日志目录，文件名为运行的class名和时间戳拼接而成。
 	 * 
 	 * @throws RuntimeException
@@ -147,7 +147,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the alert is existing.</BR>
+	 * judge if the alert is existing</BR>
 	 * 判断弹出的对话框（Dialog）是否存在。
 	 * 
 	 * @throws RuntimeException
@@ -166,7 +166,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the alert is present in specified seconds.</BR>
+	 * judge if the alert is present in specified seconds</BR>
 	 * 在指定的时间内判断弹出的对话框（Dialog）是否存在。
 	 * 
 	 * @param seconds timeout in seconds
@@ -189,7 +189,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the element is existing.</BR>
+	 * judge if the element is existing</BR>
 	 * 判断指定的对象是否存在。
 	 * 
 	 * @param by the element locator By
@@ -199,7 +199,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the element is present in specified seconds.</BR>
+	 * judge if the element is present in specified seconds</BR>
 	 * 在指定的时间内判断指定的对象是否存在。
 	 * 
 	 * @param by the element locator By
@@ -215,7 +215,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the browser is existing, using part of the page title.</BR>
+	 * judge if the browser is existing, using part of the page title</BR>
 	 * 按照网页标题判断页面是否存在，标题可使用部分内容匹配。
 	 * 
 	 * @param browserTitle part of the title to see if browser exists
@@ -243,7 +243,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the browser is present by title reg pattern in specified seconds.</BR>
+	 * judge if the browser is present by title reg pattern in specified seconds</BR>
 	 * 在指定时间内按照网页标题判断页面是否存在，标题可使用部分内容匹配。
 	 * 
 	 * @param browserTitle part of the title to see if browser exists
@@ -260,7 +260,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * maximize browser window: support ie, ff3.6 and lower.</BR>
+	 * maximize browser window: support ie, ff3.6 and lower</BR>
 	 * 网页窗口最大化操作。
 	 * 
 	 * @throws RuntimeException
@@ -282,7 +282,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select default window and default frame.</BR>
+	 * select default window and default frame</BR>
 	 * 在当前页面中自动选择默认的页面框架（frame）。
 	 * 
 	 * @throws RuntimeException
@@ -302,7 +302,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to active element.</BR>
+	 * switch to active element</BR>
 	 * 在当前操作的页面和对象时自动选择已被激活的对象。
 	 * 
 	 * @throws RuntimeException
@@ -322,7 +322,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to new window supporting, by deleting first hanlder.</BR>
+	 * switch to new window supporting, by deleting first hanlder</BR>
 	 * 选择最新弹出的窗口，需要预存第一个窗口的handler。
 	 * 
 	 * @param firstHandler the first window handle
@@ -350,7 +350,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to window by title.</BR>
+	 * switch to window by title</BR>
 	 * 按照网页标题选择窗口，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be switched to
@@ -382,7 +382,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close window by window title and its index if has the same title, by string full pattern.</BR>
+	 * close window by window title and its index if has the same title, by string full pattern</BR>
 	 * 按照网页标题选择并且关闭窗口，重名窗口按照指定的重名的序号关闭，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be closed.
@@ -416,7 +416,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close the last window by the same window title, by string full pattern.</BR>
+	 * close the last window by the same window title, by string full pattern</BR>
 	 * 按照网页标题选择窗口，适用于无重名的窗口，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be closed.
@@ -446,7 +446,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close windows except specified window title, by string full pattern.</BR>
+	 * close windows except specified window title, by string full pattern</BR>
 	 * 关闭除了指定标题页面之外的所有窗口，适用于例外窗口无重名的情况，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window not to be closed
@@ -476,7 +476,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close windows except specified window title, by string full pattern.</BR>
+	 * close windows except specified window title, by string full pattern</BR>
 	 * 关闭除了指定标题页面之外的所有窗口，例外窗口如果重名，按照指定的重名顺序关闭，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window not to be closed
@@ -517,7 +517,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for new window which has no title in few seconds.</BR>
+	 * wait for new window which has no title in few seconds</BR>
 	 * 判断在指定的时间内是否有新的窗口弹出，无论其是否有标题。
 	 * 
 	 * @param browserCount windows count before new window appears.
@@ -533,7 +533,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for new window which has no title in few seconds.</BR>
+	 * wait for new window which has no title in few seconds</BR>
 	 * 判断在指定的时间内是否有新的窗口弹出，无论其是否有标题。
 	 * 
 	 * @param oldHandlers windows handler Set before new window appears.
@@ -549,7 +549,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by index.</BR>
+	 * select a frame by index</BR>
 	 * 按照序号选择框架（frame）。
 	 * 
 	 * @param index the index of the frame to select
@@ -570,7 +570,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by name or id.</BR>
+	 * select a frame by name or id</BR>
 	 * 按照名称或者ID选择框架（frame）。
 	 * 
 	 * @param nameOrId the name or id of the frame to select
@@ -591,7 +591,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by frameElement.</BR>
+	 * select a frame by frameElement</BR>
 	 * 按照框架对象本身选择框架（frame）。
 	 * 
 	 * @param frameElement the frame element to select
@@ -612,7 +612,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by frame element locator: By.</BR>
+	 * select a frame by frame element locator: By</BR>
 	 * 按照指定的元素定位方式选择框架（frame）。
 	 * 
 	 * @param by the frame element locator
@@ -633,7 +633,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * edit a content editable iframe.</BR>
+	 * edit a content editable iframe</BR>
 	 * 编辑指定框架（frame）内的最直接展示文本内容。
 	 * 
 	 * @param by the frame element locaotr
@@ -656,7 +656,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the get method, adding user defined log.</BR>
+	 * override the get method, adding user defined log</BR>
 	 * 地址跳转方法，与WebDriver原生get方法内容完全一致。
 	 * 
 	 * @param url the url you want to open
@@ -677,7 +677,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * navigate to some where by url.</BR>
+	 * navigate to some where by url</BR>
 	 * 地址跳转方法，与WebDriver原生navigate.to方法内容完全一致。
 	 * 
 	 * @param url the url you want to open
@@ -698,7 +698,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * navigate back.</BR>
+	 * navigate back</BR>
 	 * 地址跳转方法，与WebDriver原生navigate.back方法内容完全一致。
 	 * 
 	 * @throws RuntimeException
@@ -718,7 +718,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * navigate forward.</BR>
+	 * navigate forward</BR>
 	 * 地址跳转方法，与WebDriver原生navigate.forward方法内容完全一致。
 	 * 
 	 * @throws RuntimeException
@@ -738,7 +738,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the click method, adding user defined log.</BR>
+	 * override the click method, adding user defined log</BR>
 	 * 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param element the webelement you want to operate
@@ -760,7 +760,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the click method, click on the element to be find by By.</BR>
+	 * override the click method, click on the element to be find by By</BR>
 	 * 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param by the locator you want to find the element
@@ -782,7 +782,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * forcely click, by executing javascript.</BR>
+	 * forcely click, by executing javascript</BR>
 	 * 在等到对象可见之后点击指定的对象，使用JavaScript执行的方式去操作，</BR>
 	 * 这种方法使用过后一般需要调用一次selectDefaultWindowFrame以确保运行稳定。
 	 * 
@@ -805,7 +805,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * forcely click, by executing javascript.</BR>
+	 * forcely click, by executing javascript</BR>
 	 * 在等到对象可见之后点击指定的对象，使用JavaScript执行的方式去操作，</BR>
 	 * 这种方法使用过后一般需要调用一次selectDefaultWindowFrame以确保运行稳定。
 	 * 
@@ -828,7 +828,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * doubleclick on the element to be find by By.</BR>
+	 * doubleclick on the element to be find by By</BR>
 	 * 在等到对象可见之后双击指定的对象.
 	 * 
 	 * @param element the webelement you want to operate
@@ -851,7 +851,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * doubleclick on the element.</BR>
+	 * doubleclick on the element</BR>
 	 * 在等到对象可见之后双击指定的对象.
 	 * 
 	 * @param by the locator you want to find the element
@@ -874,7 +874,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * right click on the element to be find by By.</BR>
+	 * right click on the element to be find by By</BR>
 	 * 在等到对象可见之后鼠标右键点击指定的对象.
 	 * 
 	 * @param element the webelement you want to operate
@@ -897,7 +897,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * right click on the element.</BR>
+	 * right click on the element</BR>
 	 * 在等到对象可见之后鼠标右键点击指定的对象。
 	 * 
 	 * @param by the locator you want to find the element
@@ -920,7 +920,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the submit method, adding user defined log.</BR>
+	 * override the submit method, adding user defined log</BR>
 	 * 在等到指定对象可见之后在该对象上做确认/提交的操作。
 	 * 
 	 * @param element the webelement you want to operate
@@ -942,7 +942,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the submit method, submit on the element to be find by By.</BR>
+	 * override the submit method, submit on the element to be find by By</BR>
 	 * 在等到指定对象可见之后在该对象上做确认/提交的操作。
 	 * 
 	 * @param by the locator you want to find the element
@@ -964,7 +964,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the clear method, adding user defined log.</BR>
+	 * override the clear method, adding user defined log</BR>
 	 * 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
 	 * 
 	 * @param element the webelement you want to operate
@@ -986,7 +986,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the clear method, clear on the element to be find by By.</BR>
+	 * override the clear method, clear on the element to be find by By</BR>
 	 * 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1009,7 +1009,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, adding user defined log.</BR>
+	 * override the sendKeys method, adding user defined log</BR>
 	 * 以追加文本的模式在指定可编辑对象中输入文本，操作之前自动等待到对象可见。
 	 * 
 	 * @param element the webelement you want to operate
@@ -1032,7 +1032,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, sendKeys on the element to be find by By.</BR>
+	 * override the sendKeys method, sendKeys on the element to be find by By</BR>
 	 * 以追加文本的模式在指定可编辑对象中输入文本，操作之前自动等待到对象可见。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1056,7 +1056,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, adding user defined log.</BR>
+	 * override the sendKeys method, adding user defined log</BR>
 	 * 清理指定对象中已经输入的内容重新输入，操作之前自动等待到对象可见。
 	 * 
 	 * @param element the webelement you want to operate
@@ -1080,7 +1080,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, sendKeys on the element to be find by By.</BR>
+	 * override the sendKeys method, sendKeys on the element to be find by By</BR>
 	 * 清理指定对象中已经输入的内容重新输入，操作之前自动等待到对象可见。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1105,7 +1105,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * readonly text box or richtext box input.</BR>
+	 * readonly text box or richtext box input</BR>
 	 * 使用DOM（Documnet Object Modal）修改页面中对象的文本属性值，使用ID定位对象则返回唯一对象，其余返回数组。
 	 * 
 	 * @param by the attribute of the element, default support is TagName/Name/Id
@@ -1118,7 +1118,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected void sendKeysByDOM(String by, String byValue, String text, int index) {
 		String js = null;
 		boolean isSucceed = false;
-		
+
 		if (by.equalsIgnoreCase("tagname")) {
 			js = "document.getElementsByTagName('" + byValue + "')[" + index + "].value='" + text + "'";
 		} else if (by.equalsIgnoreCase("name")) {
@@ -1142,7 +1142,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * readonly text box or richtext box input, finding elements by element id.</BR>
+	 * readonly text box or richtext box input, finding elements by element id</BR>
 	 * 按照ID定位页面中对象，并使用DOM（Documnet Object Modal）修改其文本属性值。
 	 * 
 	 * @param elementId the id of the element
@@ -1155,7 +1155,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * readonly text box or richtext box input, finding elements by element name.</BR>
+	 * readonly text box or richtext box input, finding elements by element name</BR>
 	 * 按照名称（Name）和序号定位页面中对象，并使用DOM（Documnet Object Modal）修改其文本属性值。
 	 * 
 	 * @param elementName the name of the element
@@ -1169,7 +1169,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * readonly text box or richtext box input, finding elements by element tag name.</BR>
+	 * readonly text box or richtext box input, finding elements by element tag name</BR>
 	 * 按照标签名称（TagName）和序号定位页面中对象，并使用DOM（Documnet Object Modal）修改其文本属性值。
 	 * 
 	 * @param elementTagName the tag name of the element
@@ -1183,7 +1183,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * sendKeys by using keybord event on element.</BR>
+	 * sendKeys by using keybord event on element</BR>
 	 * 使用键盘模拟的方法在指定的对象上输入指定的文本。
 	 * 
 	 * @param element the webelement you want to operate
@@ -1207,7 +1207,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * sendKeys by using keybord event on element to be found by By.</BR>
+	 * sendKeys by using keybord event on element to be found by By</BR>
 	 * 使用键盘模拟的方法在指定的对象上输入指定的文本。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1232,7 +1232,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * edit rich text box created by kindeditor.</BR>
+	 * edit rich text box created by kindeditor</BR>
 	 * 使用JS调用KindEditor对象本身的接口，在页面KindEditor对象中输入指定的文本。
 	 * 
 	 * @param editorId kindeditor id
@@ -1254,7 +1254,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by index.</BR>
+	 * select an item from a picklist by index</BR>
 	 * 按照指定序号选择下拉列表中的选项。
 	 * 
 	 * @param element the picklist element
@@ -1278,7 +1278,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by index.</BR>
+	 * select an item from a picklist by index</BR>
 	 * 按照指定序号选择下拉列表中的选项。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1303,7 +1303,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value.</BR>
+	 * select an item from a picklist by item value</BR>
 	 * 按照指定选项的实际值（不是可见文本值，而是对象的“value”属性的值）选择下拉列表中的选项。
 	 * 
 	 * @param element the picklist element
@@ -1327,7 +1327,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value.</BR>
+	 * select an item from a picklist by item value</BR>
 	 * 按照指定选项的实际值（不是可见文本值，而是对象的“value”属性的值）选择下拉列表中的选项。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1352,7 +1352,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value.</BR>
+	 * select an item from a picklist by item value</BR>
 	 * 按照指定选项的可见文本值（用户直接可以看到的文本）选择下拉列表中的选项。
 	 * 
 	 * @param element the picklist element
@@ -1376,7 +1376,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value.</BR>
+	 * select an item from a picklist by item value</BR>
 	 * 按照指定选项的可见文本值（用户直接可以看到的文本）选择下拉列表中的选项。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1457,7 +1457,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * find elements displayed on the page.</BR>
+	 * find elements displayed on the page</BR>
 	 * 按照指定的定位方式寻找所有可见的对象。
 	 * 
 	 * @param by the way to locate webelements
@@ -1492,7 +1492,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * find elements displayed on the page.</BR>
+	 * find elements displayed on the page</BR>
 	 * 按照指定的定位方式寻找第一可见的对象。
 	 * 
 	 * @param by the way to locate webelement
@@ -1520,7 +1520,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the findElements method, adding user defined log.</BR>
+	 * override the findElements method, adding user defined log</BR>
 	 * 按照指定的定位方式寻找象。
 	 * 
 	 * @param by the locator of the elements to be find
@@ -1543,7 +1543,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the findElement method, adding user defined log.</BR>
+	 * override the findElement method, adding user defined log</BR>
 	 * 按照指定的定位方式寻找象。
 	 * 
 	 * @param by the locator of the element to be find
@@ -1590,7 +1590,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * refresh the webtable on the same locator, only if it changes.</BR>
+	 * refresh the webtable on the same locator, only if it changes</BR>
 	 * 如果同一定位方式的WebTable内容发生变化需要重新定位，则需要刷新WebTable。
 	 */
 	protected synchronized void tableRefresh(){
@@ -1599,7 +1599,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get row count of a webtable.</BR>
+	 * get row count of a webtable</BR>
 	 * 返回一个WebTable的行的总数。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
@@ -1624,7 +1624,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get column count of a specified webtable row.</BR>
+	 * get column count of a specified webtable row</BR>
 	 * 返回一个WebTable在制定行上的列的总数。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
@@ -1651,7 +1651,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get the element in the webTable cell by row and col index.</BR>
+	 * get the element in the webTable cell by row and col index</BR>
 	 * 返回WebTable中指定行、列和类型的子元素，如按钮、链接、输入框等。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
@@ -1679,7 +1679,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get the cell text of the webTable on specified row and column.</BR>
+	 * get the cell text of the webTable on specified row and column</BR>
 	 * 返回WebTable的指定行和列的中的文本内容。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
@@ -1706,7 +1706,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for the element visiable in timeout setting.</BR>
+	 * wait for the element visiable in timeout setting</BR>
 	 * 在指定时间内等待，直到对象可见。
 	 * 
 	 * @param by the element locator By
@@ -1732,7 +1732,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for the element clickable in timeout setting.</BR>
+	 * wait for the element clickable in timeout setting</BR>
 	 * 在指定时间内等待，直到对象能够被点击。
 	 * 
 	 * @param by the element locator By
@@ -1758,7 +1758,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for text appears on element in timeout setting.</BR>
+	 * wait for text appears on element in timeout setting</BR>
 	 * 在指定时间内等待，直到指定对象上出现指定文本。
 	 * 
 	 * @param by the element locator By
@@ -1785,7 +1785,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for text appears in element attributes in timeout setting.</BR>
+	 * wait for text appears in element attributes in timeout setting</BR>
 	 * 在指定时间内等待，直到指定对象的某个属性值等于指定文本。
 	 * 
 	 * @param by the element locator By
@@ -1812,7 +1812,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for alert disappears in the time united by seconds.</BR>
+	 * wait for alert disappears in the time united by seconds</BR>
 	 * 在指定时间内等待，对话框（Dialog）消失，用以缓冲运行，增加健壮性。
 	 * 
 	 * @throws RuntimeException
@@ -1833,7 +1833,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the alert dialog not to appears.</BR>
+	 * make the alert dialog not to appears</BR>
 	 * 通过JS函数重载，在对话框（Alert）出现之前点击掉它，或者说等价于不让其出现。
 	 * 
 	 * @throws RuntimeException
@@ -1852,7 +1852,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the warn dialog not to appears when window.close().</BR>
+	 * make the warn dialog not to appears when window.close()</BR>
 	 * 通过JS函数重载，在浏览器窗口关闭之前除去它的告警提示。
 	 * 
 	 * @throws RuntimeException
@@ -1875,7 +1875,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the confirm dialog not to appears choose default option OK.</BR>
+	 * make the confirm dialog not to appears choose default option OK</BR>
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 * 
 	 * @throws RuntimeException
@@ -1894,7 +1894,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the confirm dialog not to appears choose default option Cancel.</BR>
+	 * make the confirm dialog not to appears choose default option Cancel</BR>
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 * 
 	 * @throws RuntimeException
@@ -1913,7 +1913,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the prompt dialog not to appears choose default option OK.</BR>
+	 * make the prompt dialog not to appears choose default option OK</BR>
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 * 
 	 * @throws RuntimeException
@@ -1932,7 +1932,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the prompt dialog not to appears choose default option Cancel.</BR>
+	 * make the prompt dialog not to appears choose default option Cancel</BR>
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 * 
 	 * @throws RuntimeException
@@ -1951,7 +1951,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * choose OK/Cancel button's OK on alerts.</BR>
+	 * choose OK/Cancel button's OK on alerts</BR>
 	 * 在弹出的对话框（Dialog）上点击确认/是等接受性按钮。
 	 * 
 	 * @throws RuntimeException
@@ -1971,7 +1971,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * choose Cancel on alerts.</BR>
+	 * choose Cancel on alerts</BR>
 	 * 在弹出的对话框（Dialog）上点击取消/否等拒绝性按钮。
 	 * 
 	 * @throws RuntimeException
@@ -1991,7 +1991,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get the text of the alerts.</BR>
+	 * get the text of the alerts</BR>
 	 * 返回对话框（Dialog）上的提示信息文本内容。
 	 * 
 	 * @return alert text string
@@ -2014,7 +2014,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * set text on alerts.</BR>
+	 * set text on alerts</BR>
 	 * 向对话框（InputBox）中输入文本。
 	 * 
 	 * @param text the text string you want to input on alerts
@@ -2035,7 +2035,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * use js to make the element to be un-hidden.</BR>
+	 * use js to make the element to be un-hidden</BR>
 	 * 使用JS执行的方法强制让某些隐藏的控件显示出来。
 	 * 
 	 * @param element the element to be operate
@@ -2059,7 +2059,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * use js to make the element to be un-hidden.</BR>
+	 * use js to make the element to be un-hidden</BR>
 	 * 使用JS执行的方法强制让某些隐藏的控件显示出来。
 	 * 
 	 * @param by the By locator to find the element
@@ -2084,7 +2084,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getTitle method, adding user defined log.</BR>
+	 * override the getTitle method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the title on your current session
@@ -2107,7 +2107,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getCurrentUrl method, adding user defined log.</BR>
+	 * override the getCurrentUrl method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the url on your current session
@@ -2130,7 +2130,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getWindowHandles method, adding user defined log.</BR>
+	 * override the getWindowHandles method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the window handlers set
@@ -2153,7 +2153,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getWindowHandle method, adding user defined log.</BR>
+	 * override the getWindowHandle method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the window handler string
@@ -2176,7 +2176,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getPageSource method, adding user defined log.</BR>
+	 * override the getPageSource method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the page source string
@@ -2199,7 +2199,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getSessionId method, adding user defined log.</BR>
+	 * override the getSessionId method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return current session id string
@@ -2222,7 +2222,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getTagName method, adding user defined log.</BR>
+	 * override the getTagName method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2246,7 +2246,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getTagName method, find the element by By and get its tag name.</BR>
+	 * override the getTagName method, find the element by By and get its tag name</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2270,7 +2270,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getAttribute method, adding user defined log.</BR>
+	 * override the getAttribute method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2295,7 +2295,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getAttribute method, find the element by By and get its attribute value.</BR>
+	 * override the getAttribute method, find the element by By and get its attribute value</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2320,7 +2320,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isSelected method, adding user defined log.</BR>
+	 * override the isSelected method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2344,7 +2344,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isSelected method, the element to be find by By.</BR>
+	 * override the isSelected method, the element to be find by By</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2368,7 +2368,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isEnabled method, adding user defined log.</BR>
+	 * override the isEnabled method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2392,7 +2392,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isEnabled method, the element to be find by By.</BR>
+	 * override the isEnabled method, the element to be find by By</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2416,7 +2416,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getText method, adding user defined log.</BR>
+	 * override the getText method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2439,7 +2439,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getText method, find the element by By and get its own text.</BR>
+	 * override the getText method, find the element by By and get its own text</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2463,7 +2463,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isDisplayed method, adding user defined log.</BR>
+	 * override the isDisplayed method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2487,7 +2487,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isDisplayed method, the element to be find by By.</BR>
+	 * override the isDisplayed method, the element to be find by By</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2511,7 +2511,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get its css property value.</BR>
+	 * get its css property value</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2536,7 +2536,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * find the element by By and get its css property value.</BR>
+	 * find the element by By and get its css property value</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
