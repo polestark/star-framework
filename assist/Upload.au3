@@ -15,7 +15,7 @@ Func fileUpload($uploadtitle, $uploadfile, $timeout)
 		WinActive($uploadtitle)
 		Sleep (500)
 		ControlSetText($uploadtitle,"","Edit1",$uploadfile)
-		ControlClick($uploadtitle,"","打开(O)","")
+		ControlClick($uploadtitle, "", "打开(&O)")
 	Else
 		Return False
 	EndIf

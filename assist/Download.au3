@@ -15,7 +15,7 @@ Func fileDownload($download_title, $save_title, $SaveAsFileName, $timeout)
 
 	WinWait($download_title,"",$timeout)
 	If  WinExists($download_title) Then
-		WinWaitActive($download_title, "", 5)
+		WinWaitActive($download_title, "", $timeout)
 		Sleep (500)
 		ControlClick($download_title,"","Button2","")
 		WinWaitActive($save_title,"",$timeout)
@@ -26,29 +26,25 @@ Func fileDownload($download_title, $save_title, $SaveAsFileName, $timeout)
 			ControlClick($save_title, "","Edit1")
 			SendKeys($saveAsFileName)
 		Else
-			ControlSetText($save_title,"","Edit1", "")
-			ControlClick($save_title, "","Edit1")
 			ControlSetText($save_title,"","Edit1", $saveAsFileName)
-         EndIf
-
+		EndIf
+		WinActivate($save_title)
 		Sleep(500)
-		ControlClick($save_title, "","Button1","")
+		ControlClick($save_title, "","Button1")
 	Else
 		If 	WinWaitActive($save_title,"",1) Then
-			WinActivate($save_title)			
+			WinActivate($save_title)
 			
 			If  @OSVersion == "WIN_2008" Then
 				ControlSetText($save_title,"","Edit1", "")
 				ControlClick($save_title, "","Edit1")
 				SendKeys($saveAsFileName)
 			Else
-				ControlSetText($save_title,"","Edit1", "")
-				ControlClick($save_title, "","Edit1")
 				ControlSetText($save_title,"","Edit1", $saveAsFileName)
 			EndIf
-		
+			WinActivate($save_title)
 			Sleep(500)
-			ControlClick($save_title, "","Button1","")
+			ControlClick($save_title, "","Button1")
 		Else
 			Return False
 		EndIf
@@ -69,4 +65,3 @@ Func SendKeys($Str)
 		Send('{ASC ' & StringToBinary(StringMid($Str, $i, 1) & ' ') & '}')
 	Next
 EndFunc
-
