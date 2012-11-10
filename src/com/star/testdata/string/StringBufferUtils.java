@@ -1,6 +1,7 @@
 package com.star.testdata.string;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,12 +11,78 @@ public class StringBufferUtils {
 	public static final Map<String, Integer> areaCode = new HashMap<String, Integer>();
 
 	/**
-	 * get current time format with pattern : formatedTime("yyyy-MM-dd HH:mm:ss").
+	 * get current time string in specified date format.
+	 * 
+	 * @param dateFormat the formatter of date, such as:yyyy-MM-dd HH:mm:ss:SSS
 	 **/
 	public String formatedTime(String dateFormat) {
-		SimpleDateFormat sdt = new SimpleDateFormat(dateFormat);
-		String sysDate = sdt.format(new Date());
+		SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+		String sysDate = formatter.format(new Date());		
 		return sysDate;
+	}
+
+	/**
+	 * get specified time string in specified date format.
+	 * 
+	 * @param addDays days after or before current date, use + and - to add.
+	 * @param dateFormat the formatter of date, such as:yyyy-MM-dd HH:mm:ss:SSS.
+	 **/
+	public String addDaysByFormatter(int addDays, String dateFormat) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DATE, addDays);
+		SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+		String date = formatter.format(cal.getTime());
+		return date;
+	}
+
+	/**
+	 * get first day of next month in specified date format.
+	 * 
+	 * @param dateFormat the formatter of date, such as:yyyy-MM-dd HH:mm:ss:SSS.
+	 **/
+	public String firstDayOfNextMonth(String dateFormat) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, 1);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+		String date = formatter.format(cal.getTime());
+		return date;
+	}
+
+	/**
+	 * get first day of specified month and specified year in specified date format.
+	 * 
+	 * @param year the year of the date.
+	 * @param month the month of the date.
+	 * @param dateFormat the formatter of date, such as:yyyy-MM-dd HH:mm:ss:SSS.
+	 **/
+	public String firstDayOfMonth(int year, int month, String dateFormat) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.YEAR, year);
+		cal.add(Calendar.MONTH, month);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+		String date = formatter.format(cal.getTime());
+		return date;
+	}
+
+	/**
+	 * get first day of specified month of current year in specified date format.
+	 * 
+	 * @param month the month of the date.
+	 * @param dateFormat the formatter of date, such as:yyyy-MM-dd HH:mm:ss:SSS.
+	 **/
+	public String firstDayOfMonth(int month, String dateFormat) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, month);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+		String date = formatter.format(cal.getTime());
+		return date;
 	}
 
 	/**
