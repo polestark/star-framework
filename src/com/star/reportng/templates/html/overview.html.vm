@@ -29,7 +29,7 @@
 #end
 
 #foreach ($suite in $suites)
-<table class="overviewTable" border=1 cellspacing=0 cellpadding=2>
+<table class="overviewTable" border="1" cellspacing="0" cellpadding="2">
   #set ($suiteId = $velocityCount)
   #set ($totalTests = 0)
   #set ($totalPassed = 0)

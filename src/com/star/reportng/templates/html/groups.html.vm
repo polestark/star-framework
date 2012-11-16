@@ -14,7 +14,7 @@
 <body>
   <h1>$messages.getString("groupsFor") $suite.name</h1>
 
-  <table class="resultsTable" border=1 cellspacing=0 cellpadding=2>
+  <table class="resultsTable" border="1" cellspacing="0" cellpadding="2">
   #foreach ($group in $groups.keySet())
     <tr>
       <td class="group">$group</td>

@@ -1,0 +1,164 @@
+package com.star.support.collect;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.ArrayList;
+import org.dom4j.Element;
+import org.dom4j.io.XMLWriter;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.OutputFormat;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import com.star.logging.frame.LoggingManager;
+
+public class TestNGFailedCollect {
+
+	private static final LoggingManager LOG = new LoggingManager(TestNGFailedCollect.class.getName());
+	private static final String FAILS = "(failed)";
+	private static final String ENCODE = "UTF-8";
+	private static final String REPORT = "./report/"; 
+	private static final String TASK = "./task/"; 
+	
+	public static void main(String[] args) throws Exception{
+		modiXMLDocument(args[0]);
+	}
+	
+	public static void modiXMLDocument(String taskName){
+		if (!taskName.contains("/") && !taskName.contains("\\")){
+			taskName = TASK + taskName;
+		}
+		modiXMLDocument(taskName, REPORT + "testng-failed.xml", REPORT + "失败重跑.xml");
+	}
+
+	/**
+	 * parse xml files to select failed test for rerun.
+	 * 
+	 * @param taskName path and name of the testng task file to be parsed.
+	 * @param failName path and name of the testng-run-failed file to be parsed.
+	 * @param outName path and name of the new created xml file for rerun.
+	 * 
+	 * @throws RuntimeException
+	 **/
+	public static void modiXMLDocument(String taskName, String failName, String outName) {		
+		if (! new File(taskName).exists()){
+			throw new RuntimeException("the TestNG task file 【 " + taskName + "】 does not exist!");
+		}
+		
+		if (! new File(failName).exists()){
+			System.out.println("the TestNG run failed file 【 " + failName + "】 does not exist!");
+			return;
+		}
+		
+		final String xmlContent = readXMLDocument(taskName);		
+		final List<String> failList = readTestNGFailed(failName);
+		
+		try {
+			org.dom4j.Document document = DocumentHelper.parseText(xmlContent);
+			OutputFormat format = OutputFormat.createPrettyPrint();
+			format.setEncoding(ENCODE);
+			XMLWriter xml = new XMLWriter(new FileOutputStream(outName), format);
+			Element root = document.getRootElement();
+			List<?> list = (List<?>) root.elements("test");
+			String testName = null;
+			boolean equals = true;
+
+			for (int i = 0; i < list.size(); i++) {
+				Element element = (Element) list.get(i);
+				testName = element.attributeValue("name").trim();
+				equals = true;
+				for (int j = 0; j < failList.size(); j++) {
+					equals = (testName.equals(failList.get(j)));
+					if (equals){
+						break;
+					}
+				}
+				if (!equals) {
+					root.remove(element);
+				}
+			}
+			xml.write(document);
+			xml.close();
+		} catch (Exception e) {
+			LOG.error(e, "XML create failed:");
+			throw new RuntimeException("XML create failed:" + e.getMessage());
+		}
+	}
+
+	/**
+	 * load your xml files, parse and return document object.
+	 * 
+	 * @param fileName path and name of the file to be parsed.
+	 * @return the document of your xml file, loaded as domfactory
+	 * 
+	 * @throws RuntimeException
+	 **/
+	private static Document loadXMLDocument(String fileName) {
+		try {
+			DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+			domFactory.setValidating(false);
+			domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+			domFactory.setNamespaceAware(true);
+			DocumentBuilder builder = domFactory.newDocumentBuilder();
+			return builder.parse(fileName);
+		} catch (Exception e) {
+			LOG.error(e, "XML parse failed:");
+			throw new RuntimeException("XML parse failed:" + e.getMessage());
+		}
+	}
+
+	/**
+	 * read xml file content.
+	 * 
+	 * @param fileName path and name of the file to be parsed.
+	 * @return the file string text of your xml file.
+	 * 
+	 * @throws RuntimeException
+	 **/
+	private static String readXMLDocument(String fileName) {
+		File file = new File(fileName);
+		ByteArrayOutputStream buff = new ByteArrayOutputStream();
+		InputStream iStream;
+		try {
+			iStream = new FileInputStream(file);
+
+			byte[] bytes = new byte[4096];
+			int len = iStream.read(bytes);
+			while (len > 0) {
+				buff.write(bytes, 0, len);
+				len = iStream.read(bytes);
+			}
+			iStream.close();
+			return new String(buff.toByteArray(), "UTF-8");
+		} catch (Exception e) {
+			LOG.error(e, "XML read failed:");
+			throw new RuntimeException("XML read failed:" + e.getMessage());			
+		}
+	}
+
+	/**
+	 * read xml file, and find test nodes that failed.
+	 * 
+	 * @param fileName path and name of the file to be read.
+	 * @return the failed tests' name List.
+	 **/
+	private static List<String> readTestNGFailed(String fileName){
+		Document document = loadXMLDocument(fileName);
+		NodeList nodeList = document.getElementsByTagName("test");
+		String nodeValue = null;
+		List<String> resList = new ArrayList<String>();
+
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			nodeValue = nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue();
+			if (nodeValue != null){
+				resList.add(nodeValue.replace(FAILS, "").trim());
+			}
+		}
+		return resList;
+	}
+}

@@ -7,9 +7,9 @@
 
 	<property environment="env" />
 	<property name="debug" value="false" />
+	<property name="task.file" value="TestNG.xml" />
 	<property name="optimize" value="false" />
-	<property name="env.choice" value="${environment}" />
-	<property file="config/config_${env.choice}.properties" />
+	<property file="config/config_${ENV_CHOICE}.properties" />
 	<tstamp>
 		<format property="now" pattern="yyyy-MM-dd_HH-mm-ss" locale="zh"/>
 	</tstamp>
@@ -71,11 +71,21 @@
 				timeOut = "3600000"
 				listeners="com.star.reportng.HTMLReporter,com.star.reportng.JUnitXMLReporter,org.testng.reporters.FailedReporter"
 				outputdir="${output}">
-			<xmlfileset dir="${task}" includes="TestNG.xml" />
-			<sysproperty key="environment" value="${env.choice}" />
+			<xmlfileset dir="${task}" includes="${task.file}" />
+			<sysproperty key="ENV_CHOICE" value="${ENV_CHOICE}" />
 			<sysproperty key="com.star.reportng.title" value="${project.name} AutoTest Report" />
 			<sysproperty key= "java.util.logging.config.file" value="./config/build-logger.properties" />
 		</testng>
+	</target>
+	
+	<target name="failcollect" description="失败汇总">
+		<echo message="……失败案例汇总开始……" />
+		<java classname="com.star.support.collect.TestNGFailedCollect" fork="true">
+			<classpath refid="compile.cp">
+			</classpath>
+			<arg value="${task.file}"/>
+		</java>
+		<echo message="……失败案例汇总完成……" />
 	</target>
 
 	<!-- ==================================================================== -->
@@ -111,6 +121,7 @@
 				<echo message="===============================================" />
 				<echo message="……构建完毕,请到【${output}】中查看测试报告……" />
 				<echo message="===============================================" />
+				<antcall target="failcollect"/>	
 			</sequential>
 			<antcall target="resupload"/>	
 	 	</sequential>

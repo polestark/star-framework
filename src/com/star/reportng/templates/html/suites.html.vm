@@ -26,7 +26,7 @@
     #end
   </p>
 </div>
-<table id="suites" border=1 cellspacing=0 cellpadding=2>
+<table id="suites" border="1" cellspacing="0" cellpadding="2">
   #foreach ($suite in $suites)
   <thead>
     <tr>
