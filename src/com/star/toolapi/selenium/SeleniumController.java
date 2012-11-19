@@ -27,6 +27,7 @@ import com.star.logging.selenium.LoggingUtils;
 import com.star.logging.selenium.ResultsFormatter;
 import com.star.support.config.ParseProperties;
 import com.star.testdata.string.StringBufferUtils;
+import com.star.toolapi.config.ToolConfiguration;
 
 public class SeleniumController {
 
@@ -34,6 +35,7 @@ public class SeleniumController {
 	protected static SeleniumServer server = null;
 
 	protected static final StringBufferUtils SBF = new StringBufferUtils();
+	private static final ToolConfiguration RC = new ToolConfiguration();
 	protected static final RemoteControlConfiguration RCC = new RemoteControlConfiguration();
 	protected static final ParseProperties PROPERTY = new ParseProperties("config/config.properties");
 	protected static final String ROOT_DIR = System.getProperty("user.dir");
@@ -97,7 +99,7 @@ public class SeleniumController {
 				RCC.setReuseBrowserSessions(false);
 				if (!Boolean.parseBoolean(CLOSETXT)){
 					RCC.setDontTouchLogging(false);
-					RCC.setOutputEncoding("gbk");
+					RC.setOutputEncoding("gbk");
 					RCC.setBrowserSideLogEnabled(true);
 					RCC.setLogOutFileName(distinctName(LOG_DIR, className, ".log"));					
 				}

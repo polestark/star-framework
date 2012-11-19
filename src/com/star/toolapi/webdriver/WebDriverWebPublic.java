@@ -1576,6 +1576,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param tabBy the element locator By
 	 */
 	private synchronized WebDriverWebTable tableCache(By tabBy) {
+		waitUtilElementVisible(driver.findElement(tabBy));
 		if (tabFinder == null) {
 			tabFinder = tabBy;
 			return new WebDriverWebTable(driver, tabBy);

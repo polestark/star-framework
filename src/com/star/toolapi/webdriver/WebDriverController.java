@@ -23,11 +23,16 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Formatter;
 import java.util.logging.FileHandler;
+
+import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
+import org.openqa.selenium.ie.InternetExplorerDriverService;
+import org.openqa.selenium.ie.InternetExplorerDriverService.Builder;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.server.SeleniumServer;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.RemoteControlConfiguration;
+
 import com.star.logging.frame.LoggingManager;
 import com.star.support.config.ParseProperties;
 import com.star.logging.webdriver.HtmlFormatter4WD;
@@ -35,6 +40,7 @@ import com.star.testdata.string.StringBufferUtils;
 
 public class WebDriverController {
 
+	protected static InternetExplorerDriverService service;
 	protected static RemoteWebDriver driver;
 	protected static Actions actionDriver;
 	protected static SeleniumServer server;
@@ -43,21 +49,27 @@ public class WebDriverController {
 
 	protected static final StringBufferUtils STRUTIL = new StringBufferUtils();
 	protected static final ParseProperties property = new ParseProperties("config/config.properties");
-	protected static final String ROOT_DIR = System.getProperty("user.dir");
-	protected static final String LOG_NAME = new File(property.get("log")).getName();
-	protected static final String LOG_REL = "./" + LOG_NAME + "/";
-	protected static final String LOG_ABS = ROOT_DIR + "/" + LOG_NAME + "/";
+	
+	protected final String ROOT_DIR = System.getProperty("user.dir");
+	protected final String LOG_NAME = new File(property.get("log")).getName();
+	protected final String LOG_REL = "./" + LOG_NAME + "/";
+	protected final String LOG_ABS = ROOT_DIR + "/" + LOG_NAME + "/";
 
-	private static final LoggingManager LOG = new LoggingManager(WebDriverController.class.getName());
-	private static final RemoteControlConfiguration RCC = new RemoteControlConfiguration();
-	private static final String PORT = property.get("serverPort");
-	private static final String CLOSETXT = property.get("closeTextLog");
-	private static final String SMARK = "~";
+	private final InternetExplorerDriverLogLevel level = InternetExplorerDriverLogLevel.
+														valueOf(property.get("SERVER_LOG_LEVEL"));
+	private final LoggingManager LOG = new LoggingManager(WebDriverController.class.getName());
+	private final RemoteControlConfiguration RCC = new RemoteControlConfiguration();
+	private final Boolean SERVER_OUTPUT_ON = Boolean.parseBoolean(property.get("SERVER_OUTPUT_ON"));
+	private final Boolean USE_DRIVERSERVER = Boolean.parseBoolean(property.get("USE_DRIVERSERVER"));
+	private final String SMARK = "~";
+	private final String EXEFILE = "./lib/IEDriverServer.exe";
+
+	private static DesiredCapabilities capability;
 	private static HtmlFormatter4WD html;
 	private static String fName;
 	private static long startTime;
 	private static long endTime;
-
+	
 	/**
 	 * choose a port to start the selenium server.
 	 * 
@@ -66,33 +78,45 @@ public class WebDriverController {
 	 */
 	protected void startServer(String clsName) {
 		log4wd = remoteMessageRecord(clsName);
-		String portStr[] = PORT.split(";");
-		for (int i = 0; i < portStr.length; i++) {
+		File log = new File(LOG_ABS + clsName + "_" + STRUTIL.getMilSecNow() + ".log");
+
+		if (USE_DRIVERSERVER) {
+			Builder builder = new InternetExplorerDriverService.Builder();
+			System.setProperty("webdriver.ie.driver", EXEFILE);
 			try {
-				RCC.setPort(Integer.parseInt(portStr[i]));
-				RCC.setDebugMode(false);
-				RCC.setSingleWindow(false);
-				RCC.setEnsureCleanSession(true);
-				RCC.setReuseBrowserSessions(false);
-				if (!Boolean.parseBoolean(CLOSETXT)) {
-					RCC.setDontTouchLogging(false);
-					RCC.setServerLogDebugMode(false);
-					RCC.setBrowserSideLogEnabled(true);
-					RCC.setOutputEncoding("gbk");
-					RCC.setServerOutputOn(false);
-					RCC.setLogOutFileName(distinctName(LOG_ABS, clsName, ".log"));
-				}
-				RCC.setTrustAllSSLCertificates(true);
-				server = new SeleniumServer(false, RCC);
-				server.start();
-				break;
+				service = SERVER_OUTPUT_ON ? builder.usingAnyFreePort().withLogFile(log).withLogLevel(level)
+						.build() : builder.usingAnyFreePort().withLogLevel(level).build();
+				service.start();
 			} catch (Throwable t) {
-				if (i == (portStr.length - 1)) {
-					LOG.error(t);
-					throw new RuntimeException("selenium server can not start:" + t.getMessage());
+				LOG.error(t);
+				throw new RuntimeException(t);
+			}
+		} else {
+			String portStr[] = property.get("serverPort").split(";");
+			for (int i = 0; i < portStr.length; i++) {
+				try {
+					RCC.setPort(Integer.parseInt(portStr[i]));
+					RCC.setDebugMode(false);
+					RCC.setSingleWindow(false);
+					RCC.setEnsureCleanSession(true);
+					RCC.setReuseBrowserSessions(false);
+					if (SERVER_OUTPUT_ON) {
+						RCC.setDontTouchLogging(false);
+						RCC.setBrowserSideLogEnabled(true);
+						RCC.setLogOutFile(log);
+					}
+					RCC.setTrustAllSSLCertificates(true);
+					server = new SeleniumServer(false, RCC);
+					server.start();
+					break;
+				} catch (Throwable t) {
+					if (i == (portStr.length - 1)) {
+						LOG.error(t);
+						throw new RuntimeException(t);
+					}
 				}
 			}
-		}
+		}	
 	}
 
 	/**
@@ -102,8 +126,14 @@ public class WebDriverController {
 	 */
 	protected void stopServer() {
 		try {
-			if (server != null) {
-				server.stop();
+			if (USE_DRIVERSERVER){
+				if (service != null && service.isRunning()) {
+					service.stop();
+				}				
+			}else{
+				if (server != null) {
+					server.stop();
+				}				
 			}
 			if (handler != null) {
 				handler.close();
@@ -120,7 +150,6 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void startWebDriver(String browser) {
-		DesiredCapabilities capability = null;
 		if (browser.toLowerCase().contains("ie") || browser.toLowerCase().contains("internetexplorer")) {
 			capability = DesiredCapabilities.internetExplorer();
 		} else if (browser.toLowerCase().contains("ff") || browser.toLowerCase().contains("firefox")) {
@@ -137,10 +166,14 @@ public class WebDriverController {
 			throw new IllegalArgumentException("you are using wrong mode of browser paltform!");
 		}
 		try {
-			URL url = new URL("http://localhost:" + server.getPort() + "/wd/hub");
-			driver = new RemoteWebDriver(url, capability);
+			if (USE_DRIVERSERVER){
+				driver = new RemoteWebDriver(service.getUrl(), capability);				
+			}else{
+				URL url = new URL("http://localhost:" + server.getPort() + "/wd/hub");
+				driver = new RemoteWebDriver(url, capability);
+			}
 			actionDriver = new Actions(driver);
-			pass("webdriver new session started");
+			pass("webdriver new instance created");
 		} catch (Throwable t) {
 			LOG.error(t);
 			throw new RuntimeException(t.getMessage());
@@ -188,21 +221,6 @@ public class WebDriverController {
 			LOG.error(t);
 			throw new RuntimeException(t.getMessage());
 		}
-	}
-
-	/**
-	 * get a new distinct filename only if the file exists already
-	 * 
-	 * @param dir file location
-	 * @param fileName file name to judge
-	 * @param fileType file type such as ".html"
-	 * @return if file exists then add mark by time
-	 * @throws RuntimeException
-	 */
-	protected String distinctName(String dir, String fileName, String fileType) {
-		String markNow = STRUTIL.formatedTime("-yyyyMMdd-HHmmssSSS");
-		return (new File(dir + fileName + "." + fileType).exists()) 
-				? (dir + fileName + markNow + "." + fileType) : (dir + fileName + "." + fileType);
 	}
 
 	/**
@@ -460,6 +478,6 @@ public class WebDriverController {
 		}
 		String traceClass = trace[last].getClassName() + " # " + trace[last].getLineNumber();
 		log4wd.info(traceClass + SMARK + methodName + SMARK + status + SMARK
-				+ message.replace(SMARK, "-").replace("&", "&amp;"));
+				+ message.replace(SMARK, "-").replace("&", "&"));
 	}
 }
