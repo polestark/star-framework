@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.OutputType;
@@ -28,11 +29,10 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.apache.commons.io.FileUtils;
 import com.star.logging.frame.LoggingManager;
 import com.star.support.externs.Win32GuiByAu3;
+import com.star.toolapi.webdriver.group.JSMethodCollection;
 import com.star.toolapi.webdriver.group.WebDriverWebTable;
-import static org.testng.AssertJUnit.assertTrue;
 
 public class WebDriverWebPublic extends WebDriverController {
 
@@ -80,8 +80,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			pause(sleepUnit);
 		}
 		if (!isDisplayed){
-			throw new ElementNotVisibleException(
-				"the element is not visible in " + timeout + "milliseconds!");
+			throw new ElementNotVisibleException("the element is not visible in " + timeout + "milliseconds!");
 		}
 	}
 
@@ -98,22 +97,67 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * public method for handle assertions and screenshot</BR>
-	 * 框架共用的各个操作结果检查和断言，出错则抛出异常并且截图。
+	 * wait util the element visible in max wait time setting</BR>
+	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
+	 * 在指定时间内循环等待，直到对象可见，使用用户指定的默认超时设置。
 	 * 
-	 * @param isSucceed if your operation success
-	 * @throws RuntimeException
+	 * @param by the WebElement locator
+	 * @throws ElementNotVisibleException
 	 */
-	private void operationCheck(boolean isSucceed) {
+	private void waitUtilElementVisible(By by) {
+		waitUtilElementVisible(driver.findElement(by), maxWaitfor);
+	}
+
+	/**
+	 * take screenshot and report to users when operation fails</BR>
+	 * 在发生操作异常之后进行截图和日志记录操作。
+	 */
+	private void failValidation() {
 		String method = Thread.currentThread().getStackTrace()[2].getMethodName();
 		String file = LOG_REL + this.getClass().getName() + STRUTIL.formatedTime(FORMATTER) + ".png";
+		takeScreenShot(file);
+		fail("method [" + method + "] failed, screenshot is: [" + file + "]");
+	}
+
+	/**
+	 * execute js functions to do something</BR>
+	 * 使用remote webdriver执行JS函数。
+	 * 
+	 * @param js js function string
+	 * @param report text content to be reported
+	 * @param args js execute parameters
+	 * 
+	 * @throws RuntimeException
+	 */
+	private void jsExecutor(String js, String report, Object args){
 		try {
-			assertTrue(isSucceed);
-		} catch (AssertionError ae) {
-			takeScreenShot(file);
-			fail("method [" + method + "] failed, screenshot is: [" + file + "]");
-			throw new RuntimeException("Test Run Failed:" + ae.getMessage());
-		}
+			driver.executeScript(js, args);
+			pass(report);
+		} catch (Exception e) {
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}		
+	}
+
+	/**
+	 * execute js functions to do something</BR>
+	 * 使用remote webdriver执行JS函数。
+	 * 
+	 * @param js js function string
+	 * @param report text content to be reported
+	 * 
+	 * @throws RuntimeException
+	 */
+	private void jsExecutor(String js, String report){
+		try {
+			driver.executeScript(js);
+			pass(report);
+		} catch (Exception e) {
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}		
 	}
 
 	/**
@@ -121,6 +165,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
 	 * @param fileName the file path&name of the screenshot to be saved
+	 * 
 	 * @throws RuntimeException
 	 */
 	protected void takeScreenShot(String fileName) {
@@ -157,10 +202,10 @@ public class WebDriverWebPublic extends WebDriverController {
 			driver.switchTo().alert();
 			return true;
 		} catch (NoAlertPresentException ne) {
-			warn("no alert is present now");
+			warn("no alert is present");
 		} catch (Exception e) {
 			LOG.error(e);
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		}
 		return false;
 	}
@@ -182,7 +227,7 @@ public class WebDriverWebPublic extends WebDriverController {
 				pause(sleepUnit);
 			} catch (Exception e) {
 				LOG.error(e);
-				throw new RuntimeException(e.getMessage());
+				throw new RuntimeException(e);
 			}
 		}
 		return false;
@@ -195,7 +240,12 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the element locator By
 	 */
 	protected boolean elementExists(By by) {
-		return (driver.findElements(by).size() > 0) ? true : false;
+		try {
+			return (driver.findElements(by).size() > 0) ? true : false;
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -209,7 +259,12 @@ public class WebDriverWebPublic extends WebDriverController {
 		long start = System.currentTimeMillis();
 		boolean exists = false;
 		while (!exists && ((System.currentTimeMillis() - start) < seconds * 1000)) {
-			exists = elementExists(by);
+			try {
+				exists = driver.findElements(by).size() > 0;
+			} catch (Exception e) {
+				LOG.error(e);
+				throw new RuntimeException(e);
+			}
 		}
 		return exists;
 	}
@@ -235,7 +290,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		} catch (WebDriverException e) {
 			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		} finally {
 			driver.switchTo().window(defaultHandler);
 		}
@@ -262,23 +317,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * maximize browser window: support ie, ff3.6 and lower</BR>
 	 * 网页窗口最大化操作。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void maximizeWindow() {
-		boolean isSucceed = false;
-		String js = "if(document.all) { " + "self.moveTo(0, 0); "
-				+ "self.resizeTo(screen.availWidth, screen.availHeight); self.focus();" + "}";
-		try {
-			driver.executeScript(js);
-			isSucceed = true;
-			pass("window maximized");
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(JSMethodCollection.MAXIMIZEWINDOW.getName(),"current window maximized");
 	}
 
 	/**
@@ -288,17 +329,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectDefaultWindowFrame() {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().defaultContent();
-			isSucceed = true;
 			pass("switch to default frame on window");
-		} catch (WebDriverException e) {
+		}  catch (Exception e) {
+			failValidation();
 			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -308,17 +346,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void focusOnActiveElement() {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().activeElement();
-			isSucceed = true;
 			pass("switch to active element");
-		} catch (WebDriverException e) {
+		}  catch (Exception e) {
+			failValidation();
 			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -329,24 +364,21 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectNewWindow(String firstHandler) {
-		boolean isSucceed = false;
 		Set<String> handlers = null;
 		Iterator<String> it = null;
 		try {
 			handlers = driver.getWindowHandles();
 			handlers.remove(firstHandler);
 			it = handlers.iterator();
-			if (it.hasNext()) {
+			while (it.hasNext()) {
 				driver.switchTo().window(it.next());
-				isSucceed = true;
-				pass("switch to new window");
 			}
-		} catch (WebDriverException e) {
+			pass("switch to new window");
+		}  catch (Exception e) {
+			failValidation();
 			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -357,7 +389,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectWindow(String windowTitle) {
-		boolean isSucceed = false;
 		Set<String> windowHandles = null;
 		try {
 			windowHandles = driver.getWindowHandles();
@@ -365,20 +396,18 @@ public class WebDriverWebPublic extends WebDriverController {
 				driver.switchTo().window(handler);
 				String title = driver.getTitle();
 				if (windowTitle.equals(title)) {
-					isSucceed = true;
 					pass("switch to window [ " + windowTitle + " ]");
-					break;
+					return;
 				}
 			}
-			if (!isSucceed){
-				fail("there is no window named [ " + windowTitle + " ]");
-			}
-		} catch (WebDriverException e) {
-			LOG.error(e);
+			fail("there is no window named [ " + windowTitle + " ]");
+			LOG.error("there is no window named [ " + windowTitle + " ]");
+			throw new RuntimeException("there is no window named [ " + windowTitle + " ]");
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -389,11 +418,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param index the index of the window which shared the same title, begins with 1.
 	 * @throws RuntimeException
 	 */
-	@SuppressWarnings("null")
 	protected void closeWindow(String windowTitle, int index) {
-		boolean isSucceed = true;
 		Object[] winArray = null;
-		List<String> winList = null;
+		List<String> winList = new ArrayList<String>();
 		try {
 			winArray = driver.getWindowHandles().toArray();
 			for (int i = 0; i < winArray.length - 1; i++) {
@@ -406,13 +433,11 @@ public class WebDriverWebPublic extends WebDriverController {
 			driver.switchTo().defaultContent();
 			driver.close();
 			pass("window [ " + windowTitle + " ] closed by index [" + index + "]");
-		} catch (WebDriverException e) {
-			isSucceed = false;
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -423,7 +448,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void closeWindow(String windowTitle) {
-		boolean isSucceed = true;
 		Object[] winArray = null;
 		try {
 			winArray = driver.getWindowHandles().toArray();
@@ -436,13 +460,11 @@ public class WebDriverWebPublic extends WebDriverController {
 				}
 			}
 			pass("window [ " + windowTitle + " ] closed ");
-		} catch (WebDriverException e) {
-			isSucceed = false;
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -453,7 +475,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void closeWindowExcept(String windowTitle) {
-		boolean isSucceed = true;
 		Set<String> windowHandles = null;
 		try {
 			windowHandles = driver.getWindowHandles();
@@ -466,13 +487,11 @@ public class WebDriverWebPublic extends WebDriverController {
 				}
 			}
 			pass("all windows closed except [ " + windowTitle + " ]");
-		} catch (WebDriverException e) {
-			isSucceed = false;
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -484,7 +503,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void closeWindowExcept(String windowTitle, int index) {
-		boolean isSucceed = true;
 		Set<String> windowHandles = null;
 		Object[] winArray = null;
 		try {
@@ -507,13 +525,11 @@ public class WebDriverWebPublic extends WebDriverController {
 				}
 			}
 			pass("keep only window [ " + windowTitle + " ] by title index [ " + index + " ]");
-		} catch (WebDriverException e) {
-			isSucceed = false;
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -556,17 +572,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectFrame(int index) {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().frame(index);
-			isSucceed = true;
 			pass("select frame by index [ " + index + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -577,17 +590,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectFrame(String nameOrId) {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().frame(nameOrId);
-			isSucceed = true;
 			pass("select frame by name or id [ " + nameOrId + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -598,17 +608,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectFrame(WebElement frameElement) {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().frame(frameElement);
-			isSucceed = true;
 			pass("select frame by frameElement");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -619,17 +626,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectFrame(By by) {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().frame(driver.findElement(by));
-			isSucceed = true;
 			pass("select frame by frame locator [ " + by.toString() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -641,18 +645,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void editFrameText(By by, String text) {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().frame(driver.findElement(by));
 			driver.switchTo().activeElement().sendKeys(text);
-			isSucceed = true;
 			pass("input text [ " + text + " ] to frame [ " + by.toString() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -663,17 +664,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void get(String url) {
-		boolean isSucceed = false;
 		try {
 			driver.get(url);
-			isSucceed = true;
 			pass("navigate to url [ " + url + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -684,17 +682,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void navigateTo(String url){
-		boolean isSucceed = false;
 		try {
 			driver.navigate().to(url);
-			isSucceed = true;
 			pass("navigate to url [ " + url + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);		
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}		
 	}
 
 	/**
@@ -704,17 +699,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void navigateBack(){
-		boolean isSucceed = false;
 		try {
 			driver.navigate().back();
-			isSucceed = true;
 			pass("navigate back");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);		
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}		
 	}
 
 	/**
@@ -724,17 +716,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void navigateForward(){
-		boolean isSucceed = false;
 		try {
 			driver.navigate().forward();
-			isSucceed = true;
 			pass("navigate forward");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);		
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}	
 	}
 
 	/**
@@ -745,18 +734,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void click(WebElement element) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(element);
 			element.click();
-			isSucceed = true;
 			pass("click on WebElement");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -767,18 +753,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void click(By by) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(driver.findElement(by));
 			driver.findElement(by).click();
-			isSucceed = true;
 			pass("click on element [ " + by.toString() + " ] ");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -787,21 +770,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 这种方法使用过后一般需要调用一次selectDefaultWindowFrame以确保运行稳定。
 	 * 
 	 * @param element the webelement you want to operate
-	 * @throws RuntimeException
 	 */
 	protected void clickByJavaScript(WebElement element) {
-		boolean isSucceed = false;
-		try {
-			waitUtilElementVisible(element);
-			driver.executeScript("return arguments[0].click();", element);
-			isSucceed = true;
-			pass("click on element");
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		waitUtilElementVisible(element);
+		jsExecutor(JSMethodCollection.CLICKBYJAVASCRIPT.getName(), "click on element", element);
 	}
 
 	/**
@@ -810,21 +782,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 这种方法使用过后一般需要调用一次selectDefaultWindowFrame以确保运行稳定。
 	 * 
 	 * @param by the locator you want to find the element
-	 * @throws RuntimeException
 	 */
 	protected void clickByJavaScript(By by) {
-		boolean isSucceed = false;
-		try {
-			waitUtilElementVisible(driver.findElement(by));
-			driver.executeScript("return arguments[0].click();", driver.findElement(by));
-			isSucceed = true;
-			pass("click on element [ " + by.toString() + " ] ");
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		waitUtilElementVisible(driver.findElement(by));
+		jsExecutor(JSMethodCollection.CLICKBYJAVASCRIPT.getName(), "click on element [ " + by.toString()
+				+ " ] ", driver.findElement(by));
 	}
 
 	/**
@@ -835,19 +797,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void doubleClick(WebElement element) {
-		boolean isSucceed = false;		
 		try {
 			waitUtilElementVisible(element);
 			actionDriver.doubleClick(element);
 			actionDriver.perform();
-			isSucceed = true;
 			pass("doubleClick on element ");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -858,19 +817,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void doubleClick(By by) {
-		boolean isSucceed = false;		
 		try {
 			waitUtilElementVisible(driver.findElement(by));
 			actionDriver.doubleClick(findElement(by));
 			actionDriver.perform();
-			isSucceed = true;
 			pass("doubleClick on element [ " + by.toString() + " ] ");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -881,19 +837,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void rightClick(WebElement element) {
-		boolean isSucceed = false;		
 		try {
 			waitUtilElementVisible(element);
 			actionDriver.contextClick(element);
 			actionDriver.perform();
-			isSucceed = true;
 			pass("rightClick on element ");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -904,19 +857,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void rightClick(By by) {
-		boolean isSucceed = false;		
 		try {
 			waitUtilElementVisible(driver.findElement(by));
 			actionDriver.contextClick(findElement(by));
 			actionDriver.perform();
-			isSucceed = true;
 			pass("rightClick on element [ " + by.toString() + " ] ");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -927,18 +877,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void submit(WebElement element) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(element);
 			element.submit();
-			isSucceed = true;
 			pass("submit on element");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -949,18 +896,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void submit(By by) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(driver.findElement(by));
 			driver.findElement(by).submit();
-			isSucceed = true;
 			pass("submit on element [ " + by.toString() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -971,18 +915,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void clear(WebElement element) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(element);
 			element.clear();
-			isSucceed = true;
 			pass("element cleared");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -993,19 +934,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void clear(By by) {
-		boolean isSucceed = false;
 		try {
 			WebElement element = driver.findElement(by);
 			waitUtilElementVisible(element);
 			element.clear();
-			isSucceed = true;
 			pass("element [ " + by.toString() + " ] cleared");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1017,18 +955,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeysAppend(WebElement element, String text) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(element);
 			element.sendKeys(text);
-			isSucceed = true;
 			pass("send text [ " + text + " ] to element");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1040,19 +975,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeysAppend(By by, String text) {
-		boolean isSucceed = false;
 		try {
 			WebElement element = driver.findElement(by);
 			waitUtilElementVisible(element);
 			element.sendKeys(text);
-			isSucceed = true;
 			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1064,19 +996,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeys(WebElement element, String text) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(element);
 			element.clear();
 			element.sendKeys(text);
-			isSucceed = true;
 			pass("send text [ " + text + " ] to WebEdit");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1088,20 +1017,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeys(By by, String text) {
-		boolean isSucceed = false;
 		try {
 			WebElement element = driver.findElement(by);
 			waitUtilElementVisible(element);
 			element.clear();
 			element.sendKeys(text);
-			isSucceed = true;
 			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1112,12 +1038,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param byValue the attribute value of the element
 	 * @param text the text you want to input to element
 	 * @param index the index of the elements shared the same attribute value
-	 * @throws RuntimeException
 	 * @throws IllegalArgumentException
 	 */
 	protected void sendKeysByDOM(String by, String byValue, String text, int index) {
 		String js = null;
-		boolean isSucceed = false;
 
 		if (by.equalsIgnoreCase("tagname")) {
 			js = "document.getElementsByTagName('" + byValue + "')[" + index + "].value='" + text + "'";
@@ -1128,17 +1052,8 @@ public class WebDriverWebPublic extends WebDriverController {
 		} else {
 			throw new IllegalArgumentException("only can find element by TagName/Name/Id");
 		}
-
-		try {
-			driver.executeScript(js);
-			isSucceed = true;
-			pass("input text [ " + text + " ] to element [ " + by + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		
+		jsExecutor(js, "input text [ " + text + " ] to element [ " + by + " ]");
 	}
 
 	/**
@@ -1191,19 +1106,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeysByKeybord(WebElement element, String text) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(element);
 			actionDriver.sendKeys(element, text);
 			actionDriver.perform();
-			isSucceed = true;
 			pass("send text [ " + text + " ] to WebEdit");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1215,20 +1127,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeysByKeybord(By by, String text) {
-		boolean isSucceed = false;
 		try {
 			WebElement element = driver.findElement(by);
 			waitUtilElementVisible(element);
 			actionDriver.sendKeys(element, text);
 			actionDriver.perform();
-			isSucceed = true;
 			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1237,20 +1146,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param editorId kindeditor id
 	 * @param text the text you want to input to element
-	 * @throws RuntimeException
 	 */
 	protected void sendKeysOnKindEditor(String editorId, String text) {
-		boolean isSucceed = false;
 		String javascript = "KE.html('" + editorId + "','<p>" + text + "</p>');";
-		try {
-			driver.executeScript(javascript);
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(javascript, "input text [ " + text + " ] to kindeditor");
 	}
 
 	/**
@@ -1262,19 +1161,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByIndex(WebElement element, int index) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(element);
 			Select select = new Select(element);
 			select.selectByIndex(index);
-			isSucceed = true;
 			pass("item selected by index [ " + index + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1286,20 +1182,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByIndex(By by, int index) {
-		boolean isSucceed = false;
 		try {
 			WebElement element = driver.findElement(by);
 			waitUtilElementVisible(element);
 			Select select = new Select(element);
 			select.selectByIndex(index);
-			isSucceed = true;
 			pass("item selected by index [ " + index + " ] on [ " + by.toString() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1311,19 +1204,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByValue(WebElement element, String itemValue) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(element);
 			Select select = new Select(element);
 			select.selectByValue(itemValue);
-			isSucceed = true;
 			pass("item selected by item value [ " + itemValue + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1335,20 +1225,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByValue(By by, String itemValue) {
-		boolean isSucceed = false;
 		try {
 			WebElement element = driver.findElement(by);
 			waitUtilElementVisible(element);
 			Select select = new Select(element);
 			select.selectByValue(itemValue);
-			isSucceed = true;
 			pass("item selected by item value [ " + itemValue + " ] on [ " + by.toString() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1360,19 +1247,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByVisibleText(WebElement element, String text) {
-		boolean isSucceed = false;
 		try {
 			waitUtilElementVisible(element);
 			Select select = new Select(element);
 			select.selectByVisibleText(text);
-			isSucceed = true;
 			pass("item selected by visible text [ " + text + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1384,20 +1268,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByVisibleText(By by, String text) {
-		boolean isSucceed = false;
 		try {
 			WebElement element = driver.findElement(by);
 			waitUtilElementVisible(element);
 			Select select = new Select(element);
 			select.selectByVisibleText(text);
-			isSucceed = true;
 			pass("item selected by visible text [ " + text + " ] on [ " + by.toString() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1409,7 +1290,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void setCheckBox(WebElement element, String onOrOff) {
-		boolean isSucceed = false;
 		try {
 			WebElement checkElement = element.findElement(By.tagName("input"));
 			waitUtilElementVisible(checkElement);
@@ -1417,14 +1297,12 @@ public class WebDriverWebPublic extends WebDriverController {
 					|| (onOrOff.toLowerCase().contains("off") && checkElement.isSelected())) {
 				element.click();
 			}
-			isSucceed = true;
 			pass("the checkbox is set to [ " + onOrOff.toUpperCase() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1436,7 +1314,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void setCheckBox(By by, String onOrOff) {
-		boolean isSucceed = false;
 		try {
 			WebElement checkBox = driver.findElement(by);
 			waitUtilElementVisible(checkBox);
@@ -1445,15 +1322,13 @@ public class WebDriverWebPublic extends WebDriverController {
 					|| (onOrOff.toLowerCase().contains("off") && checkElement.isSelected())) {
 				checkBox.click();
 			}
-			isSucceed = true;
 			pass("the checkbox [ " + by.toString() + " ] is set to [ " 
 					+ onOrOff.toUpperCase() + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1465,7 +1340,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected List<WebElement> findDisplayedElments(By by) {
-		boolean isSucceed = false;
 		List<WebElement> elementList = new ArrayList<WebElement>();
 		List<WebElement> elements = null;
 		WebElement element;
@@ -1475,19 +1349,17 @@ public class WebDriverWebPublic extends WebDriverController {
 			while ((element = it.next()) != null && element.isDisplayed()) {
 				elementList.add(element);
 			}
-			isSucceed = true;
 			int eleNum = elementList.size();
 			if (eleNum > 0){
 				pass("got" + eleNum + "displayed elements [ " + by.toString() + " ]");
 			}else{
 				warn("there is not displayed element found by [" + by.toString() + " ]");
 			}
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return elementList;
 	}
 
@@ -1500,7 +1372,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected WebElement findDisplayedElment(By by) {
-		boolean isSucceed = false;
 		WebElement element, retElement = null;
 		List<WebElement> elements = null;
 		try {
@@ -1509,13 +1380,11 @@ public class WebDriverWebPublic extends WebDriverController {
 			while ((element = it.next()) != null && element.isDisplayed()) {
 				retElement = element;
 			}
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return retElement;
 	}
 
@@ -1528,17 +1397,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected List<WebElement> findElements(By by) {
-		boolean isSucceed = false;
 		List<WebElement> elements = null;
 		try {
 			elements = driver.findElements(by);
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return elements;
 	}
 
@@ -1551,20 +1417,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected WebElement findElement(By by) {
-		boolean isSucceed = false;
 		WebElement element = null;
 		try {
 			List<WebElement> elements = driver.findElements(by);
 			if (elements.size() > 0) {
 				element = elements.get(0);
 			}
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return element;
 	}
 
@@ -1576,7 +1439,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param tabBy the element locator By
 	 */
 	private synchronized WebDriverWebTable tableCache(By tabBy) {
-		waitUtilElementVisible(driver.findElement(tabBy));
+		waitUtilElementVisible(tabBy);
 		if (tabFinder == null) {
 			tabFinder = tabBy;
 			return new WebDriverWebTable(driver, tabBy);
@@ -1608,19 +1471,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected int tableRowCount(By tabBy) {
-		boolean isSucceed = false;
 		int rowCount = 0;
 		try {
 			webTable = tableCache(tabBy);
 			rowCount = webTable.rowCount();
-			isSucceed = true;
 			pass("the webTable " + tabBy.toString() + "has row count: [ " + rowCount + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return rowCount;
 	}
 
@@ -1634,20 +1494,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected int tableColCount(By tabBy, int rowNum) {
-		boolean isSucceed = false;
 		int colCount = 0;
 		try {
 			webTable = tableCache(tabBy);
 			colCount = webTable.colCount(rowNum);
-			isSucceed = true;
 			pass("count columns of the webTable " + tabBy.toString() 
 				+ " on the row [ " + rowNum + " ], got: [ " + colCount + " ]");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return colCount;
 	}
 
@@ -1664,18 +1521,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected WebElement tableChildElement(By tabBy, int row, int col, String type, int index) {
-		boolean isSucceed = false;
 		WebElement element = null;
 		try {
 			webTable = tableCache(tabBy);
 			element = webTable.childItem(row, col, type, index);
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return element;
 	}
 
@@ -1690,19 +1544,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String tableCellText(By tabBy, int row, int col) {
-		boolean isSucceed = false;
 		String text = null;
 		try {
 			webTable = tableCache(tabBy);
 			text = webTable.cellText(row, col);
 			pass("the text of cell[" + row + "," + col + "] is: [ " + text + " ]");
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return text;
 	}
 
@@ -1715,20 +1566,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForElementVisible(By by, int seconds) {
-		boolean isSucceed = false;
 		boolean isExists = false;
 		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
 			if (wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null) {
 				isExists = true;
 			}
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isExists;
 	}
 
@@ -1741,20 +1589,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForElementClickable(By by, int seconds) {
-		boolean isSucceed = false;
 		boolean isExists = false;
 		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
 			if (wait.until(ExpectedConditions.elementToBeClickable(by)) != null) {
 				isExists = true;
 			}
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isExists;
 	}
 
@@ -1768,20 +1613,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForTextOnElement(By by, String text, int seconds) {
-		boolean isSucceed = false;
 		boolean isExists = false;
 		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
 			if (wait.until(ExpectedConditions.textToBePresentInElement(by, text)) != null) {
 				isExists = true;
 			}
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isExists;
 	}
 
@@ -1795,20 +1637,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForTextOfElementAttr(By by, String text, int seconds) {
-		boolean isSucceed = false;
 		boolean isExists = false;
 		WebDriverWait wait = new WebDriverWait((WebDriver) driver, seconds);
 		try {
 			if (wait.until(ExpectedConditions.textToBePresentInElementValue(by, text)) != null) {
 				isExists = true;
 			}
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isExists;
 	}
 
@@ -1826,8 +1665,9 @@ public class WebDriverWebPublic extends WebDriverController {
 			} catch (NoAlertPresentException ne) {
 				return true;
 			} catch (Exception e) {
+				failValidation();
 				LOG.error(e);
-				throw new RuntimeException(e.getMessage());
+				throw new RuntimeException(e);
 			}
 		}
 		return false;
@@ -1836,119 +1676,49 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * make the alert dialog not to appears</BR>
 	 * 通过JS函数重载，在对话框（Alert）出现之前点击掉它，或者说等价于不让其出现。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void ensrueBeforeAlert() {
-		boolean isSucceed = false;
-		try {
-			driver.executeScript("window.alert = function() {}");
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(JSMethodCollection.ENSRUEBEFOREALERT.getName(), "override js to ensure alert before it appears");
 	}
 
 	/**
 	 * make the warn dialog not to appears when window.close()</BR>
 	 * 通过JS函数重载，在浏览器窗口关闭之前除去它的告警提示。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void ensureBeforeWinClose() {
-		boolean isSucceed = false;
-		String js = "window.close = function(){" 
-				+ " window.opener=null; " 
-				+ " window.open('','_self');"
-				+ " window.close();}";
-		try {
-			driver.executeScript(js);
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(JSMethodCollection.ENSUREBEFOREWINCLOSE.getName(), "override js to ensure window close event");
 	}
 
 	/**
 	 * make the confirm dialog not to appears choose default option OK</BR>
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击确认，或者说等价于不让其出现而直接确认。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void ensureBeforeConfirm() {
-		boolean isSucceed = false;
-		try {
-			driver.executeScript("window.confirm = function() {return true}");
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(JSMethodCollection.ENSUREBEFORECONFIRM.getName(), "override js to ensure confirm before it appears");
 	}
 
 	/**
 	 * make the confirm dialog not to appears choose default option Cancel</BR>
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击取消，或者说等价于不让其出现而直接取消。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void dismissBeforeConfirm() {
-		boolean isSucceed = false;
-		try {
-			driver.executeScript("window.confirm = function() {return false}");
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(JSMethodCollection.DISMISSBEFORECONFIRM.getName(), "override js to dismiss confirm before it appears");
 	}
 
 	/**
 	 * make the prompt dialog not to appears choose default option OK</BR>
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击确认，或者说等价于不让其出现而直接确认。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void ensureBeforePrompt() {
-		boolean isSucceed = false;
-		try {
-			driver.executeScript("window.prompt = function() {return true}");
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(JSMethodCollection.ENSUREBEFOREPROMPT.getName(), "override js to ensure prompt before it appears");
 	}
 
 	/**
 	 * make the prompt dialog not to appears choose default option Cancel</BR>
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击取消，或者说等价于不让其出现而直接取消。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void dismisBeforePrompt() {
-		boolean isSucceed = false;
-		try {
-			driver.executeScript("window.prompt = function() {return false}");
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(JSMethodCollection.DISMISBEFOREPROMPT.getName(), "override js to dismiss prompt before it appears");
 	}
 
 	/**
@@ -1958,17 +1728,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void chooseOKOnAlert() {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().alert().accept();
-			isSucceed = true;
 			pass("click OK button on alert");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1978,17 +1745,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void chooseCancelOnAlert() {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().alert().dismiss();
-			isSucceed = true;
 			pass("click Cancel on alert dialog");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -1999,18 +1763,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getTextOfAlert() {
-		boolean isSucceed = false;
 		String alerts = null;
 		try {
 			alerts = driver.switchTo().alert().getText();
-			isSucceed = true;
 			pass("the text of the alert is: " + alerts);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return alerts;
 	}
 
@@ -2022,17 +1783,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void setTextOnAlert(String text) {
-		boolean isSucceed = false;
 		try {
 			driver.switchTo().alert().sendKeys(text);
-			isSucceed = true;
 			pass("set text [ " + text + " ] on alert");
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 	}
 
 	/**
@@ -2040,23 +1798,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 使用JS执行的方法强制让某些隐藏的控件显示出来。
 	 * 
 	 * @param element the element to be operate
-	 * @throws RuntimeException
 	 */
 	protected void makeElementUnHidden(WebElement element) {
-		boolean isSucceed = false;
-		final String js = "arguments[0].style.visibility = 'visible'; "
-						+ "arguments[0].style.height = '1px'; " 
-						+ "arguments[0].style.width = '1px'; "
-						+ "arguments[0].style.opacity = 1";
-		try {
-			driver.executeScript(js, element);
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(JSMethodCollection.MAKEELEMENTUNHIDDEN.getName(), 
+				"override js to make elements to be visible", element);
 	}
 
 	/**
@@ -2064,24 +1809,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 使用JS执行的方法强制让某些隐藏的控件显示出来。
 	 * 
 	 * @param by the By locator to find the element
-	 * @throws RuntimeException
 	 */
 	protected void makeElementUnHidden(By by) {
-		boolean isSucceed = false;
-		final String js = "arguments[0].style.visibility = 'visible'; "
-						+ "arguments[0].style.height = '1px'; " 
-						+ "arguments[0].style.width = '1px'; "
-						+ "arguments[0].style.opacity = 1";
-		try {
-			WebElement element = driver.findElement(by);
-			driver.executeScript(js, element);
-			isSucceed = true;
-		} catch (WebDriverException e) {
-			LOG.error(e);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		operationCheck(isSucceed);
+		jsExecutor(JSMethodCollection.MAKEELEMENTUNHIDDEN.getName(), 
+				"override js to make elements to be visible", driver.findElement(by));
 	}
 
 	/**
@@ -2092,18 +1823,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getWindowTitle() {
-		boolean isSucceed = false;
 		String title = null;
 		try {
 			title = driver.getTitle();
-			isSucceed = true;
 			pass("current window title is :" + title);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return title;
 	}
 
@@ -2115,18 +1843,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getCurrentUrl() {
-		boolean isSucceed = false;
 		String url = null;
 		try {
 			url = driver.getCurrentUrl();
-			isSucceed = true;
 			pass("current session url is :" + url);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return url;
 	}
 
@@ -2138,18 +1863,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected Set<String> getWindowHandles() {
-		boolean isSucceed = false;
 		Set<String> handler = null;
 		try {
 			handler = driver.getWindowHandles();
-			isSucceed = true;
 			pass("window handlers are: " + handler.toString());
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return handler;
 	}
 
@@ -2161,18 +1883,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getWindowHandle() {
-		boolean isSucceed = false;
 		String handler = null;
 		try {
 			handler = driver.getWindowHandle();
-			isSucceed = true;
 			pass("current window handler is:" + handler);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return handler;
 	}
 
@@ -2184,18 +1903,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getPageSource() {
-		boolean isSucceed = false;
 		String source = null;
 		try {
 			source = driver.getPageSource();
-			isSucceed = true;
 			pass("page source begins with: " + source.substring(0, 50));
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return source;
 	}
 
@@ -2207,18 +1923,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getSessionId() {
-		boolean isSucceed = false;
 		String sessionId = null;
 		try {
 			sessionId = driver.getSessionId().toString();
-			isSucceed = true;
 			pass("current sessionid is:" + sessionId);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return sessionId;
 	}
 
@@ -2231,18 +1944,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getTagName(WebElement element) {
-		boolean isSucceed = false;
 		String tagName = null;
 		try {
 			tagName = element.getTagName();
-			isSucceed = true;
 			pass("element's TagName is: " + tagName);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return tagName;
 	}
 
@@ -2255,18 +1965,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getTagName(By by) {
-		boolean isSucceed = false;
 		String tagName = null;
 		try {
 			tagName = driver.findElement(by).getTagName();
-			isSucceed = true;
 			pass("element [ " + by.toString() + " ]'s TagName is: " + tagName);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return tagName;
 	}
 
@@ -2280,18 +1987,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getAttribute(WebElement element, String attributeName) {
-		boolean isSucceed = false;
 		String value = null;
 		try {
 			value = element.getAttribute(attributeName);
-			isSucceed = true;
 			pass("element's " + attributeName + "is: " + value);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return value;
 	}
 
@@ -2305,18 +2009,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getAttribute(By by, String attributeName) {
-		boolean isSucceed = false;
 		String value = null;
 		try {
 			value = driver.findElement(by).getAttribute(attributeName);
-			isSucceed = true;
 			pass("element [ " + by.toString() + " ]'s " + attributeName + "is: " + value);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return value;
 	}
 
@@ -2329,18 +2030,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isSelected(WebElement element) {
-		boolean isSucceed = false;
 		boolean isSelected = false;
 		try {
 			isSelected = element.isSelected();
-			isSucceed = true;
 			pass("element selected? " + String.valueOf(isSelected));
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isSelected;
 	}
 
@@ -2353,18 +2051,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isSelected(By by) {
-		boolean isSucceed = false;
 		boolean isSelected = false;
 		try {
 			isSelected = driver.findElement(by).isSelected();
-			isSucceed = true;
 			pass("element [ " + by.toString() + " ] selected? "	+ String.valueOf(isSelected));
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isSelected;
 	}
 
@@ -2377,18 +2072,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isEnabled(WebElement element) {
-		boolean isSucceed = false;
 		boolean isEnabled = false;
 		try {
 			isEnabled = element.isEnabled();
-			isSucceed = true;
 			pass("element enabled? " + String.valueOf(isEnabled));
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isEnabled;
 	}
 
@@ -2401,18 +2093,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isEnabled(By by) {
-		boolean isSucceed = false;
 		boolean isEnabled = false;
 		try {
 			isEnabled = driver.findElement(by).isEnabled();
-			isSucceed = true;
 			pass("element [ " + by.toString() + " ] enabled? " + String.valueOf(isEnabled));
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isEnabled;
 	}
 
@@ -2424,18 +2113,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getText(WebElement element) {
-		boolean isSucceed = false;
 		String text = null;
 		try {
 			text = element.getText();
-			isSucceed = true;
 			pass("element text is:" + text);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return text;
 	}
 
@@ -2448,18 +2134,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getText(By by) {
-		boolean isSucceed = false;
 		String text = null;
 		try {
 			text = driver.findElement(by).getText();
-			isSucceed = true;
 			pass("element [ " + by.toString() + " ]'s text is: " + text);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return text;
 	}
 
@@ -2472,18 +2155,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isDisplayed(WebElement element) {
-		boolean isSucceed = false;
 		boolean isDisplayed = false;
 		try {
 			isDisplayed = element.isDisplayed();
-			isSucceed = true;
 			pass("element displayed? " + String.valueOf(isDisplayed));
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isDisplayed;
 	}
 
@@ -2496,18 +2176,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isDisplayed(By by) {
-		boolean isSucceed = false;
 		boolean isDisplayed = false;
 		try {
 			isDisplayed = driver.findElement(by).isDisplayed();
-			isSucceed = true;
 			pass("element [ " + by.toString() + " ] displayed? " + String.valueOf(isDisplayed));
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return isDisplayed;
 	}
 
@@ -2521,18 +2198,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getCssValue(WebElement element, String propertyName) {
-		boolean isSucceed = false;
 		String cssValue = null;
 		try {
 			cssValue = element.getCssValue(propertyName);
-			isSucceed = true;
 			pass("element's css [" + propertyName + "] value is:" + cssValue);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return cssValue;
 	}
 
@@ -2546,19 +2220,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getCssValue(By by, String propertyName) {
-		boolean isSucceed = false;
 		String cssValue = null;
 		try {
 			cssValue = driver.findElement(by).getCssValue(propertyName);
-			isSucceed = true;
 			pass("element [ " + by.toString() + " ]'s css[" 
 				+ propertyName + "] value is: " + cssValue);
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
-		operationCheck(isSucceed);
 		return cssValue;
 	}
 }
