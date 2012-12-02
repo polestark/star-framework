@@ -79,7 +79,7 @@ public class Win32GuiByVbs{
 	 * @param	vbsfileName whole name whitch vbs file to be executed
 	 * @throws	RuntimeException
 	 **/
-	private void executeVbsFile(String vbsfileName){
+	public void executeVbsFile(String vbsfileName){
 		try {
 			String[] vbsCmd  = new String[]{"wscript", vbsfileName};  
 			Process process = Runtime.getRuntime().exec(vbsCmd);
@@ -97,7 +97,7 @@ public class Win32GuiByVbs{
 	 * @param	vbsfileName whole name whitch vbs file to be saved
 	 * @throws	RuntimeException
 	 **/
-	private void createVbsFile(String vbs, String vbsfileName){
+	public void createVbsFile(String vbs, String vbsfileName){
 		File file = new File(vbsfileName);
 		BufferedWriter writer = null;
 		try{
@@ -157,6 +157,34 @@ public class Win32GuiByVbs{
 			throw new RuntimeException("execute extern file failed:" + e.getMessage());		
 		}
 		return new String(env).trim();
+	}
+
+	/**
+	 * judge if the specified process is exist under windows.
+	 * 
+	 * @param	processName process name like "iexplore.exe" or "iexplore".
+	 * @return	when process exists, return true, else false.
+	 * 
+	 * @throws	RuntimeException
+	 **/
+	public boolean processExistUnderWindows(String processName) {
+		processName = processName.toLowerCase().replace(".exe", "") + ".exe";
+		try {
+			Process process = Runtime.getRuntime().exec("cmd /c tasklist");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		    String pName;
+		    while ((pName = reader.readLine()) != null){
+		    	if (pName.toLowerCase().contains(processName)){
+				    reader.close();
+		    		return true;
+		    	}
+		    }
+		    reader.close();
+    		return false;
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException("execute extern file failed:" + e.getMessage());		
+		}
 	}
 
 	/**

@@ -62,11 +62,8 @@ public class WebDriverWebTable{
 	 */
 	public WebElement childItem(int row, int col, String type, int index) {
 		List<WebElement> cells = tabRows.get(row - 1).findElements(By.tagName("td"));
-		if (type.contains("cell")) {
-			return cells.get(col - 1);
-		} else {			
-			return childsGetter(cells.get(col - 1), type).get(index - 1);
-		}
+		return (type.contains("cell"))? cells.get(col - 1):
+				childsGetter(cells.get(col - 1), type).get(index - 1);
 	}
 
 	/**
@@ -114,7 +111,7 @@ public class WebDriverWebTable{
 		}else if(elementType.toLowerCase().trim().contains("text")){
 			return "textarea";
 		}else{
-			throw new IllegalArgumentException("please input the correct element type!");
+			return elementType.toLowerCase();
 		}
 	}
 }

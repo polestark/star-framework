@@ -51,15 +51,13 @@ public class HtmlFormatter4WD {
 	private static final String HTML_START_PASS = "<tr><td align=center><p><span>\n";
 	private static final String HTML_MID = "</span></p></td><td style=\"word-break:break-all;\"><p><span>\n";
 	private static final String HTML_END = "</span></p></td style=\"word-break:break-all;\"></tr>\n";
-	private static final String DROP_XML = property.get("closeXmlLog");;
+	private static final String KEEP_XML_LOGFILE = property.get("KEEP_XML_LOGFILE");;
 
 	/**
 	 * construct with parameter intialize and check.
 	 * 
-	 * @param fileName
-	 *            the whole path and name of the xml log file
-	 * @param nodesList
-	 *            the key names you want to record into html logs
+	 * @param fileName the whole path and name of the xml log file
+	 * @param nodesList the key names you want to record into html logs
 	 * @throws IllegalArgumentException
 	 **/
 	public HtmlFormatter4WD(String fileName, String nodesList) {
@@ -84,17 +82,15 @@ public class HtmlFormatter4WD {
 	 * get html file content, and write to the new html file. if needed, delete
 	 * xml log file finally.
 	 * 
-	 * @param startTime
-	 *            the milliseconds when you start your test
-	 * @param endTime
-	 *            the milliseconds when you stop your test
+	 * @param startTime the milliseconds when you start your test
+	 * @param endTime the milliseconds when you stop your test
 	 **/
 	public void xmlTansToHtml(long startTime, long endTime) {
 		String htmls = htmlBodyHead(startTime, endTime);
 
 		writeHtml(startTime, endTime, htmls);
 
-		if (Boolean.parseBoolean(DROP_XML)) {
+		if (!Boolean.parseBoolean(KEEP_XML_LOGFILE)) {
 			new File(xmlName).delete();
 		}
 	}
@@ -102,10 +98,8 @@ public class HtmlFormatter4WD {
 	/**
 	 * read the xml log file into list, choosen by your nodes select.
 	 * 
-	 * @param startTime
-	 *            the milliseconds when you start your test
-	 * @param endTime
-	 *            the milliseconds when you stop your test
+	 * @param startTime the milliseconds when you start your test
+	 * @param endTime the milliseconds when you stop your test
 	 * @return xml file content in list, choosen by your nodes select
 	 * @throws RuntimeException
 	 **/
@@ -167,10 +161,8 @@ public class HtmlFormatter4WD {
 	/**
 	 * get html file content title and table.
 	 * 
-	 * @param startTime
-	 *            the milliseconds when you start your test
-	 * @param endTime
-	 *            the milliseconds when you stop your test
+	 * @param startTime the milliseconds when you start your test
+	 * @param endTime the milliseconds when you stop your test
 	 * @return the first part html body
 	 * @throws RuntimeException
 	 **/
@@ -204,10 +196,8 @@ public class HtmlFormatter4WD {
 	/**
 	 * write loop to append formatted html to new log file.
 	 * 
-	 * @param startTime
-	 *            the milliseconds when you start your test
-	 * @param endTime
-	 *            the milliseconds when you stop your test
+	 * @param startTime the milliseconds when you start your test
+	 * @param endTime the milliseconds when you stop your test
 	 * @throws RuntimeException
 	 **/
 	private void writeHtml(long startTime, long endTime, String htmlBody) {
@@ -256,10 +246,8 @@ public class HtmlFormatter4WD {
 	/**
 	 * create and return OutputStreamWriter.
 	 * 
-	 * @param outputFile
-	 *            File to write
-	 * @param encode
-	 *            the encode of the output file
+	 * @param outputFile File to write
+	 * @param encode the encode of the output file
 	 * @return OutputStreamWriter
 	 * @throws RuntimeException
 	 **/

@@ -16,7 +16,7 @@ public class Win32GuiByAu3 {
 	private static final LoggingManager LOG = new LoggingManager(Win32GuiByAu3.class.getName());
 
 	/**
-	 * upload file in win32 gui using autoit compiled exe.
+	 * upload file in win32 gui using autoit compiled exe</BR>
 	 * you can use it like this: fileUpload("选择文件", "D:\\a.txt", 5);
 	 * 
 	 * @param	title dialog title
@@ -37,9 +37,10 @@ public class Win32GuiByAu3 {
 			closeWindow(title, 1);
 		}
 	}
+	
 	/**
-	 * upload file in win32 gui using autoit compiled exe.
-	 * wait for upload dialog appers in 20 seconds.
+	 * upload file in win32 gui using autoit compiled exe</BR>
+	 * wait for upload dialog appers in 20 seconds</BR>
 	 * you can use it like this: fileUpload("选择文件", "D:\\a.txt");
 	 * 
 	 * @param	title dialog title
@@ -51,7 +52,7 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
-	 * download file in win32 gui using autoit compiled exe.
+	 * download file in win32 gui using autoit compiled exe</BR>
 	 * you can use it like this: fileDownload("文件下载", "另存为", "D:\\download.csv", 30);
 	 * 
 	 * @param	fstTitle the first download dialog title
@@ -78,8 +79,8 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
-	 * download file in win32 gui using autoit compiled exe.
-	 * wait for download dialog appers in 20 seconds.
+	 * download file in win32 gui using autoit compiled exe</BR>
+	 * wait for download dialog appers in 20 seconds</BR>
 	 * you can use it like this: fileDownload("文件下载", "另存为", "D:\\download.csv");
 	 * 
 	 * @param	fstTitle the first download dialog title
@@ -92,7 +93,7 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
-	 * click alert dialog in win32 gui using autoit compiled exe.
+	 * click alert dialog in win32 gui using autoit compiled exe</BR>
 	 * you can use it like this: clickAlert("提示信息", "确定(Y)", 10);
 	 * 
 	 * @param	dialogTitle dialog title
@@ -116,8 +117,8 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
-	 * click alert dialog in win32 gui using autoit compiled exe.
-	 * wait for alert appers in 5 seconds.
+	 * click alert dialog in win32 gui using autoit compiled exe</BR>
+	 * wait for alert appers in 5 seconds</BR>
 	 * you can use it like this: clickAlert("提示信息", "确定(Y)");
 	 * 
 	 * @param	dialogTitle dialog title
@@ -129,8 +130,9 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
-	 * type text in alert dialog in win32 gui using autoit compiled exe.
+	 * type text in alert dialog in win32 gui using autoit compiled exe</BR>
 	 * you can use it like this: typeAlert("窗口标题", "Edit1", "输入内容", 5);
+	 * 
 	 * @param	title init dialog title
 	 * @param	locator the locator on the dialog
 	 * @param	text text to put into the edit
@@ -153,8 +155,8 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
-	 * type text in alert dialog in win32 gui using autoit compiled exe.
-	 * wait for alert appers in 5 seconds.
+	 * type text in alert dialog in win32 gui using autoit compiled exe</BR>
+	 * wait for alert appers in 5 seconds</BR>
 	 * you can use it like this: typeAlert("窗口标题", "Edit1", "输入内容");
 	 * 
 	 * @param	title init dialog title
@@ -167,7 +169,7 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
-	 * close window by name in win32 gui using autoit compiled exe.
+	 * close window by name in win32 gui using autoit compiled exe</BR>
 	 * you can use it like this: closeWindow("窗口标题", 5);
 	 * 
 	 * @param	title dialog title
@@ -187,8 +189,8 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
-	 * close window by name in win32 gui using autoit compiled exe.
-	 * wait for alert appers in 5 seconds.
+	 * close window by name in win32 gui using autoit compiled exe</BR>
+	 * wait for alert appers in 5 seconds</BR>
 	 * you can use it like this: closeWindow("窗口标题");
 	 * 
 	 * @param	title dialog title
@@ -199,29 +201,7 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
-	 * sendkeys to textarea in ie using autoit compiled exe.
-	 * you can use it like this: typeTextArea("窗口标题", "id", "nameEdit", "输入内容");
-	 * 
-	 * @param	ieTitle ie window title
-	 * @param	findBy name or id
-	 * @param	nameOrId id value or name value of edit
-	 * @param	text content to be input to the edit
-	 * @throws	RuntimeException
-	 **/
-	public void typeTextArea(String ieTitle, String findBy, String nameOrId, String text){
-		String fileExec = ASSIST + "EditTextArea.exe";
-		String cmd = "\"" + fileExec + "\" \"" + ieTitle + "\" \"" + findBy + "\" \"" + nameOrId + "\" \"" + text + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}
-	}
-
-	/**
-	 * get and write browser message to file using autoit compiled exe.
+	 * get and write browser message to file using autoit compiled exe</BR>
 	 * you can use it like this: assertErrors(title, "errorMessage", "li", "D:\\a.txt", 10);
 	 * 
 	 * @param	title pop window title

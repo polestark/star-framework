@@ -35,6 +35,7 @@ import org.openqa.selenium.server.RemoteControlConfiguration;
 
 import com.star.logging.frame.LoggingManager;
 import com.star.support.config.ParseProperties;
+import com.star.support.externs.Win32GuiByVbs;
 import com.star.logging.webdriver.HtmlFormatter4WD;
 import com.star.testdata.string.StringBufferUtils;
 
@@ -48,6 +49,7 @@ public class WebDriverController {
 	protected static Logger log4wd;
 
 	protected static final StringBufferUtils STRUTIL = new StringBufferUtils();
+	protected static final Win32GuiByVbs VBS = new Win32GuiByVbs();
 	protected static final ParseProperties property = new ParseProperties("config/config.properties");
 	
 	protected final String ROOT_DIR = System.getProperty("user.dir");
@@ -126,18 +128,12 @@ public class WebDriverController {
 	 */
 	protected void stopServer() {
 		try {
-			if (USE_DRIVERSERVER){
-				if (service != null && service.isRunning()) {
-					service.stop();
-				}				
-			}else{
-				if (server != null) {
-					server.stop();
-				}				
+			if (USE_DRIVERSERVER) {
+				service.stop();
+			} else {
+				server.stop();
 			}
-			if (handler != null) {
-				handler.close();
-			}
+			handler.close();
 		} catch (Throwable t) {
 			LOG.error(t);
 			throw new RuntimeException(t.getMessage());
@@ -186,6 +182,9 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void startWebDriver() {
+		VBS.killWin32Process("werfault");
+		VBS.killWin32Process("iexplore");
+		VBS.executeVbsFile("./assist/ResetProxy.vbs");
 		startWebDriver("ie");
 	}
 
@@ -196,7 +195,7 @@ public class WebDriverController {
 	 */
 	protected void closeWebDriver() {
 		try {
-			if (driver != null && driver.getWindowHandle() != null) {
+			if (driver != null) {
 				driver.close();
 				pass("closed current webdriver session");
 			}
@@ -213,7 +212,7 @@ public class WebDriverController {
 	 */
 	protected void stopWebDriver() {
 		try {
-			if (driver != null && driver.getWindowHandle() != null) {
+			if (driver != null) {
 				driver.quit();
 				pass("all webdriver session closed");
 			}
@@ -230,7 +229,6 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void testCunstruction(String className) {
-		
 		fName = LOG_ABS + className + ".xml";
 		html = new HtmlFormatter4WD(fName, "date;millis;method;status;message;class");
 		startTime = System.currentTimeMillis();
@@ -257,7 +255,6 @@ public class WebDriverController {
 	 */
 	private Logger remoteMessageRecord(String clsName) {
 		Logger logger = Logger.getLogger(this.getClass().getName());
-
 		try {
 			Formatter xmlFormatter = new Formatter() {
 
@@ -478,6 +475,6 @@ public class WebDriverController {
 		}
 		String traceClass = trace[last].getClassName() + " # " + trace[last].getLineNumber();
 		log4wd.info(traceClass + SMARK + methodName + SMARK + status + SMARK
-				+ message.replace(SMARK, "-").replace("&", "&"));
+				+ message.replace(SMARK, "-").replace("&", "&amp;"));
 	}
 }

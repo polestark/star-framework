@@ -58,7 +58,7 @@ public class CSVFileHanlder {
 	public void setCharSet(String fileEncode){
 		this.charSet = fileEncode;
 	}
-	
+
 	/**
 	 * read specified row and column value of csv file
 	 * 
@@ -99,7 +99,7 @@ public class CSVFileHanlder {
 	 */
 	public String readCSVLineValue(int row) {
 		String line = null;
-		
+
 		try {
 			int i = 1;
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charSet));
@@ -114,7 +114,7 @@ public class CSVFileHanlder {
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
-		
+
 		return null;
 	}
 
@@ -125,7 +125,7 @@ public class CSVFileHanlder {
 	 */
 	public List<String> readCSVToList() {
 		String line = null;
-		
+
 		List<String> csvList = new ArrayList<String>();
 		try {
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charSet));
@@ -137,7 +137,7 @@ public class CSVFileHanlder {
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
-		
+
 		return csvList;
 	}
 
@@ -160,7 +160,7 @@ public class CSVFileHanlder {
 	 */
 	public int csvColumnCount() {
 		List<String> content = readCSVToList();
-		
+
 		if (content.toString().equals("[]")) {
 			return 0;
 		} else {
@@ -208,7 +208,7 @@ public class CSVFileHanlder {
 	 */
 	public void putLineToCSV(String value, int row) {
 		List<String> original = readCSVToList();
-		
+
 		try {
 			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charSet));
 			for (int i = 0; i < original.size(); i++) {
@@ -242,7 +242,7 @@ public class CSVFileHanlder {
 		List<String> original = readCSVToList();
 		StringBuffer sb = new StringBuffer();
 		String[] text = null;
-		
+
 		try {
 			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charSet));
 			for (int i = 0; i < original.size(); i++) {

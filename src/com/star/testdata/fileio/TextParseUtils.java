@@ -40,11 +40,11 @@ public class TextParseUtils {
 	 * add map to arraylist.
 	 * @throws	RuntimeException
 	 **/
+	@SuppressWarnings("resource")
 	public List<Map<String, String>> MyList(){
 		File f = new File(fileName);
 		List<Map<String, String>> paraList = new ArrayList<Map<String, String>>();
 		try{
-			@SuppressWarnings("resource")
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
 			String strKey = br.readLine();
 			String[] keys = strKey.split(";");

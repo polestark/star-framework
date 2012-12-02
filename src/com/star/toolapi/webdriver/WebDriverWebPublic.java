@@ -129,7 +129,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @throws RuntimeException
 	 */
-	private void jsExecutor(String js, String report, Object args){
+	protected void jsExecutor(String js, String report, Object args){
 		try {
 			driver.executeScript(js, args);
 			pass(report);
@@ -149,7 +149,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @throws RuntimeException
 	 */
-	private void jsExecutor(String js, String report){
+	protected void jsExecutor(String js, String report){
 		try {
 			driver.executeScript(js);
 			pass(report);
@@ -203,11 +203,11 @@ public class WebDriverWebPublic extends WebDriverController {
 			return true;
 		} catch (NoAlertPresentException ne) {
 			warn("no alert is present");
+			return false;
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
-		return false;
 	}
 
 	/**
@@ -319,7 +319,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 网页窗口最大化操作。
 	 */
 	protected void maximizeWindow() {
-		jsExecutor(JSMethodCollection.MAXIMIZEWINDOW.getName(),"current window maximized");
+		jsExecutor(JSMethodCollection.MAXIMIZEWINDOW.getName(), "current window maximized");
 	}
 
 	/**
@@ -785,8 +785,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void clickByJavaScript(By by) {
 		waitUtilElementVisible(driver.findElement(by));
-		jsExecutor(JSMethodCollection.CLICKBYJAVASCRIPT.getName(), "click on element [ " + by.toString()
-				+ " ] ", driver.findElement(by));
+		jsExecutor(JSMethodCollection.CLICKBYJAVASCRIPT.getName(), 
+				"click on element [ " + by.toString() + " ] ", driver.findElement(by));
 	}
 
 	/**
@@ -1052,7 +1052,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		} else {
 			throw new IllegalArgumentException("only can find element by TagName/Name/Id");
 		}
-		
+
 		jsExecutor(js, "input text [ " + text + " ] to element [ " + by + " ]");
 	}
 
@@ -1521,16 +1521,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected WebElement tableChildElement(By tabBy, int row, int col, String type, int index) {
-		WebElement element = null;
 		try {
 			webTable = tableCache(tabBy);
-			element = webTable.childItem(row, col, type, index);
+			return webTable.childItem(row, col, type, index);
 		} catch (Exception e) {
 			failValidation();
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
-		return element;
 	}
 
 	/**
@@ -1566,18 +1564,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForElementVisible(By by, int seconds) {
-		boolean isExists = false;
 		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
-			if (wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null) {
-				isExists = true;
-			}
+			return wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null;
 		} catch (Exception e) {
 			failValidation();
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
-		return isExists;
 	}
 
 	/**
@@ -1589,18 +1583,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForElementClickable(By by, int seconds) {
-		boolean isExists = false;
 		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
-			if (wait.until(ExpectedConditions.elementToBeClickable(by)) != null) {
-				isExists = true;
-			}
+			return wait.until(ExpectedConditions.elementToBeClickable(by)) != null;
 		} catch (Exception e) {
 			failValidation();
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
-		return isExists;
 	}
 
 	/**
@@ -1613,18 +1603,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForTextOnElement(By by, String text, int seconds) {
-		boolean isExists = false;
 		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
-			if (wait.until(ExpectedConditions.textToBePresentInElement(by, text)) != null) {
-				isExists = true;
-			}
+			return wait.until(ExpectedConditions.textToBePresentInElement(by, text)) != null;
 		} catch (Exception e) {
 			failValidation();
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
-		return isExists;
 	}
 
 	/**
@@ -1637,18 +1623,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForTextOfElementAttr(By by, String text, int seconds) {
-		boolean isExists = false;
 		WebDriverWait wait = new WebDriverWait((WebDriver) driver, seconds);
 		try {
-			if (wait.until(ExpectedConditions.textToBePresentInElementValue(by, text)) != null) {
-				isExists = true;
-			}
+			return wait.until(ExpectedConditions.textToBePresentInElementValue(by, text)) != null;
 		} catch (Exception e) {
 			failValidation();
 			LOG.error(e);
 			throw new RuntimeException(e);
 		}
-		return isExists;
 	}
 
 	/**
@@ -1678,7 +1660,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在对话框（Alert）出现之前点击掉它，或者说等价于不让其出现。
 	 */
 	protected void ensrueBeforeAlert() {
-		jsExecutor(JSMethodCollection.ENSRUEBEFOREALERT.getName(), "override js to ensure alert before it appears");
+		jsExecutor(JSMethodCollection.ENSRUEBEFOREALERT.getName(),
+				"override js to ensure alert before it appears");
 	}
 
 	/**
@@ -1686,7 +1669,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在浏览器窗口关闭之前除去它的告警提示。
 	 */
 	protected void ensureBeforeWinClose() {
-		jsExecutor(JSMethodCollection.ENSUREBEFOREWINCLOSE.getName(), "override js to ensure window close event");
+		jsExecutor(JSMethodCollection.ENSUREBEFOREWINCLOSE.getName(),
+				"override js to ensure window close event");
 	}
 
 	/**
@@ -1694,7 +1678,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 */
 	protected void ensureBeforeConfirm() {
-		jsExecutor(JSMethodCollection.ENSUREBEFORECONFIRM.getName(), "override js to ensure confirm before it appears");
+		jsExecutor(JSMethodCollection.ENSUREBEFORECONFIRM.getName(),
+				"override js to ensure confirm before it appears");
 	}
 
 	/**
@@ -1702,7 +1687,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 */
 	protected void dismissBeforeConfirm() {
-		jsExecutor(JSMethodCollection.DISMISSBEFORECONFIRM.getName(), "override js to dismiss confirm before it appears");
+		jsExecutor(JSMethodCollection.DISMISSBEFORECONFIRM.getName(),
+				"override js to dismiss confirm before it appears");
 	}
 
 	/**
@@ -1710,7 +1696,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 */
 	protected void ensureBeforePrompt() {
-		jsExecutor(JSMethodCollection.ENSUREBEFOREPROMPT.getName(), "override js to ensure prompt before it appears");
+		jsExecutor(JSMethodCollection.ENSUREBEFOREPROMPT.getName(),
+				"override js to ensure prompt before it appears");
 	}
 
 	/**
@@ -1718,7 +1705,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 */
 	protected void dismisBeforePrompt() {
-		jsExecutor(JSMethodCollection.DISMISBEFOREPROMPT.getName(), "override js to dismiss prompt before it appears");
+		jsExecutor(JSMethodCollection.DISMISBEFOREPROMPT.getName(),
+				"override js to dismiss prompt before it appears");
 	}
 
 	/**
