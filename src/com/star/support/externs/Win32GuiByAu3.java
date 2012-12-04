@@ -1,5 +1,7 @@
 package com.star.support.externs;
 
+import com.star.support.externs.executor.ThreadExecutor;
+
 /**
  * 说明：
  * 1、依赖AUTOIT实现的GUI操作，必须编译为可知性程序；
@@ -8,12 +10,10 @@ package com.star.support.externs;
  * @author 测试仔刘毅
  **/
 
-import com.star.logging.frame.LoggingManager;
-
 public class Win32GuiByAu3 {
 
 	private static final String ASSIST = System.getProperty("user.dir") + "/assist/";
-	private static final LoggingManager LOG = new LoggingManager(Win32GuiByAu3.class.getName());
+	private final ThreadExecutor execute = new ThreadExecutor();
 
 	/**
 	 * upload file in win32 gui using autoit compiled exe</BR>
@@ -27,15 +27,8 @@ public class Win32GuiByAu3 {
 	public void fileUpload(String title, String fileName, int timeout){
 		String fileExec = ASSIST + "Upload.exe";
 		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" + fileName + "\" \"" + timeout + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}finally{
-			closeWindow(title, 1);
-		}
+		execute.executeCommands(cmd);
+		closeWindow(title, 1);
 	}
 	
 	/**
@@ -65,17 +58,9 @@ public class Win32GuiByAu3 {
 		String fileExec = ASSIST + "Download.exe";
 		String cmd = "\"" + fileExec + "\" \"" + fstTitle + "\" \"" 
 					+ sndTitle + "\" \"" + saveAs + "\" \"" + timeout + "\"";
-		System.out.println(cmd);
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}finally{
-			closeWindow(fstTitle, 1);
-			closeWindow(sndTitle, 1);
-		}
+		execute.executeCommands(cmd);
+		closeWindow(fstTitle, 1);
+		closeWindow(sndTitle, 1);
 	}
 
 	/**
@@ -103,17 +88,10 @@ public class Win32GuiByAu3 {
 	 **/
 	public void clickAlert(String dialogTitle, String buttonName, int timeout){
 		String fileExec = ASSIST + "ClickAlert.exe";
-		String command = "\"" + fileExec + "\" \"" + dialogTitle + "\" \""
+		String cmd = "\"" + fileExec + "\" \"" + dialogTitle + "\" \""
 				+ buttonName + "\" \"" + timeout + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(command);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}finally{
-			closeWindow(dialogTitle, 1);
-		}
+		execute.executeCommands(cmd);
+		closeWindow(dialogTitle, 1);
 	}
 
 	/**
@@ -143,15 +121,8 @@ public class Win32GuiByAu3 {
 		String fileExec = ASSIST + "TypeAlert.exe";
 		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" 
 					+ locator + "\" \"" + text + "\" \"" + timeout + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}finally{
-			closeWindow(title, 1);
-		}
+		execute.executeCommands(cmd);
+		closeWindow(title, 1);
 	}
 
 	/**
@@ -179,13 +150,7 @@ public class Win32GuiByAu3 {
 	public void closeWindow(String title, int timeout){
 		String fileExec = ASSIST + "CloseWindow.exe";
 		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" + timeout + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}
+		execute.executeCommands(cmd);
 	}
 
 	/**
@@ -215,12 +180,7 @@ public class Win32GuiByAu3 {
 		String execName = ASSIST + "WriteErrorMessage.exe";
 		String cmd = "\"" + execName + "\" \"" + title + "\" \"" + upIdName + "\" \"" 
 				+ eleType + "\" \""	+ fileName + "\" \"" + String.valueOf(timeout) + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}
+		execute.executeCommands(cmd);
+		closeWindow(title, 1);
 	}
 }

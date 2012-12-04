@@ -15,7 +15,7 @@ public class WatiJBaseCase extends IEWebTestByWatiJ {
 	 * 
 	 * @throws	RuntimeException
 	 **/
-	@BeforeTest(alwaysRun = true)
+	@BeforeTest(alwaysRun = true, timeOut=30000)
 	public void testSetup(){
 		vbs.killWin32Process("iexplore");
 		vbs.killWin32Process("IEDriverServer");
@@ -28,7 +28,7 @@ public class WatiJBaseCase extends IEWebTestByWatiJ {
 	 * 
 	 * @throws	RuntimeException
 	 **/
-	@AfterTest(alwaysRun = true)
+	@AfterTest(alwaysRun = true, timeOut=30000)
 	public void tearDown(){
 		testTermination();
 		

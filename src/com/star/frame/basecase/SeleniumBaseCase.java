@@ -14,7 +14,7 @@ public class SeleniumBaseCase extends SeleniumWebPublic {
 	 * 
 	 * @throws	RuntimeException
 	 **/
-	@BeforeTest(alwaysRun = true)
+	@BeforeTest(alwaysRun = true, timeOut=30000)
 	public void testSetup(){
 		vbs.killWin32Process("iexplore");
 		vbs.killWin32Process("IEDriverServer");
@@ -27,7 +27,7 @@ public class SeleniumBaseCase extends SeleniumWebPublic {
 	 * 
 	 * @throws	RuntimeException
 	 **/
-	@AfterTest(alwaysRun = true)
+	@AfterTest(alwaysRun = true, timeOut=30000)
 	public void tearDown(){
 		testTermination();
 		

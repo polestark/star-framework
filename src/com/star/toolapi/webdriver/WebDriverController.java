@@ -178,13 +178,15 @@ public class WebDriverController {
 
 	/**
 	 * start webdirver using browser iexplore
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void startWebDriver() {
 		VBS.killWin32Process("werfault");
 		VBS.killWin32Process("iexplore");
-		VBS.executeVbsFile("./assist/ResetProxy.vbs");
+		
+		//判断是否在虚拟机上运行，如果是则初始化代理设置！
+		if (VBS.getEnvironment("USERNAME").toLowerCase().contains("autotest")){
+			VBS.executeVbsFile("./assist/ResetProxy.vbs");
+		}
 		startWebDriver("ie");
 	}
 

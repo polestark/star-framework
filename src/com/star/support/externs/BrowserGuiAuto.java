@@ -1,11 +1,11 @@
 package com.star.support.externs;
 
-import com.star.logging.frame.LoggingManager;
+import com.star.support.externs.executor.ThreadExecutor;
 
 public class BrowserGuiAuto {
 
 	private static final String ASSIST = System.getProperty("user.dir") + "/assist/";
-	private static final LoggingManager LOG = new LoggingManager(Win32GuiByAu3.class.getName());
+	private final ThreadExecutor execute = new ThreadExecutor();
 
 	private int maxWait = 5;
 
@@ -31,13 +31,7 @@ public class BrowserGuiAuto {
 		String fileExec = ASSIST + "ieClickById.exe";
 		String cmd = "\"" + fileExec + "\" \"" + ieTitle + "\" \"" 
 					+ ieIndex + "\" \"" + objectId + "\" \"" + maxWait + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}
+		execute.executeCommands(cmd);
 	}
 
 	/**
@@ -66,13 +60,7 @@ public class BrowserGuiAuto {
 		String fileExec = ASSIST + "ieClickByName.exe";
 		String cmd = "\"" + fileExec + "\" \"" + ieTitle + "\" \"" + ieIndex 
 					+ "\" \"" + objectName + "\" \"" + ObjectIndex + "\" \"" + maxWait + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}
+		execute.executeCommands(cmd);
 	}
 
 	/**
@@ -113,13 +101,7 @@ public class BrowserGuiAuto {
 		String fileExec = ASSIST + "ieClickByLinkText.exe";
 		String cmd = "\"" + fileExec + "\" \"" + ieTitle + "\" \"" 
 					+ ieIndex + "\" \"" + linkText + "\" \"" + maxWait + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}
+		execute.executeCommands(cmd);
 	}
 
 	/**
@@ -148,13 +130,7 @@ public class BrowserGuiAuto {
 		String fileExec = ASSIST + "ieSendKeysById.exe";
 		String cmd = "\"" + fileExec + "\" \"" + ieTitle + "\" \"" + ieIndex 
 					+ "\" \"" + objectId + "\" \"" + textContent + "\" \"" + maxWait + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}
+		execute.executeCommands(cmd);
 	}
 
 	/**
@@ -186,13 +162,7 @@ public class BrowserGuiAuto {
 		String fileExec = ASSIST + "ieSendKeysByName.exe";
 		String cmd = "\"" + fileExec + "\" \"" + ieTitle + "\" \"" + ieIndex + "\" \"" 
 					+ objectName + "\" \"" + ObjectIndex + "\" \"" + textContent + "\" \"" + maxWait + "\"";
-		try {
-			Process process = Runtime.getRuntime().exec(cmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute au3 exe files failed:" + e.getMessage());
-		}
+		execute.executeCommands(cmd);
 	}
 
 	/**

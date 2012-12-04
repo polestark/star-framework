@@ -30,6 +30,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import com.star.logging.frame.LoggingManager;
+import com.star.support.externs.BrowserGuiAuto;
 import com.star.support.externs.Win32GuiByAu3;
 import com.star.toolapi.webdriver.group.JSMethodCollection;
 import com.star.toolapi.webdriver.group.WebDriverWebTable;
@@ -39,6 +40,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	private static final LoggingManager LOG = new LoggingManager(WebDriverWebPublic.class.getName());
 	protected static final String FORMATTER = "_yyyyMMddHHmmssSSS";
 	protected static final Win32GuiByAu3 AU3 = new Win32GuiByAu3(); 
+	protected static final BrowserGuiAuto IEAU3 = new BrowserGuiAuto();
 	private static long maxWaitfor = 10000;
 	private static long sleepUnit = 500;
 	private static By tabFinder = null;
@@ -1567,6 +1569,25 @@ public class WebDriverWebPublic extends WebDriverController {
 		WebDriverWait wait = new WebDriverWait(driver, seconds);
 		try {
 			return wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null;
+		} catch (Exception e) {
+			failValidation();
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * wait for the element visiable in timeout setting</BR>
+	 * 在指定时间内等待，直到对象可见。
+	 * 
+	 * @param element the element to be found.
+	 * @param seconds timeout in seconds.
+	 * @throws RuntimeException.
+	 */
+	protected boolean waitForElementVisible(WebElement element, int seconds) {
+		WebDriverWait wait = new WebDriverWait(driver, seconds);
+		try {
+			return wait.until(ExpectedConditions.visibilityOf(element)) != null;
 		} catch (Exception e) {
 			failValidation();
 			LOG.error(e);

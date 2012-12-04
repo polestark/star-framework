@@ -19,22 +19,23 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.MessageFormat;
 import com.star.support.externs.Win32GuiByVbs;
+import com.star.support.externs.executor.ThreadExecutor;
 import com.star.logging.frame.LoggingManager;
 import com.star.testdata.string.StringBufferUtils;
 
 public class Win32GuiByVbs{
-	
-	private static final LoggingManager LOG = new LoggingManager(Win32GuiByVbs.class.getName());	
-	private static final StringBufferUtils SBF = new StringBufferUtils();
-	private static final String VBSRES = "vbsResult";
-	
+
+	private final StringBufferUtils SBF = new StringBufferUtils();
+	private final String VBSRES = "vbsResult";	
+	private final LoggingManager LOG = new LoggingManager(Win32GuiByVbs.class.getName());		
 	private final String vbs_1 = "Set fObject = CreateObject(\"Scripting.FileSystemObject\") \n"
 		  				 + "Set fileStream = fObject.CreateTextFile(\"{0}\", True) \n";
 	private final String vbs_2 = "fileStream.Write({0}) \n"
 						  + "fileStream.Close \n"
 						  + "Set fileStream = nothing \n"
 						  + "Set fObject = Nothing";
-
+	private final ThreadExecutor execute = new ThreadExecutor();
+	
 	/**
 	 * execute  a specified vbs string and get its return value by temp file.
 	 * 
@@ -80,14 +81,8 @@ public class Win32GuiByVbs{
 	 * @throws	RuntimeException
 	 **/
 	public void executeVbsFile(String vbsfileName){
-		try {
-			String[] vbsCmd  = new String[]{"wscript", vbsfileName};  
-			Process process = Runtime.getRuntime().exec(vbsCmd);
-			process.waitFor();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute extern file failed:" + e.getMessage());
-		}
+		String[] vbsCmd  = new String[]{"wscript", vbsfileName}; 
+		execute.executeCommands(vbsCmd);
 	}
 
 	/**
@@ -146,12 +141,12 @@ public class Win32GuiByVbs{
 	 * @throws	RuntimeException
 	 **/
 	public String getEnvironment(String virName) {
-		byte[] env = new byte[1000];
+		byte[] env = new byte[2048];
 		try {
 			Process process = Runtime.getRuntime().exec("cmd /c echo %" + virName + "% ");
-			process.waitFor();
 			InputStream iStream = process.getInputStream();
 			iStream.read(env);
+		    process.waitFor();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException("execute extern file failed:" + e.getMessage());		
@@ -180,6 +175,7 @@ public class Win32GuiByVbs{
 		    	}
 		    }
 		    reader.close();
+		    process.waitFor();
     		return false;
 		} catch (Exception e) {
 			LOG.error(e);
@@ -195,10 +191,6 @@ public class Win32GuiByVbs{
 	 **/
 	public void killWin32Process(String process){
 		String cmd = "cmd /c taskkill /f /im " + process.toLowerCase().replace(".exe", "") + ".exe";
-		try {
-			Runtime.getRuntime().exec(cmd).waitFor();
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}		
+		execute.executeCommands(cmd);
 	}
 }

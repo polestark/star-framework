@@ -6,6 +6,7 @@ package com.star.testdata.fileio;
  * 2、实现对单元格的读写；
  * 3、读取整个sheet页的数据存入List和Map，供测试运行时使用；
  * 4、所有单元格的类型全部强制转换为字符串类型。
+ * 5、如果要使用xlsx格式，则必须使用dom4j.jar。
  * 
  * @author 测试仔刘毅
  */
@@ -22,7 +23,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-
 import com.star.support.config.ParseProperties;
 import com.star.logging.frame.LoggingManager;
 
@@ -62,9 +62,6 @@ public class ExcelParseUtils {
 	 * @param	col column index which to be changed
 	 * @param	value value to be put into cell
 	 * @throws	RuntimeException
-	 * notice you can use this method to set cell value both in xls and xlsx,
-	 *         but when xlsx you must use dom4j.jar, otherwise there is a
-	 *         ClassNotFoundException
 	 */
 	public void setExcelValue(String sheetName, int row, int col, String value) {
 		FileOutputStream fileOut = null;
@@ -92,29 +89,123 @@ public class ExcelParseUtils {
 			xlCell.setCellValue(value);
 			fileOut = new FileOutputStream(fileName);
 			xlWBook.write(fileOut);
+			fileOut.flush();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException("set excel value failed:" + e.getMessage());
 		} finally {
 			try {
-				if (fileOut != null) {
-					fileOut.close();
-				}
+				fileOut.close();
+				fso.close();
 			} catch (Exception e) {
 				LOG.error(e);
-				throw new RuntimeException("close FileOutputStream failed:" + e.getMessage());
-			}
-			try {
-				if (fso != null) {
-					fso.close();
-				}
-			} catch (Exception e) {
-				LOG.error(e);
-				throw new RuntimeException("close FileInputStream failed:" + e.getMessage());
+				throw new RuntimeException(e);
 			}
 		}
 	}
 
+	/**
+	 * put dataList to excel sheets.
+	 * 
+	 * @param	sheetName excel sheet name.
+	 * @param	dataList data list to be parsed and put into excel sheets.
+	 * @param	rowNum row count of the sheet to be modified.
+	 * @param	ignoreRows rows to skip when put value.
+	 * @param	ignoreColumns columns to skip when put value.
+	 * 
+	 * @throws	RuntimeException
+	 * @throws IllegalArgumentException
+	 */
+	public void putListToExcelWithFullIgnore(String sheetName, List<String> dataList,
+											 int rowNum, int ignoreRows, int ignoreColumns) {
+		if (dataList.size() % rowNum != 0) {
+			LOG.error("dataList has wrong element count for excel!");
+			throw new IllegalArgumentException("dataList has wrong element count for excel!");
+		}
+
+		FileOutputStream fileOut = null;
+		FileInputStream fso = null;
+		String value = null;
+		final int colCount = dataList.size() / rowNum;
+
+		try {
+			fso = new FileInputStream(fileName);
+			xlWBook = WorkbookFactory.create(fso);
+			if (xlWBook == null) {
+				LOG.error("file [" + fileName + "] does not exist!");
+				return;
+			}
+
+			xlSheet = xlWBook.getSheet(sheetName);
+			if (xlSheet == null) {
+				xlSheet = xlWBook.createSheet(sheetName);
+			}
+
+			for (int j = ignoreRows; j < ignoreRows + rowNum; j++) {
+				xlRow = xlSheet.getRow(j);
+				if (xlRow == null) {
+					xlRow = xlSheet.createRow(j);
+				}
+				for (int i = ignoreColumns; i < ignoreColumns + colCount; i++) {
+					value = dataList.get(i * j);
+					xlCell = xlRow.getCell(i);
+					if (xlCell == null) {
+						xlCell = xlRow.createCell(i);
+					}
+
+					xlCell.setCellType(1);
+					if (value != null) {
+						xlCell.setCellValue(value);
+					}
+				}
+			}
+
+			fileOut = new FileOutputStream(fileName);
+			xlWBook.write(fileOut);
+			fileOut.flush();
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException("set excel value failed:" + e.getMessage());
+		} finally {
+			try {
+				fileOut.close();
+				fso.close();
+			} catch (Exception e) {
+				LOG.error(e);
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	
+	/**
+	 * put dataList to excel sheets.
+	 * 
+	 * @param	sheetName excel sheet name.
+	 * @param	dataList data list to be parsed and put into excel sheets.
+	 * @param	rowNum row count of the sheet to be modified.
+	 * @param	ignoreRows rows to skip when put value.
+	 * 
+	 * @throws	RuntimeException
+	 * @throws IllegalArgumentException
+	 */
+	public void putListToExcelWithNoColumnIgnore(String sheetName, List<String> dataList, int rowNum, int ignoreRows) {
+		putListToExcelWithFullIgnore(sheetName, dataList, rowNum, ignoreRows, 0);
+	}
+
+	/**
+	 * put dataList to excel sheets.
+	 * 
+	 * @param	sheetName excel sheet name.
+	 * @param	dataList data list to be parsed and put into excel sheets.
+	 * @param	rowNum row count of the sheet to be modified.
+	 * 
+	 * @throws	RuntimeException
+	 * @throws IllegalArgumentException
+	 */
+	public void putListToExcelWithNoIgnore(String sheetName, List<String> dataList, int rowNum) {
+		putListToExcelWithFullIgnore(sheetName, dataList, rowNum, 0, 0);
+	}
+	
 	/**
 	 * get excel cell value of specified cell.
 	 * 
@@ -122,10 +213,8 @@ public class ExcelParseUtils {
 	 * @param	row row index which to be changed
 	 * @param	col column index which to be changed
 	 * @return	excel cell value string
+	 * 
 	 * @throws	RuntimeException
-	 * notice you can use this method to get cell value both in xls and xlsx,
-	 *         but when xlsx you must use dom4j.jar, otherwise there is a
-	 *         ClassNotFoundException
 	 */
 	public String getExcelValue(String sheetName, int row, int col) {
 		String text = null;
@@ -135,31 +224,25 @@ public class ExcelParseUtils {
 			xlWBook = WorkbookFactory.create(fso);
 			if (xlWBook == null) {
 				LOG.error("file [" + fileName + "] does not exist!");
-				return null;
+				throw new RuntimeException("file [" + fileName + "] does not exist!");
 			}
 			xlSheet = xlWBook.getSheet(sheetName);
 			if (xlSheet == null) {
 				LOG.error("sheet [" + sheetName + "] does not exist!");
-				return null;
+				throw new RuntimeException("sheet [" + sheetName + "] does not exist!");
 			}
 			xlRow = xlSheet.getRow(row - 1);
-			if (xlRow != null) {
-				xlCell = xlRow.getCell(col - 1);
-				if (xlCell != null) {
-					text = xlCell.toString();
-				}
-			}
+			xlCell = (xlRow == null) ? null : xlRow.getCell(col - 1);
+			text = (xlCell == null) ? "" : xlCell.toString();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException("read excel failed:" + e.getMessage());
 		} finally {
 			try {
-				if (fso != null) {
-					fso.close();
-				}
+				fso.close();
 			} catch (Exception e) {
 				LOG.error(e);
-				throw new RuntimeException("close FileInputStream failed:" + e.getMessage());
+				throw new RuntimeException(e);
 			}
 		}
 		return text;
@@ -170,6 +253,7 @@ public class ExcelParseUtils {
 	 * 
 	 * @param	keys map key names
 	 * @param	parms map key values
+	 * 
 	 * @throws	RuntimeException
 	 */
 	public Map<String, String> creatMap(List<String> keys, List<String> parms) {
@@ -182,6 +266,111 @@ public class ExcelParseUtils {
 			paraMap.put(keys.get(i), parms.get(i));
 		}		
 		return paraMap;
+	}
+
+	/**
+	 * get the specified excel sheet and put its value string to list.
+	 * 
+	 * @param	sheetName excel sheet name
+	 * @param	ignoreRows first several rows not to read.
+	 * @param	ignoreCols first several cols not to read.
+	 * @param	readRows specified row count to read.
+	 * @param	readColumns specified column count to read.
+	 * @throws	RuntimeException
+	 */
+	public List<String> excelToList(String sheetName, int ignoreRows, int ignoreCols, 
+													   int readRows, int readColumns) {
+		FileInputStream fso = null;
+		List<String> paraList = new ArrayList<String>();
+
+		try {
+			fso = new FileInputStream(fileName);
+			xlWBook = WorkbookFactory.create(fso);
+			if (xlWBook == null) {
+				LOG.error("file [" + fileName + "] does not exist!");
+				throw new RuntimeException("file [" + fileName + "] does not exist!");
+			}
+
+			xlSheet = xlWBook.getSheet(sheetName);
+			if (xlSheet == null) {
+				LOG.error("sheet [" + sheetName + "] does not exist!");
+				throw new RuntimeException("sheet [" + sheetName + "] does not exist!");
+			}
+			readRows = (readRows == 0)? xlSheet.getPhysicalNumberOfRows(): readRows;
+			for (int i = ignoreRows; i < ignoreRows + readRows; i++) {
+				xlRow = xlSheet.getRow(i);
+				readColumns = (readColumns == 0)? xlRow.getPhysicalNumberOfCells(): readColumns;
+				if (xlRow != null) {
+					for (int j = ignoreCols; j < ignoreCols + readColumns; j++) {
+						xlCell = xlRow.getCell(j);
+						if (xlCell == null) {
+							paraList.add("");;
+						} else {
+							paraList.add(xlCell.toString());
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException("read excel failed:" + e.getMessage());
+		} finally {
+			try {
+				fso.close();
+			} catch (Exception e) {
+				LOG.error(e);
+				throw new RuntimeException(e);
+			}
+		}
+		return paraList;
+	}
+
+	/**
+	 * get the specified excel sheet and put its value string to list, with no ignores.
+	 * 
+	 * @param	sheetName excel sheet name
+	 * @param	readRows specified row count to read.
+	 * @param	readColumns specified column count to read.
+	 * @throws	RuntimeException
+	 */
+	public List<String> excelToListHasNoIgnore(String sheetName, int readRows, int readColumns) {
+		return excelToList(sheetName, 0, 0, readRows, readColumns);
+	}
+
+	/**
+	 * get the specified excel sheet and put its value string to list.</BR>
+	 * with no ignores rows and columns, read all the sheet area.
+	 * 
+	 * @param	sheetName excel sheet name
+	 * @throws	RuntimeException
+	 */
+	public List<String> excelToListWithAllArea(String sheetName) {
+		return excelToList(sheetName, 0, 0, 0, 0);
+	}
+
+	/**
+	 * get the specified excel sheet and put its value string to list.</BR>
+	 * ignores several rows and columns, then read all the rest sheet area.
+	 * 
+	 * @param	sheetName excel sheet name
+	 * @param	ignoreRows first several rows not to read.
+	 * @param	ignoreCols first several cols not to read.
+	 * @throws	RuntimeException
+	 */
+	public List<String> excelToListAllAreaAfterIgnore(String sheetName, int ignoreRows, int ignoreCols) {
+		return excelToList(sheetName, ignoreRows, ignoreCols, 0, 0);
+	}
+
+	/**
+	 * get the specified excel sheet and put its value string to list.</BR>
+	 * ignores several rows and no columns, then read all the rest sheet area.
+	 * 
+	 * @param	sheetName excel sheet name
+	 * @param	ignoreRows first several rows not to read.
+	 * @throws	RuntimeException
+	 */
+	public List<String> excelToListAllAreaAfterIgnore(String sheetName, int ignoreRows) {
+		return excelToList(sheetName, ignoreRows, 0, 0, 0);
 	}
 
 	/**
@@ -241,12 +430,10 @@ public class ExcelParseUtils {
 			throw new RuntimeException("read excel failed:" + e.getMessage());
 		} finally {
 			try {
-				if (fso != null) {
-					fso.close();
-				}
+				fso.close();
 			} catch (Exception e) {
 				LOG.error(e);
-				throw new RuntimeException("close FileInputStream failed:" + e.getMessage());
+				throw new RuntimeException(e);
 			}
 		}
 		return paraList;
