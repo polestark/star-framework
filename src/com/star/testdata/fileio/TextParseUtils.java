@@ -24,7 +24,7 @@ public class TextParseUtils {
 
 	private String fileName;
 	public Map<String, String> paraMap;
-	private static final LoggingManager LOG = new LoggingManager(TextParseUtils.class.getName());
+	private final LoggingManager LOG = new LoggingManager(TextParseUtils.class.getName());
 
 	/**
 	 * class construct with initialize parameters.

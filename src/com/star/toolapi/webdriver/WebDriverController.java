@@ -35,6 +35,8 @@ import org.openqa.selenium.server.RemoteControlConfiguration;
 
 import com.star.logging.frame.LoggingManager;
 import com.star.support.config.ParseProperties;
+import com.star.support.externs.BrowserGuiAuto;
+import com.star.support.externs.Win32GuiByAu3;
 import com.star.support.externs.Win32GuiByVbs;
 import com.star.logging.webdriver.HtmlFormatter4WD;
 import com.star.testdata.string.StringBufferUtils;
@@ -50,6 +52,8 @@ public class WebDriverController {
 
 	protected static final StringBufferUtils STRUTIL = new StringBufferUtils();
 	protected static final Win32GuiByVbs VBS = new Win32GuiByVbs();
+	protected static final Win32GuiByAu3 AU3 = new Win32GuiByAu3(); 
+	protected static final BrowserGuiAuto IEAU3 = new BrowserGuiAuto();
 	protected static final ParseProperties property = new ParseProperties("config/config.properties");
 	
 	protected final String ROOT_DIR = System.getProperty("user.dir");

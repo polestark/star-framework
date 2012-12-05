@@ -1,5 +1,12 @@
 package com.star.support.externs.executor;
 
+/**
+ * execute exe/bat/shell/vbs string or file by java.</BR>
+ * JAVA执行EXE、BAT、SHELL、VBS等外部文件.
+ * 
+ * @author 测试仔刘毅
+ */
+
 import com.star.logging.frame.LoggingManager;
 
 public class ThreadExecutor{
@@ -19,7 +26,7 @@ public class ThreadExecutor{
 			listener.start();
 			process.waitFor();
 			listener.setOver(true);
-			listener.threadClear();
+			listener.processClear();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
@@ -39,7 +46,7 @@ public class ThreadExecutor{
 			listener.start();
 			process.waitFor();
 			listener.setOver(true);
-			listener.threadClear();
+			listener.processClear();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);

@@ -13,7 +13,7 @@ import com.star.logging.frame.LoggingManager;
 
 public class CSVFileHanlder {
 
-	private static final LoggingManager LOG = new LoggingManager(ExcelParseUtils.class.getName());
+	private final LoggingManager LOG = new LoggingManager(CSVFileHanlder.class.getName());
 	private File file;
 	private BufferedReader reader;
 	private BufferedWriter writer;

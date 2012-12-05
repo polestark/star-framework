@@ -33,8 +33,8 @@ public class ExcelParseUtils {
 	private Sheet xlSheet = null;
 	private Row xlRow = null;
 	private Cell xlCell = null;
-	private static final LoggingManager LOG = new LoggingManager(ExcelParseUtils.class.getName());
-	private static final ParseProperties PROPERTY = new ParseProperties("config/config.properties");
+	private final LoggingManager LOG = new LoggingManager(ExcelParseUtils.class.getName());
+	private final ParseProperties PROPERTY = new ParseProperties("config/config.properties");
 
 	/**
 	 * class construct with initlize to set filename for excel file operations.
@@ -126,6 +126,7 @@ public class ExcelParseUtils {
 		FileOutputStream fileOut = null;
 		FileInputStream fso = null;
 		String value = null;
+		int index = 0;
 		final int colCount = dataList.size() / rowNum;
 
 		try {
@@ -147,7 +148,7 @@ public class ExcelParseUtils {
 					xlRow = xlSheet.createRow(j);
 				}
 				for (int i = ignoreColumns; i < ignoreColumns + colCount; i++) {
-					value = dataList.get(i * j);
+					value = dataList.get(index);
 					xlCell = xlRow.getCell(i);
 					if (xlCell == null) {
 						xlCell = xlRow.createCell(i);
@@ -157,6 +158,7 @@ public class ExcelParseUtils {
 					if (value != null) {
 						xlCell.setCellValue(value);
 					}
+					index ++;
 				}
 			}
 
@@ -176,7 +178,7 @@ public class ExcelParseUtils {
 			}
 		}
 	}
-	
+
 	/**
 	 * put dataList to excel sheets.
 	 * 
@@ -188,7 +190,8 @@ public class ExcelParseUtils {
 	 * @throws	RuntimeException
 	 * @throws IllegalArgumentException
 	 */
-	public void putListToExcelWithNoColumnIgnore(String sheetName, List<String> dataList, int rowNum, int ignoreRows) {
+	public void putListToExcelWithNoColumnIgnore(String sheetName, List<String> dataList, 
+				int rowNum, int ignoreRows) {
 		putListToExcelWithFullIgnore(sheetName, dataList, rowNum, ignoreRows, 0);
 	}
 
@@ -205,7 +208,7 @@ public class ExcelParseUtils {
 	public void putListToExcelWithNoIgnore(String sheetName, List<String> dataList, int rowNum) {
 		putListToExcelWithFullIgnore(sheetName, dataList, rowNum, 0, 0);
 	}
-	
+
 	/**
 	 * get excel cell value of specified cell.
 	 * 
