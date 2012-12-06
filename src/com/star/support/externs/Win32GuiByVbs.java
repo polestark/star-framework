@@ -19,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.MessageFormat;
 import com.star.support.externs.Win32GuiByVbs;
-import com.star.support.externs.executor.ThreadExecutor;
+import com.star.frame.executor.ThreadExecutor;
 import com.star.logging.frame.LoggingManager;
 import com.star.testdata.string.StringBufferUtils;
 

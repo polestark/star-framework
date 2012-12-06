@@ -15,7 +15,7 @@ public class ReadWorkFolder{
 	/**
 	 * reset static virible when use recursion method.
 	 */
-	public void circleReset(){
+	public void fileListReset(){
 		fileList.removeAll(fileList);
 	}
 
