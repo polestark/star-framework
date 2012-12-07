@@ -8,6 +8,7 @@ import com.star.toolapi.selenium.SeleniumWebPublic;
 public class SeleniumBaseCase extends SeleniumWebPublic {
 	
 	private final Win32GuiByVbs vbs = new Win32GuiByVbs();
+	private final String className = this.getClass().getName();
 
 	/**
 	 * test initialize: start selenium-server, create log bufferwriter
@@ -16,9 +17,9 @@ public class SeleniumBaseCase extends SeleniumWebPublic {
 	 **/
 	@BeforeTest(alwaysRun = true, timeOut=30000)
 	public void testSetup(){
+		System.out.println("==============当前测试案例【" + className + "】运行开始==============");
 		vbs.killWin32Process("iexplore");
 		vbs.killWin32Process("IEDriverServer");
-		
 		testCunstruction(this.getClass().getName());
 	}
 
@@ -30,8 +31,8 @@ public class SeleniumBaseCase extends SeleniumWebPublic {
 	@AfterTest(alwaysRun = true, timeOut=30000)
 	public void tearDown(){
 		testTermination();
-		
 		vbs.killWin32Process("IEDriverServer");
 		vbs.killWin32Process("iexplore");
+		System.out.println("==============当前测试案例【" + className + "】运行结束==============");
 	}
 }
