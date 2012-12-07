@@ -37,7 +37,7 @@ public class WebDriverWebPublic extends WebDriverController {
 
 	private static final LoggingManager LOG = new LoggingManager(WebDriverWebPublic.class.getName());
 	protected static final String FORMATTER = "_yyyyMMddHHmmssSSS";
-	private static long maxWaitfor = 10000;
+	private static int maxWaitfor = 10;
 	private static long sleepUnit = 500;
 	private static By tabFinder = null;
 	private static WebDriverWebTable webTable = null;
@@ -57,7 +57,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param 	timeout max wait time setting in seconds
 	 */
-	protected void setMaxWaitTime(long timeout) {
+	protected void setMaxWaitTime(int timeout) {
 		WebDriverWebPublic.maxWaitfor = timeout;
 	}
 
@@ -67,18 +67,18 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在指定时间内循环等待，直到对象可见，超时之后直接抛出对象不可见异常信息。
 	 * 
 	 * @param element the WebElement to be judged
-	 * @param timeout timeout setting in millisecond unit
+	 * @param timeout timeout setting in seconds
 	 * @throws ElementNotVisibleException
 	 */
-	private void waitUtilElementVisible(WebElement element, long timeout) {
+	protected void waitUtilElementVisible(WebElement element, int timeout) {
 		long start = System.currentTimeMillis();
 		boolean isDisplayed = false;
-		while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout)) {
+		while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
 			isDisplayed = (element == null)? false : element.isDisplayed();
 			pause(sleepUnit);
 		}
 		if (!isDisplayed){
-			throw new ElementNotVisibleException("the element is not visible in " + timeout + "milliseconds!");
+			throw new ElementNotVisibleException("the element is not visible in " + timeout + "seconds!");
 		}
 	}
 
@@ -90,8 +90,21 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the WebElement to be judged
 	 * @throws ElementNotVisibleException
 	 */
-	private void waitUtilElementVisible(WebElement element) {
+	protected void waitUtilElementVisible(WebElement element) {
 		waitUtilElementVisible(element, maxWaitfor);
+	}
+
+	/**
+	 * wait util the element visible in max wait time setting</BR>
+	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
+	 * 在指定时间内循环等待，直到对象可见，使用用户指定的默认超时设置。
+	 * 
+	 * @param by the WebElement locator
+	 * @param timeout timeout setting in seconds
+	 * @throws ElementNotVisibleException
+	 */
+	protected void waitUtilElementVisible(By by, int timeout) {
+		waitUtilElementVisible(driver.findElement(by), timeout);
 	}
 
 	/**
@@ -102,8 +115,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the WebElement locator
 	 * @throws ElementNotVisibleException
 	 */
-	private void waitUtilElementVisible(By by) {
-		waitUtilElementVisible(driver.findElement(by), maxWaitfor);
+	protected void waitUtilElementVisible(By by) {
+		waitUtilElementVisible(driver.findElement(by));
 	}
 
 	/**

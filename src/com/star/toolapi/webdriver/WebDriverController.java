@@ -55,6 +55,7 @@ public class WebDriverController {
 	protected static final Win32GuiByAu3 AU3 = new Win32GuiByAu3(); 
 	protected static final BrowserGuiAuto IEAU3 = new BrowserGuiAuto();
 	protected static final ParseProperties property = new ParseProperties("config/config.properties");
+	protected static final ParseProperties CONFIG = property;
 	
 	protected final String ROOT_DIR = System.getProperty("user.dir");
 	protected final String LOG_NAME = new File(property.get("log")).getName();
@@ -273,6 +274,15 @@ public class WebDriverController {
 				public String format(LogRecord record) {
 					String[] msgContent = record.getMessage().split(SMARK);
 					StringBuffer sb = new StringBuffer(500);
+					String message = msgContent[3];
+					
+					//XML特殊字符的处理
+					message = message.replace("&", "&lt;");
+					message = message.replace("<", "&amp;");
+					message = message.replace(">", "&gt;");
+					message = message.replace("'", "&apos;");
+					message = message.replace("\"", "&quot;");
+					
 					sb.append("<record>\n");
 					
 					sb.append("  <date>");// log current time
@@ -292,7 +302,7 @@ public class WebDriverController {
 					sb.append("</status>\n");
 					
 					sb.append("  <message>");// log current message details
-					sb.append(msgContent[3]);
+					sb.append(message);
 					sb.append("</message>");
 					sb.append("\n");
 					

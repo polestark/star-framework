@@ -78,7 +78,7 @@ public class ThreadExecutor{
 		}
 	}
 	
-	private static class ProcessListener extends Thread {
+	private class ProcessListener extends Thread {
 		private Process process = null;
 		public Integer exit = null;
 
@@ -99,7 +99,7 @@ public class ThreadExecutor{
 				StreamReader reader = new StreamReader(process.getInputStream());
 				reader.start();
 				exit = process.waitFor();
-				reader.join();
+				reader.join(10000);
 			} catch (InterruptedException ignore) {
 				return;
 			} catch (Exception e) {
@@ -108,7 +108,7 @@ public class ThreadExecutor{
 		}
 	}
 	
-	private static class StreamReader extends Thread {
+	private class StreamReader extends Thread {
 		private InputStream input;
 		private StringWriter writer;
 
@@ -133,6 +133,8 @@ public class ThreadExecutor{
 					baoStream.write(buffer);
 				}
 				writer.write(new String(baoStream.toString("GBK").getBytes("UTF-8")));
+				writer.close();
+				baoStream.close();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

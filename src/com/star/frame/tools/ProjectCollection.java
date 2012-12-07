@@ -26,7 +26,7 @@ public class ProjectCollection{
 
 	public static void main(String[] args) throws Exception {
 		tws.setReadCharSet("UTF-8");
-		String fileName = "D:\\养老险健康险测试案例汇总" + time + ".xls";
+		String fileName = "D:\\自动化测试管理\\养老险健康险测试案例汇总" + time + ".xls";
 
 		try {
 			HSSFWorkbook workbook = new HSSFWorkbook();
@@ -61,7 +61,7 @@ public class ProjectCollection{
 
 			for (int i = 0; i < project.length; i++) {
 				row = sheet.createRow(i + 1);
-				String sourceFolder = "E:\\Automation\\" + project[i] + "\\src";
+				String sourceFolder = "D:\\test_develop\\" + project[i] + "\\src";
 				tws.fileListReset();
 				List<String> testClass = tws.testClassFiles(sourceFolder);
 				tws.fileListReset();

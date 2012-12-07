@@ -130,6 +130,11 @@ public class HtmlFormatter4WD {
 							cnodeValue = String.valueOf(Long.parseLong(cnodeValue) - tempMillis) + " ms";
 							tempMillis = lastMillis;
 						}
+						cnodeValue = cnodeValue.replace("&lt;", "&");
+						cnodeValue = cnodeValue.replace("&amp;", "<");
+						cnodeValue = cnodeValue.replace("&gt;", ">");
+						cnodeValue = cnodeValue.replace("&apos;", "'");
+						cnodeValue = cnodeValue.replace("&quot;", "\"");
 						arrayList.add(cnodeValue);
 					}
 				}

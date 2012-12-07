@@ -8,14 +8,23 @@ public class TestDebugForCase extends DemoBaseCase {
 	
 	@Test(timeOut=30000)
 	public void testApi(){
-		click(By.linkText("网点保全处理岗"));
-		click(By.linkText("处理岗工作台"));
-		selectFrame("content");
-		click(By.xpath("//img[contains(@onclick,'searchQueueTask')]"));
-		tableRowCount(By.id("workTable"));
-		tableColCount(By.id("workTable"), 2);
-		for (int i = 1; i <= 3; i ++){
-			System.out.println(tableCellText(By.id("workTable"), 2, i));
-		}
+		this.click(By.linkText("系统运营维护岗"));
+		this.click(By.linkText("超期未反馈问题件导出"));
+		this.selectFrame("content");
+
+		this.selectByValue(By.name("corporation"), "ALL");
+		this.selectByValue(By.name("branchCode"), "G02");
+		this.sendKeys(By.name("startApplyDate"), "20120101");
+		this.sendKeys(By.name("endApplyDate"), "20121201");
+		this.selectByValue(By.name("symbol"), "<");
+		this.sendKeys(By.name("overdueDate"), "100");
+		
+		this.click(By.xpath("//img[contains(@onclick,'submit_pagequery_per()')]"));		
+		this.waitForElementVisible(By.id("id_getQuestionnaireNoProcessInfo_query"), 5);
+		this.click(By.xpath("//img[contains(@onclick,'exportExcel()')]"));
+		
+		String fileName = CONFIG.get("respath") + "超期未反馈问题件导出" + STRUTIL.formatedTime(FORMATTER) + ".xls";
+		
+		AU3.fileDownload("文件下载", "另存为", fileName, 20);
 	}
 }
