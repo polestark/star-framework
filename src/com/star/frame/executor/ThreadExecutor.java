@@ -6,14 +6,23 @@ import java.io.ByteArrayOutputStream;
 import java.util.concurrent.TimeoutException;
 
 public class ThreadExecutor{
-	private long timeOut = 30000;
+	private long threadTimeOut = 30000;
+	private long readTimeOut = 10000;
 
 	/**
 	 * set process execute timeout 
-	 * @param time timeout of milliseconds.
+	 * @param timeOut timeout of milliseconds.
 	 */
-	public void setTimeOut(long time){
-		this.timeOut = time;
+	public void setThreadTimeOut(long timeOut){
+		this.threadTimeOut = timeOut;
+	}
+
+	/**
+	 * set process buffer read timeout 
+	 * @param timeOut timeout of milliseconds.
+	 */
+	public void setReadTimeOut(long timeOut){
+		this.readTimeOut = timeOut;
 	}
 	
 	/**
@@ -29,7 +38,7 @@ public class ThreadExecutor{
 			listener.start();
 			
 	        try {
-	        	listener.join(timeOut);
+	        	listener.join(threadTimeOut);
 	            if (listener.exit != null){
 	                return listener.exit;
 	            } else{
@@ -60,7 +69,7 @@ public class ThreadExecutor{
 			listener.start();
 			
 	        try {
-	        	listener.join(timeOut);
+	        	listener.join(threadTimeOut);
 	            if (listener.exit != null){
 	                return listener.exit;
 	            } else{
@@ -98,8 +107,8 @@ public class ThreadExecutor{
 			try {
 				StreamReader reader = new StreamReader(process.getInputStream());
 				reader.start();
+				reader.join(readTimeOut);
 				exit = process.waitFor();
-				reader.join(10000);
 			} catch (InterruptedException ignore) {
 				return;
 			} catch (Exception e) {
