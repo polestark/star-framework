@@ -15,20 +15,20 @@ import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.apache.commons.io.FileUtils;
 import com.star.logging.frame.LoggingManager;
 import com.star.toolapi.webdriver.group.JSMethodCollection;
 import com.star.toolapi.webdriver.group.WebDriverWebTable;
@@ -39,8 +39,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected static final String FORMATTER = "_yyyyMMddHHmmssSSS";
 	private static int maxWaitfor = 10;
 	private static long sleepUnit = 500;
-	private static By tabFinder = null;
-	private static WebDriverWebTable webTable = null;
+	protected static By tabFinder = null;
+	protected static WebDriverWebTable webTable = null;
 
 	/**
 	 * set sleep interval for loop wait.
@@ -126,8 +126,19 @@ public class WebDriverWebPublic extends WebDriverController {
 	private void failValidation() {
 		String method = Thread.currentThread().getStackTrace()[2].getMethodName();
 		String file = LOG_REL + this.getClass().getName() + STRUTIL.formatedTime(FORMATTER) + ".png";
-		takeScreenShot(file);
-		fail("method [" + method + "] failed, screenshot is: [" + file + "]");
+		String errorMessage = null;
+		try{
+			takeScreenShot(file);
+			fail("method [" + method + "] failed, screenshot is: [" + file + "]");
+		}catch(UnhandledAlertException alert){
+			try {
+				errorMessage = driver.switchTo().alert().getText();
+				fail("method [" + method + "] failed, there is modal dialog present: [" + errorMessage + "]");
+				driver.switchTo().alert().accept();
+			}catch(Exception e){
+				throw new RuntimeException("unable to handle modal dialog: " + e.getMessage());
+			}
+		}
 	}
 
 	/**
@@ -148,7 +159,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			failValidation();
 			LOG.error(e);
 			throw new RuntimeException(e);
-		}		
+		}
 	}
 
 	/**
@@ -289,8 +300,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected boolean browserExists(String browserTitle) {
 		String defaultHandler = driver.getWindowHandle();
+		Set<String> windowHandles = null;
 		try {
-			Set<String> windowHandles = driver.getWindowHandles();
+			windowHandles = driver.getWindowHandles();
+			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
 				String currentTitle = driver.getTitle();
@@ -298,10 +311,7 @@ public class WebDriverWebPublic extends WebDriverController {
 					return true;
 				}
 			}
-		} catch (WebDriverException e) {
-			LOG.error(e);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
 		} finally {
 			driver.switchTo().window(defaultHandler);
 		}
@@ -331,6 +341,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void maximizeWindow() {
 		jsExecutor(JSMethodCollection.MAXIMIZEWINDOW.getName(), "current window maximized");
+	}
+
+	/**
+	 * maximize browser window</BR>
+	 * 网页窗口最大化操作。
+	 */
+	protected void windowMaximize() {
+		driver.manage().window().maximize();
 	}
 
 	/**
@@ -379,6 +397,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		Iterator<String> it = null;
 		try {
 			handlers = driver.getWindowHandles();
+			handlers = driver.getWindowHandles();
 			handlers.remove(firstHandler);
 			it = handlers.iterator();
 			while (it.hasNext()) {
@@ -403,6 +422,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		Set<String> windowHandles = null;
 		try {
 			windowHandles = driver.getWindowHandles();
+			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
 				String title = driver.getTitle();
@@ -411,9 +431,8 @@ public class WebDriverWebPublic extends WebDriverController {
 					return;
 				}
 			}
-			fail("there is no window named [ " + windowTitle + " ]");
 			LOG.error("there is no window named [ " + windowTitle + " ]");
-			throw new RuntimeException("there is no window named [ " + windowTitle + " ]");
+			failAndExit("there is no window named [ " + windowTitle + " ]");
 		} catch (Exception e) {
 			failValidation();
 			LOG.error(e);
@@ -433,6 +452,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		Object[] winArray = null;
 		List<String> winList = new ArrayList<String>();
 		try {
+			winArray = driver.getWindowHandles().toArray();
 			winArray = driver.getWindowHandles().toArray();
 			for (int i = 0; i < winArray.length - 1; i++) {
 				driver.switchTo().window(winArray[i].toString());
@@ -462,6 +482,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		Object[] winArray = null;
 		try {
 			winArray = driver.getWindowHandles().toArray();
+			winArray = driver.getWindowHandles().toArray();
 			for (int i = winArray.length - 1; i > 0; i--) {
 				driver.switchTo().window(winArray[i].toString());
 				if (windowTitle.equals(driver.getTitle())) {
@@ -488,6 +509,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected void closeWindowExcept(String windowTitle) {
 		Set<String> windowHandles = null;
 		try {
+			windowHandles = driver.getWindowHandles();
 			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
@@ -518,6 +540,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		Object[] winArray = null;
 		try {
 			windowHandles = driver.getWindowHandles();
+			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
 				String title = driver.getTitle();
@@ -527,6 +550,7 @@ public class WebDriverWebPublic extends WebDriverController {
 				}
 			}
 
+			winArray = driver.getWindowHandles().toArray();
 			winArray = driver.getWindowHandles().toArray();
 			for (int i = 0; i < winArray.length; i++) {
 				driver.switchTo().window(winArray[i].toString());
@@ -551,10 +575,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param seconds time unit in seconds.
 	 */
 	protected boolean isNewWindowExits(int browserCount, int seconds) {
+		Set<String> windowHandles = null;
 		boolean isExist = false;
 		long begins = System.currentTimeMillis();
 		while ((System.currentTimeMillis() - begins < seconds * 1000) && !isExist) {
-			isExist = (driver.getWindowHandles().size() > browserCount) ? true : false;
+			windowHandles = driver.getWindowHandles();
+			windowHandles = driver.getWindowHandles();
+			isExist = (windowHandles.size() > browserCount) ? true : false;
 		}
 		return isExist;
 	}
@@ -568,9 +595,12 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected boolean isNewWindowExits(Set<String> oldHandlers, int seconds) {
 		boolean isExist = false;
+		Set<String> windowHandles = null;
 		long begins = System.currentTimeMillis();
 		while ((System.currentTimeMillis() - begins < seconds * 1000) && !isExist) {
-			isExist = (driver.getWindowHandles().size() > oldHandlers.size()) ? true : false;
+			windowHandles = driver.getWindowHandles();
+			windowHandles = driver.getWindowHandles();
+			isExist = (windowHandles.size() > oldHandlers.size()) ? true : false;
 		}
 		return isExist;
 	}
@@ -1883,6 +1913,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected Set<String> getWindowHandles() {
 		Set<String> handler = null;
 		try {
+			handler = driver.getWindowHandles();
 			handler = driver.getWindowHandles();
 			pass("window handlers are: " + handler.toString());
 		} catch (Exception e) {

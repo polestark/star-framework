@@ -193,4 +193,28 @@ public class Win32GuiByVbs{
 		String cmd = "cmd /c taskkill /f /im " + process.toLowerCase().replace(".exe", "") + ".exe";
 		execute.executeCommands(cmd);
 	}
+
+	/**
+	 * excel file saved again by vbs after java modify.
+	 * 
+	 * @param	vbsName vbs file path and name.
+	 * @param	fileName file to be resaved.
+	 * @param	sheetName the sheet to be modified.
+	 * @throws	RuntimeException
+	 **/
+	public void excelReSave(String vbsName, String fileName, String sheetName) {
+		String command = "cmd /c " + new File(vbsName).getAbsolutePath() + " " + fileName + " " + sheetName;
+		execute.executeCommands(command);
+	}
+
+	/**
+	 * excel file saved again by vbs after java modify.
+	 * 
+	 * @param	fileName file to be resaved.
+	 * @param	sheetName the sheet to be modified.
+	 * @throws	RuntimeException
+	 **/
+	public void excelReSave(String fileName, String sheetName) {
+		excelReSave("./lib/ExcelReSave.vbs", fileName, sheetName);
+	}
 }

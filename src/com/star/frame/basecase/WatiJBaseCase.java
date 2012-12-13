@@ -4,12 +4,16 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
 import com.star.support.externs.Win32GuiByVbs;
+import com.star.testdata.string.StringBufferUtils;
 import com.star.toolapi.watij.IEWebTestByWatiJ;
 
 public class WatiJBaseCase extends IEWebTestByWatiJ {
 	
 	private final Win32GuiByVbs vbs = new Win32GuiByVbs();
-	private final String className = this.getClass().getName();
+    private final String className = this.getClass().getName();
+    private final StringBufferUtils string = new StringBufferUtils();
+    private long starts = 0;
+    private String begins = string.formatedTime("yyyy-MM-dd HH-mm-ss-SSS");
 
 	/**
 	 * start new watij ie test.
@@ -18,9 +22,9 @@ public class WatiJBaseCase extends IEWebTestByWatiJ {
 	 **/
 	@BeforeTest(alwaysRun = true, timeOut=30000)
 	public void testSetup(){
-		System.out.println("==============当前测试案例【" + className + "】运行开始==============");
-		vbs.killWin32Process("iexplore");
-		vbs.killWin32Process("IEDriverServer");
+        starts = System.currentTimeMillis();
+        System.out.println("==============" + begins + "：案例【" + className + "】开始==============");
+        vbs.killWin32Process("werfault");
 		testCunstruction();
 	}
 
@@ -32,8 +36,11 @@ public class WatiJBaseCase extends IEWebTestByWatiJ {
 	@AfterTest(alwaysRun = true, timeOut=30000)
 	public void tearDown(){
 		testTermination();
-		vbs.killWin32Process("IEDriverServer");
-		vbs.killWin32Process("iexplore");
-		System.out.println("==============当前测试案例【" + className + "】运行结束==============");
+        vbs.killWin32Process("iexplore");
+        vbs.killWin32Process("werfault");
+        String ends = string.formatedTime("yyyy-MM-dd HH-mm-ss-SSS");
+        long stops = System.currentTimeMillis();
+        System.out.println("==============" + ends + "：案例【" + className + "】结束==============");
+        System.out.println("==============本次运行消耗时间 " + (stops - starts)/1000 + " 秒！==============");
 	}
 }

@@ -1,13 +1,13 @@
 package com.star.frame.executor;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
 import java.util.concurrent.TimeoutException;
 
 public class ThreadExecutor{
-	private long threadTimeOut = 30000;
-	private long readTimeOut = 10000;
+	private long threadTimeOut = 60000;
+	private long readTimeOut = 20000;
 
 	/**
 	 * set process execute timeout 
@@ -30,6 +30,7 @@ public class ThreadExecutor{
 	 * 
 	 * @param	command command to be executed
 	 * @throws	RuntimeException
+	 * @throws	TimeoutException
 	 */
 	public int executeCommands(String command) {
 		try {
@@ -61,6 +62,7 @@ public class ThreadExecutor{
 	 * 
 	 * @param	command vbs file with params Object to be executed
 	 * @throws	RuntimeException
+	 * @throws	TimeoutException
 	 */
 	public int executeCommands(String[] command) {
 		try {
@@ -119,7 +121,6 @@ public class ThreadExecutor{
 	
 	private class StreamReader extends Thread {
 		private InputStream input;
-		private StringWriter writer;
 
 		/**
 		 * construct with parameter sets. 
@@ -127,7 +128,6 @@ public class ThreadExecutor{
 		 */
 		public StreamReader(InputStream input) {
 			this.input = input;
-			writer = new StringWriter();
 		}
 
 		/**
@@ -136,14 +136,12 @@ public class ThreadExecutor{
 		@Override
 		public void run() {
 			try {
-				ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
-				int buffer = -1;
-				while ((buffer = input.read()) != -1) {
-					baoStream.write(buffer);
+				InputStreamReader isReader = new InputStreamReader(input);
+				BufferedReader bfRader = new BufferedReader(isReader);
+				while(bfRader.readLine() != null){
 				}
-				writer.write(new String(baoStream.toString("GBK").getBytes("UTF-8")));
-				writer.close();
-				baoStream.close();
+				bfRader.close();
+				isReader.close();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

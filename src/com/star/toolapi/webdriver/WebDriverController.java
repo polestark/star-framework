@@ -29,6 +29,7 @@ import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.ie.InternetExplorerDriverService.Builder;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.server.SeleniumServer;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.RemoteControlConfiguration;
@@ -134,11 +135,17 @@ public class WebDriverController {
 	protected void stopServer() {
 		try {
 			if (USE_DRIVERSERVER) {
-				service.stop();
+				if (service != null){
+					service.stop();
+				}
 			} else {
-				server.stop();
+				if (server != null){
+					server.stop();
+				}
 			}
-			handler.close();
+			if (handler != null){
+				handler.close();
+			}
 		} catch (Throwable t) {
 			LOG.error(t);
 			throw new RuntimeException(t.getMessage());
@@ -166,6 +173,13 @@ public class WebDriverController {
 		} else {
 			throw new IllegalArgumentException("you are using wrong mode of browser paltform!");
 		}
+
+		//capability.setCapability(CapabilityType.SUPPORTS_ALERTS, true);
+		//capability.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, "access");
+		//capability.setCapability(CapabilityType.TAKES_SCREENSHOT, true);
+		capability.setCapability(CapabilityType.SUPPORTS_JAVASCRIPT, true);
+		capability.setCapability(CapabilityType.SUPPORTS_FINDING_BY_CSS, true);
+		
 		try {
 			if (USE_DRIVERSERVER){
 				driver = new RemoteWebDriver(service.getUrl(), capability);				
@@ -185,7 +199,6 @@ public class WebDriverController {
 	 * start webdirver using browser iexplore
 	 */
 	protected void startWebDriver() {
-		VBS.killWin32Process("werfault");
 		VBS.killWin32Process("iexplore");
 		
 		//判断是否在虚拟机上运行，如果是则初始化代理设置！
@@ -217,7 +230,7 @@ public class WebDriverController {
 	 * 
 	 * @throws RuntimeException
 	 */
-	protected void stopWebDriver() {
+	protected void destroyWebDriver() {
 		try {
 			if (driver != null) {
 				driver.quit();
@@ -277,8 +290,8 @@ public class WebDriverController {
 					String message = msgContent[3];
 					
 					//XML特殊字符的处理
-					message = message.replace("&", "&lt;");
-					message = message.replace("<", "&amp;");
+					message = message.replace("&", "&amp;");
+					message = message.replace("<", "&lt;");
 					message = message.replace(">", "&gt;");
 					message = message.replace("'", "&apos;");
 					message = message.replace("\"", "&quot;");
@@ -491,6 +504,6 @@ public class WebDriverController {
 		}
 		String traceClass = trace[last].getClassName() + " # " + trace[last].getLineNumber();
 		log4wd.info(traceClass + SMARK + methodName + SMARK + status + SMARK
-				+ message.replace(SMARK, "-").replace("&", "&amp;"));
+				+ message.replace(SMARK, "-").replace("&", "&"));
 	}
 }
