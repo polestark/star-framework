@@ -13,7 +13,6 @@ public class WatiJBaseCase extends IEWebTestByWatiJ {
     private final String className = this.getClass().getName();
     private final StringBufferUtils string = new StringBufferUtils();
     private long starts = 0;
-    private String begins = string.formatedTime("yyyy-MM-dd HH-mm-ss-SSS");
 
 	/**
 	 * start new watij ie test.
@@ -22,6 +21,7 @@ public class WatiJBaseCase extends IEWebTestByWatiJ {
 	 **/
 	@BeforeTest(alwaysRun = true, timeOut=30000)
 	public void testSetup(){
+    	String begins = string.formatedTime("yyyy-MM-dd HH-mm-ss-SSS");
         starts = System.currentTimeMillis();
         System.out.println("==============" + begins + "：案例【" + className + "】开始==============");
         vbs.killWin32Process("werfault");

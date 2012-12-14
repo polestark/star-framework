@@ -12,7 +12,6 @@ public class WebDriverBaseCase extends WebDriverWebPublic {
     private final String className = this.getClass().getName();
     private final StringBufferUtils string = new StringBufferUtils();
     private long starts = 0;
-    private String begins = string.formatedTime("yyyy-MM-dd HH-mm-ss-SSS");
        
     /**
     * test initialize: start selenium-server, create log bufferwriter
@@ -21,6 +20,7 @@ public class WebDriverBaseCase extends WebDriverWebPublic {
     **/
     @BeforeTest(alwaysRun = true, timeOut=60000)
     public void testSetup(){
+    	String begins = string.formatedTime("yyyy-MM-dd HH-mm-ss-SSS");
         starts = System.currentTimeMillis();
         System.out.println("==============" + begins + "：案例【" + className + "】开始==============");
         vbs.killWin32Process("werfault");

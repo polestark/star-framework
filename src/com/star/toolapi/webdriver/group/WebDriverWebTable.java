@@ -18,24 +18,64 @@ import org.openqa.selenium.WebElement;
 
 public class WebDriverWebTable{
 	
-	private static By tabBy = null;
-	private static List<WebElement> tabRows = null;
+	private By tabBy = null;
+	private WebElement table = null;
+	private List<WebElement> tabRows = null;
 	
 	/**
-	 * construct with parameters initialize
+	 * construct with parameters initialize.
 	 * 
-	 * @param	driver	the WebDriver instance
-	 * @param	tabFinder	the By locator of the table
+	 * @param	driver the WebDriver instance.
+	 * @param	tabFinder the By locator of the table.
+	 * @param	hob choice of table body and head to operate.
 	 */
-	public WebDriverWebTable(WebDriver driver, By tabFinder){
-		tabBy = tabFinder;
-		tabRows = driver.findElement(tabBy).findElements(By.tagName("tr"));
+	public WebDriverWebTable(WebDriver driver, By tabFinder, String hob){
+		this.tabBy = tabFinder;
+		this.table = driver.findElement(tabBy);
+		this.tabRows = table.findElements(By.tagName(hob)).get(0).findElements(By.tagName("tr"));
 	}
 	
 	/**
-	 * get row count of a webtable
+	 * construct with parameters initialize.
 	 * 
-	 * @return the row count of the table
+	 * @param	driver the WebDriver instance.
+	 * @param	tabFinder the By locator of the table.
+	 */
+	public WebDriverWebTable(WebDriver driver, By tabFinder){
+		this(driver, tabFinder, "tbody");
+	}
+
+	/**
+	 * to get the whole web table element.
+	 * 
+	 * @return the table element.
+	 */
+	public WebElement tableElement(){
+		return this.table;
+	}
+
+	/**
+	 * to get the web table head element.
+	 * 
+	 * @return the first table head element.
+	 */
+	public WebElement tableHeader(){
+		return this.table.findElements(By.tagName("thead")).get(0);
+	}
+
+	/**
+	 * to get the web table body element.
+	 * 
+	 * @return the first table body element.
+	 */
+	public WebElement tableBody(){
+		return this.table.findElements(By.tagName("tbody")).get(0);
+	}
+	
+	/**
+	 * get row count of a webtable.
+	 * 
+	 * @return the row count of the table.
 	 */
 	public int rowCount() {
 		return tabRows.size();
@@ -44,8 +84,8 @@ public class WebDriverWebTable{
 	/**
 	 * get column count of a specified webtable row.
 	 * 
-	 * @param rowNum row index of your table to count
-	 * @return the column count of the row in table
+	 * @param rowNum row index of your table to count.
+	 * @return the column count of the row in table.
 	 */
 	public int colCount(int rowNum) {
 		return tabRows.get(rowNum - 1).findElements(By.tagName("td")).size();
@@ -58,7 +98,7 @@ public class WebDriverWebTable{
 	 * @param col column index of the table.
 	 * @param type the element type, such as "img"/"a"/"input"...
 	 * @param index element index in the specified cell, begins with 1.
-	 * @return the table cell WebElement
+	 * @return the table cell WebElement.
 	 */
 	public WebElement childItem(int row, int col, String type, int index) {
 		List<WebElement> cells = tabRows.get(row - 1).findElements(By.tagName("td"));
@@ -71,19 +111,19 @@ public class WebDriverWebTable{
 	 * 
 	 * @param row row index of the table.
 	 * @param col column index of the table.
-	 * @return the cell text
+	 * @return the cell text.
 	 */
 	public String cellText(int row, int col) {
 		return childItem(row, col, "cell", 0).getText();
 	}
 
 	/**
-	 * button/edit/checkbox are using the same html tag "input", others may be the same,
+	 * button/edit/checkbox are using the same html tag "input", others may be the same.</BR>
 	 * this method will get the WebElements List accord the user element classes.
 	 * 
-	 * @param father the father element to get childs
-	 * @param elementClass link/button/edit/checkbox/image/list and so on
-	 * @return	the WebElements List
+	 * @param father the father element to get childs.
+	 * @param elementClass link/button/edit/checkbox/image/list and so on.
+	 * @return	the WebElements List.
 	 */
 	private List<WebElement> childsGetter(WebElement father, String elementClass){
 		return father.findElements(By.tagName(elementTagGetter(elementClass)));
@@ -92,8 +132,8 @@ public class WebDriverWebTable{
 	/**
 	 * get the tag of element by webelement type.
 	 * 
-	 * @param elementType link/button/edit/checkbox/image/list and so on
-	 * @throws IllegalArgumentException
+	 * @param elementType link/button/edit/checkbox/image/list and so on.
+	 * @throws IllegalArgumentException.
 	 */
 	private String elementTagGetter(String elementType){
 		if (elementType.toLowerCase().trim().contains("link")){
@@ -104,7 +144,7 @@ public class WebDriverWebTable{
 			return "input";
 		}else if(elementType.toLowerCase().trim().contains("checkbox")){
 			return "input";
-		}else if(elementType.toLowerCase().trim().trim().contains("image")){
+		}else if(elementType.toLowerCase().trim().contains("image")){
 			return "img";
 		}else if(elementType.toLowerCase().trim().contains("list")){
 			return "select";

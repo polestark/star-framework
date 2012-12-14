@@ -23,6 +23,9 @@ public class ProjectCollection{
 						"egis_finance,egis_iprs,egis_nbu,egis_pas,egis_pis,egis_pos,egis_pts," +
 						"egis_query,ehis_claim,ehis_hcs,ehis_nbs,ehis_uws,pss_ann";
 	private static final String[] project = projects.split(",");
+	private static int countNatualClass = 0;
+	private static int countTestClass = 0;
+	private static int countTestMethod = 0;
 
 	public static void main(String[] args) throws Exception {
 		tws.setReadCharSet("UTF-8");
@@ -71,6 +74,11 @@ public class ProjectCollection{
 				for (int j = 0; j < testClass.size(); j++) {
 					methodCount += tws.countTestMethod(testClass.get(j));
 				}
+				
+				countNatualClass += testClass.size();
+				countTestClass += classCount;
+				countTestMethod += methodCount;
+				
 				System.out.println(project[i] + ":");
 				System.out.println("	total-class: " + testClass.size());
 				System.out.println("	tests-class: " + classCount);
@@ -96,6 +104,27 @@ public class ProjectCollection{
 				cell.setCellValue(methodCount);
 				cell.setCellStyle(cellStyle);
 			}
+
+			row = sheet.createRow(project.length + 1);
+			cell = row.createCell(0);
+			cell.setCellType(1);
+			cell.setCellValue("合计");
+			cell.setCellStyle(cellStyle);
+			
+			cell = row.createCell(1);
+			cell.setCellType(0);
+			cell.setCellValue(countNatualClass);
+			cell.setCellStyle(cellStyle);
+			
+			cell = row.createCell(2);
+			cell.setCellType(0);
+			cell.setCellValue(countTestClass);
+			cell.setCellStyle(cellStyle);
+			
+			cell = row.createCell(3);
+			cell.setCellType(0);
+			cell.setCellValue(countTestMethod);
+			cell.setCellStyle(cellStyle);
 			workbook.write(fileOut);
 			fileOut.flush();
 			fileOut.close();

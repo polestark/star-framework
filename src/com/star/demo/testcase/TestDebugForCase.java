@@ -6,7 +6,7 @@ import com.star.demo.framework.DemoBaseCase;
 
 public class TestDebugForCase extends DemoBaseCase {
 	
-	@Test(timeOut=30000)
+	@Test
 	public void testApi(){
 		this.click(By.linkText("系统运营维护岗"));
 		this.click(By.linkText("超期未反馈问题件导出"));

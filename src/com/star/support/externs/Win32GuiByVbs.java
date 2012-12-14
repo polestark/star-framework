@@ -215,6 +215,6 @@ public class Win32GuiByVbs{
 	 * @throws	RuntimeException
 	 **/
 	public void excelReSave(String fileName, String sheetName) {
-		excelReSave("./lib/ExcelReSave.vbs", fileName, sheetName);
+		excelReSave("./assist/ExcelReSave.vbs", fileName, sheetName);
 	}
 }
