@@ -1,14 +1,14 @@
 package com.star.demo.testcase;
 
 import org.junit.Test;
-import com.star.frame.executor.ThreadExecutor;
+import com.star.support.externs.Win32GuiByVbs;
 
 public class TestDebugForFrame{
 	
-	ThreadExecutor exe = new ThreadExecutor();
+	Win32GuiByVbs exe = new Win32GuiByVbs();
 	
 	@Test
 	public void frameWork() {
-		exe.executeCommands("C:\\Program Files\\Java\\jdk1.6.0_20\\bin\\javac.exe");
+		exe.killWin32Process("iexplore");
 	}
 }

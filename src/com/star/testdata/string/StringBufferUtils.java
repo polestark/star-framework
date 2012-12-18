@@ -114,7 +114,7 @@ public class StringBufferUtils {
 		Random rnd = new Random();
 
 		while (count < lengthOfNumber) {
-			i = Math.abs(rnd.nextInt(10));
+			i = Math.abs(rnd.nextInt(9));
 			if (i == 0 && count == 0) {
 			} else {
 				randomStr.append(String.valueOf(i));
@@ -138,7 +138,7 @@ public class StringBufferUtils {
 		Random rnd = new Random();
 
 		while (count < lengthOfString) {
-			i = Math.abs(rnd.nextInt(10) % charArr.length);
+			i = Math.abs(rnd.nextInt(35) % charArr.length);
 			randomStr.append(charArr[i]);
 			count++;
 		}

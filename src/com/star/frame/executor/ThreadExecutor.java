@@ -136,7 +136,7 @@ public class ThreadExecutor{
 		@Override
 		public void run() {
 			try {
-				InputStreamReader isReader = new InputStreamReader(input);
+				InputStreamReader isReader = new InputStreamReader(input, "GBK");
 				BufferedReader bfRader = new BufferedReader(isReader);
 				while(bfRader.readLine() != null){
 				}

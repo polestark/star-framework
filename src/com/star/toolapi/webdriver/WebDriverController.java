@@ -17,6 +17,7 @@ import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.Handler;
@@ -29,7 +30,6 @@ import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.ie.InternetExplorerDriverService.Builder;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.server.SeleniumServer;
-import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.RemoteControlConfiguration;
@@ -95,7 +95,8 @@ public class WebDriverController {
 				service = SERVER_OUTPUT_ON ? builder.usingAnyFreePort().withLogFile(log).withLogLevel(level)
 						.build() : builder.usingAnyFreePort().withLogLevel(level).build();
 				service.start();
-			} catch (Throwable t) {
+				System.out.println("server is started on this address: " + service.getUrl().toString());
+			} catch (Exception t) {
 				LOG.error(t);
 				throw new RuntimeException(t);
 			}
@@ -117,7 +118,7 @@ public class WebDriverController {
 					server = new SeleniumServer(false, RCC);
 					server.start();
 					break;
-				} catch (Throwable t) {
+				} catch (Exception t) {
 					if (i == (portStr.length - 1)) {
 						LOG.error(t);
 						throw new RuntimeException(t);
@@ -146,7 +147,7 @@ public class WebDriverController {
 			if (handler != null){
 				handler.close();
 			}
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			LOG.error(t);
 			throw new RuntimeException(t.getMessage());
 		}
@@ -158,6 +159,12 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void startWebDriver(String browser) {
+		//判断是否在虚拟机上运行，如果是则初始化代理设置！
+		if (VBS.getEnvironment("USERNAME").toLowerCase().contains("autotest")){
+			VBS.killWin32Process("iexplore");
+			VBS.executeVbsFile("./assist/ResetProxy.vbs");
+		}
+		
 		if (browser.toLowerCase().contains("ie") || browser.toLowerCase().contains("internetexplorer")) {
 			capability = DesiredCapabilities.internetExplorer();
 		} else if (browser.toLowerCase().contains("ff") || browser.toLowerCase().contains("firefox")) {
@@ -173,23 +180,20 @@ public class WebDriverController {
 		} else {
 			throw new IllegalArgumentException("you are using wrong mode of browser paltform!");
 		}
-
-		//capability.setCapability(CapabilityType.SUPPORTS_ALERTS, true);
-		//capability.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, "access");
-		//capability.setCapability(CapabilityType.TAKES_SCREENSHOT, true);
-		capability.setCapability(CapabilityType.SUPPORTS_JAVASCRIPT, true);
-		capability.setCapability(CapabilityType.SUPPORTS_FINDING_BY_CSS, true);
 		
 		try {
 			if (USE_DRIVERSERVER){
-				driver = new RemoteWebDriver(service.getUrl(), capability);				
+				driver = new RemoteWebDriver(service.getUrl(), capability);	
+				driver.manage().timeouts().implicitlyWait(10000, TimeUnit.MILLISECONDS);
+				driver.manage().timeouts().setScriptTimeout(10000, TimeUnit.MILLISECONDS);
+				driver.manage().timeouts().pageLoadTimeout(60000, TimeUnit.MILLISECONDS);
 			}else{
 				URL url = new URL("http://localhost:" + server.getPort() + "/wd/hub");
 				driver = new RemoteWebDriver(url, capability);
 			}
-			actionDriver = new Actions(driver);
 			pass("webdriver new instance created");
-		} catch (Throwable t) {
+			actionDriver = new Actions(driver);
+		} catch (Exception t) {
 			LOG.error(t);
 			throw new RuntimeException(t.getMessage());
 		}
@@ -199,12 +203,6 @@ public class WebDriverController {
 	 * start webdirver using browser iexplore
 	 */
 	protected void startWebDriver() {
-		VBS.killWin32Process("iexplore");
-		
-		//判断是否在虚拟机上运行，如果是则初始化代理设置！
-		if (VBS.getEnvironment("USERNAME").toLowerCase().contains("autotest")){
-			VBS.executeVbsFile("./assist/ResetProxy.vbs");
-		}
 		startWebDriver("ie");
 	}
 
@@ -219,7 +217,7 @@ public class WebDriverController {
 				driver.close();
 				pass("closed current webdriver session");
 			}
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			LOG.error(t);
 			throw new RuntimeException(t.getMessage());
 		}
@@ -236,7 +234,7 @@ public class WebDriverController {
 				driver.quit();
 				pass("all webdriver session closed");
 			}
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			LOG.error(t);
 			throw new RuntimeException(t.getMessage());
 		}

@@ -104,6 +104,11 @@ public class ProjectCollection{
 				cell.setCellValue(methodCount);
 				cell.setCellStyle(cellStyle);
 			}
+			
+			System.out.println("total:");
+			System.out.println("	total-class: " + countNatualClass);
+			System.out.println("	tests-class: " + countTestClass);
+			System.out.println("	test-method: " + countTestMethod);
 
 			row = sheet.createRow(project.length + 1);
 			cell = row.createCell(0);

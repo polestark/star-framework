@@ -158,29 +158,45 @@ public class Win32GuiByVbs{
 	 * judge if the specified process is exist under windows.
 	 * 
 	 * @param	processName process name like "iexplore.exe" or "iexplore".
+	 * @param	userFilter if system process excluded.
+	 * @return	when process exists, return true, else false.
+	 * 
+	 * @throws	RuntimeException
+	 **/
+	public boolean processExistUnderWindows(String processName, boolean userFilter) {
+		processName = processName.toLowerCase().replace(".exe", "") + ".exe";
+		String command = userFilter ? 
+				"cmd /c tasklist /FI \"USERNAME eq %USERDOMAIN%\\%USERNAME%\"" : "cmd /c tasklist";
+		try {
+			Process process = Runtime.getRuntime().exec(command);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"));
+			String pName;
+			while ((pName = reader.readLine()) != null) {
+				System.out.println(pName);
+				if (pName.toLowerCase().contains(processName)) {
+					reader.close();
+					return true;
+				}
+			}
+			reader.close();
+			process.waitFor();
+			return false;
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException("execute extern file failed:" + e.getMessage());
+		}
+	}
+
+	/**
+	 * judge if the specified process is exist under windows.
+	 * 
+	 * @param	processName process name like "iexplore.exe" or "iexplore".
 	 * @return	when process exists, return true, else false.
 	 * 
 	 * @throws	RuntimeException
 	 **/
 	public boolean processExistUnderWindows(String processName) {
-		processName = processName.toLowerCase().replace(".exe", "") + ".exe";
-		try {
-			Process process = Runtime.getRuntime().exec("cmd /c tasklist");
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		    String pName;
-		    while ((pName = reader.readLine()) != null){
-		    	if (pName.toLowerCase().contains(processName)){
-				    reader.close();
-		    		return true;
-		    	}
-		    }
-		    reader.close();
-		    process.waitFor();
-    		return false;
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException("execute extern file failed:" + e.getMessage());		
-		}
+		return processExistUnderWindows(processName, true);
 	}
 
 	/**
@@ -189,8 +205,9 @@ public class Win32GuiByVbs{
 	 * @param	process process name like 'iexplore' or 'iexplore.exe'
 	 * @throws	RuntimeException
 	 **/
-	public void killWin32Process(String process){
-		String cmd = "cmd /c taskkill /f /im " + process.toLowerCase().replace(".exe", "") + ".exe";
+	public void killWin32Process(String process) {
+		String cmd = "cmd /c taskkill /FI \"USERNAME eq %USERDOMAIN%\\%USERNAME%\" /f /im "
+				+ process.toLowerCase().replace(".exe", "") + ".exe";
 		execute.executeCommands(cmd);
 	}
 

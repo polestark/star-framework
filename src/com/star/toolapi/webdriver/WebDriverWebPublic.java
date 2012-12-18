@@ -30,8 +30,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.apache.commons.io.FileUtils;
 import com.star.logging.frame.LoggingManager;
-import com.star.toolapi.webdriver.group.JSMethodCollection;
-import com.star.toolapi.webdriver.group.WebDriverWebTable;
+import com.star.toolapi.user.web.JSCollection;
+import com.star.toolapi.user.web.WebTable;
 
 public class WebDriverWebPublic extends WebDriverController {
 
@@ -40,7 +40,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	private static int maxWaitfor = 10;
 	private static long sleepUnit = 500;
 	protected static By tabFinder = null;
-	protected static WebDriverWebTable webTable = null;
+	protected static WebTable webTable = null;
 
 	/**
 	 * set sleep interval for loop wait.
@@ -340,7 +340,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 网页窗口最大化操作。
 	 */
 	protected void maximizeWindow() {
-		jsExecutor(JSMethodCollection.MAXIMIZEWINDOW.getName(), "current window maximized");
+		jsExecutor(JSCollection.MAXIMIZEWINDOW.getName(), "current window maximized");
 	}
 
 	/**
@@ -814,7 +814,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void clickByJavaScript(WebElement element) {
 		waitUtilElementVisible(element);
-		jsExecutor(JSMethodCollection.CLICKBYJAVASCRIPT.getName(), "click on element", element);
+		jsExecutor(JSCollection.CLICKBYJAVASCRIPT.getName(), "click on element", element);
 	}
 
 	/**
@@ -826,7 +826,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void clickByJavaScript(By by) {
 		waitUtilElementVisible(driver.findElement(by));
-		jsExecutor(JSMethodCollection.CLICKBYJAVASCRIPT.getName(), 
+		jsExecutor(JSCollection.CLICKBYJAVASCRIPT.getName(), 
 				"click on element [ " + by.toString() + " ] ", driver.findElement(by));
 	}
 
@@ -1479,17 +1479,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param tabBy the element locator By
 	 */
-	private synchronized WebDriverWebTable tableCache(By tabBy) {
+	private synchronized WebTable tableCache(By tabBy) {
 		waitUtilElementVisible(tabBy);
 		if (tabFinder == null) {
 			tabFinder = tabBy;
-			return new WebDriverWebTable(driver, tabBy);
+			return new WebTable(driver, tabBy);
 		} else {
 			if (tabBy.toString().equals(tabFinder.toString())) {
 				return webTable;
 			} else {
 				tabFinder = tabBy;
-				return new WebDriverWebTable(driver, tabBy);
+				return new WebTable(driver, tabBy);
 			}
 		}
 	}
@@ -1720,7 +1720,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在对话框（Alert）出现之前点击掉它，或者说等价于不让其出现。
 	 */
 	protected void ensrueBeforeAlert() {
-		jsExecutor(JSMethodCollection.ENSRUEBEFOREALERT.getName(),
+		jsExecutor(JSCollection.ENSRUEBEFOREALERT.getName(),
 				"override js to ensure alert before it appears");
 	}
 
@@ -1729,7 +1729,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在浏览器窗口关闭之前除去它的告警提示。
 	 */
 	protected void ensureBeforeWinClose() {
-		jsExecutor(JSMethodCollection.ENSUREBEFOREWINCLOSE.getName(),
+		jsExecutor(JSCollection.ENSUREBEFOREWINCLOSE.getName(),
 				"override js to ensure window close event");
 	}
 
@@ -1738,7 +1738,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 */
 	protected void ensureBeforeConfirm() {
-		jsExecutor(JSMethodCollection.ENSUREBEFORECONFIRM.getName(),
+		jsExecutor(JSCollection.ENSUREBEFORECONFIRM.getName(),
 				"override js to ensure confirm before it appears");
 	}
 
@@ -1747,7 +1747,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 */
 	protected void dismissBeforeConfirm() {
-		jsExecutor(JSMethodCollection.DISMISSBEFORECONFIRM.getName(),
+		jsExecutor(JSCollection.DISMISSBEFORECONFIRM.getName(),
 				"override js to dismiss confirm before it appears");
 	}
 
@@ -1756,7 +1756,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 */
 	protected void ensureBeforePrompt() {
-		jsExecutor(JSMethodCollection.ENSUREBEFOREPROMPT.getName(),
+		jsExecutor(JSCollection.ENSUREBEFOREPROMPT.getName(),
 				"override js to ensure prompt before it appears");
 	}
 
@@ -1765,7 +1765,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 */
 	protected void dismisBeforePrompt() {
-		jsExecutor(JSMethodCollection.DISMISBEFOREPROMPT.getName(),
+		jsExecutor(JSCollection.DISMISBEFOREPROMPT.getName(),
 				"override js to dismiss prompt before it appears");
 	}
 
@@ -1848,7 +1848,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the element to be operate
 	 */
 	protected void makeElementUnHidden(WebElement element) {
-		jsExecutor(JSMethodCollection.MAKEELEMENTUNHIDDEN.getName(), 
+		jsExecutor(JSCollection.MAKEELEMENTUNHIDDEN.getName(), 
 				"override js to make elements to be visible", element);
 	}
 
@@ -1859,7 +1859,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the By locator to find the element
 	 */
 	protected void makeElementUnHidden(By by) {
-		jsExecutor(JSMethodCollection.MAKEELEMENTUNHIDDEN.getName(), 
+		jsExecutor(JSCollection.MAKEELEMENTUNHIDDEN.getName(), 
 				"override js to make elements to be visible", driver.findElement(by));
 	}
 

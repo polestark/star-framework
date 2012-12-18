@@ -15,7 +15,7 @@ Func fileDownload($download_title, $save_title, $SaveAsFileName, $timeout)
 
 	 WinWait($download_title,"",$timeout)
 	 If  WinExists($download_title) Then
-		WinWaitActive($download_title, "", 2)
+		WinActivate($download_title)
 		Sleep (500)
 		ControlClick($download_title,"","±£´æ(&S)","")
 		WinWaitActive($save_title,"",$timeout)
@@ -32,7 +32,7 @@ Func fileDownload($download_title, $save_title, $SaveAsFileName, $timeout)
 		Sleep(500)
 		ControlClick($save_title, "","±£´æ(&S)")
 	 Else
-	   If	WinWaitActive($save_title,"",1) Then
+	   If	WinExists($save_title) Then
 			WinActivate($save_title)
 						
 			If  @OSVersion == "WIN_2008" Then
