@@ -85,8 +85,8 @@ public class JUnitXMLReporter extends AbstractReporter {
 		Map<IClass, TestClassResults> flattenedResults = new HashMap<IClass, TestClassResults>();
 		for (ISuite suite : suites) {
 			for (ISuiteResult suiteResult : suite.getResults().values()) {
-				organiseByClass(suiteResult.getTestContext().getFailedConfigurations().getAllResults(),
-						flattenedResults);
+				/*organiseByClass(suiteResult.getTestContext().getFailedConfigurations().getAllResults(),
+						flattenedResults);*/
 				organiseByClass(suiteResult.getTestContext().getSkippedConfigurations().getAllResults(),
 						flattenedResults);
 				organiseByClass(suiteResult.getTestContext().getFailedTests().getAllResults(),

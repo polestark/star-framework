@@ -4,7 +4,7 @@ package com.star.toolapi.webdriver;
  * 封装整体思路：
  * 1、封装常用方法，每个方法对WebDriverException进行捕获，其余的直接抛出RuntimeException；
  * 2、对于封装过的方法，存在WebDriverException的操作为失败，否则默认为成功，失败的操作在
- * 	  operationCheck中进行截图、报告错误、抛出RuntimeException操作，强制出错则停止运行；
+ * 	  failValidation中进行截图、报告错误、抛出RuntimeException操作，强制出错则停止运行；
  * 3、部分方法是使用javascript执行来达到目的，建议非不得已尽量避免使用。
  *  
  * @author 测试仔刘毅
@@ -104,7 +104,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws ElementNotVisibleException
 	 */
 	protected void waitUtilElementVisible(By by, int timeout) {
-		waitUtilElementVisible(driver.findElement(by), timeout);
+		WebElement element = null;
+		long start = System.currentTimeMillis();
+		boolean isDisplayed = false;
+		while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
+			element = findElement(by);
+			isDisplayed = (element == null)? false : element.isDisplayed();
+			pause(sleepUnit);
+		}
+		if (!isDisplayed){
+			throw new ElementNotVisibleException("the element is not visible in " + timeout + "seconds!");
+		}
 	}
 
 	/**
@@ -116,7 +126,25 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws ElementNotVisibleException
 	 */
 	protected void waitUtilElementVisible(By by) {
-		waitUtilElementVisible(driver.findElement(by));
+		waitUtilElementVisible(by, maxWaitfor);
+	}
+
+	/**
+	 * UnhandledAlertException handle</BR>
+	 * 预期之外的弹出框处理。
+	 * 
+	 * @param exception the UnhandledAlertException.
+	 * @param methodName the method name to record logs.
+	 * @throws RuntimeException
+	 */
+	private void AlertExceptionHandler(UnhandledAlertException exception, String methodName){
+		try {
+			String errorMessage = driver.switchTo().alert().getText();
+			fail("method [" + methodName + "] failed, there is modal dialog present: [" + errorMessage + "]");
+			driver.switchTo().alert().accept();
+		}catch(Exception e){
+			throw new RuntimeException("unable to handle modal dialog: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -126,18 +154,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	private void failValidation() {
 		String method = Thread.currentThread().getStackTrace()[2].getMethodName();
 		String file = LOG_REL + this.getClass().getName() + STRUTIL.formatedTime(FORMATTER) + ".png";
-		String errorMessage = null;
 		try{
 			takeScreenShot(file);
 			fail("method [" + method + "] failed, screenshot is: [" + file + "]");
 		}catch(UnhandledAlertException alert){
-			try {
-				errorMessage = driver.switchTo().alert().getText();
-				fail("method [" + method + "] failed, there is modal dialog present: [" + errorMessage + "]");
-				driver.switchTo().alert().accept();
-			}catch(Exception e){
-				throw new RuntimeException("unable to handle modal dialog: " + e.getMessage());
-			}
+			AlertExceptionHandler(alert, method);
 		}
 	}
 
@@ -306,12 +327,13 @@ public class WebDriverWebPublic extends WebDriverController {
 			windowHandles = driver.getWindowHandles();
 			for (String handler : windowHandles) {
 				driver.switchTo().window(handler);
-				String currentTitle = driver.getTitle();
-				if (currentTitle.contains(browserTitle)){
+				if (driver.getTitle().contains(browserTitle)) {
 					return true;
 				}
 			}
 		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException(e);
 		} finally {
 			driver.switchTo().window(defaultHandler);
 		}
@@ -1413,20 +1435,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected WebElement findDisplayedElment(By by) {
-		WebElement element, retElement = null;
-		List<WebElement> elements = null;
-		try {
-			elements = driver.findElements(by);
-			Iterator<WebElement> it = elements.iterator();
-			while ((element = it.next()) != null && element.isDisplayed()) {
-				retElement = element;
-			}
-		} catch (Exception e) {
-			failValidation();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
-		return retElement;
+		List<WebElement> elements = findDisplayedElments(by);
+		return (elements.size() > 0) ? elements.get(0) : null;
 	}
 
 	/**
@@ -1458,18 +1468,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected WebElement findElement(By by) {
-		WebElement element = null;
-		try {
-			List<WebElement> elements = driver.findElements(by);
-			if (elements.size() > 0) {
-				element = elements.get(0);
-			}
-		} catch (Exception e) {
-			failValidation();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
-		return element;
+		List<WebElement> elements = findElements(by);
+		return (elements.size() > 0) ? (elements.get(0)) : null;
 	}
 
 	/**
@@ -1556,7 +1556,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param tabBy By, by which you can locate the webTable
 	 * @param row row index of the webTable.
 	 * @param col column index of the webTable.
-	 * @param type the element type, such as "img"/"a"/"input"
+	 * @param type the element type, such as "img"/"a"/"input" or "image/link/button/webedit"
 	 * @param index element index in the specified cell, begins with 1.
 	 * @return the webTable cell WebElement
 	 * @throws RuntimeException

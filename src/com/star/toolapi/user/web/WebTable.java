@@ -27,7 +27,7 @@ public class WebTable{
 	 * 
 	 * @param	driver the WebDriver instance.
 	 * @param	tabFinder the By locator of the table.
-	 * @param	hob choice of table body and head to operate.
+	 * @param	bodyOrHead choice of table body and head to operate.
 	 */
 	public WebTable(WebDriver driver, By tabFinder, String bodyOrHead){
 		this.tabBy = tabFinder;

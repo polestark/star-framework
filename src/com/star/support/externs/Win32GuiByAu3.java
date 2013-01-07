@@ -166,6 +166,31 @@ public class Win32GuiByAu3 {
 	}
 
 	/**
+	 * activate window by name in win32 gui using autoit compiled exe</BR>
+	 * you can use it like this: activateWindow("窗口标题", 5);
+	 * 
+	 * @param	title dialog title
+	 * @param	timeout timeout setting for wait alert appears in second unit
+	 * @throws	RuntimeException
+	 **/
+	public void activateWindow(String title, int timeout){
+		String fileExec = ASSIST + "ActivateWindow.exe";
+		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" + timeout + "\"";
+		execute.executeCommands(cmd);
+	}
+
+	/**
+	 * activate window by name in win32 gui using autoit compiled exe</BR>
+	 * you can use it like this: activateWindow("窗口标题");
+	 * 
+	 * @param	title dialog title
+	 * @throws	RuntimeException
+	 **/
+	public void activateWindow(String title){
+		activateWindow(title, 5);
+	}
+
+	/**
 	 * get and write browser message to file using autoit compiled exe</BR>
 	 * you can use it like this: assertErrors(title, "errorMessage", "li", "D:\\a.txt", 10);
 	 * 

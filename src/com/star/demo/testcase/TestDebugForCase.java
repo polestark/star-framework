@@ -6,7 +6,7 @@ import com.star.demo.framework.DemoBaseCase;
 
 public class TestDebugForCase extends DemoBaseCase {
 	
-	@Test
+	/*@Test
 	public void testApi(){
 		this.click(By.linkText("系统运营维护岗"));
 		this.click(By.linkText("超期未反馈问题件导出"));
@@ -26,14 +26,16 @@ public class TestDebugForCase extends DemoBaseCase {
 		String fileName = CONFIG.get("respath") + "超期未反馈问题件导出" + STRUTIL.formatedTime(FORMATTER) + ".xls";
 		
 		AU3.fileDownload("文件下载", "另存为", fileName, 20);
-	}
+	}*/
 	
 	@Test
-	public void SettlePrint(){
+	public void ettlePrintQuery(){
 		selectWindow("平安养老保险股份有限公司保险业务管理系统");
 		this.click(By.linkText("收付汇总岗"));
 		this.click(By.linkText("收付汇总打印"));
 		this.selectFrame(By.id("content"));
+		ASSERT.assertTrue(elementExists(By.name("ipTable"), 1));
+		ASSERT.assertTrue("断言出错！", elementExists(By.name("ipTable"), 1));
 		
 		sendKeys(By.name("settlementNettingSeq"), "1110000227150");
 		click(By.name("button"));

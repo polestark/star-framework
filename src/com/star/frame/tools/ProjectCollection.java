@@ -19,7 +19,7 @@ import com.star.testdata.string.StringBufferUtils;
 public class ProjectCollection{	
 	private static ReadWorkFolder tws = new ReadWorkFolder();
 	private static final String time = new StringBufferUtils().formatedTime("yyyy-MM-dd");	
-	private static final String projects = "chs_annuity,egis_abbs,egis_channel,egis_cspi," +
+	private static final String projects = "chs_core_annuity,egis_abbs,egis_channel,egis_cspi," +
 						"egis_finance,egis_iprs,egis_nbu,egis_pas,egis_pis,egis_pos,egis_pts," +
 						"egis_query,ehis_claim,ehis_hcs,ehis_nbs,ehis_uws,pss_ann";
 	private static final String[] project = projects.split(",");

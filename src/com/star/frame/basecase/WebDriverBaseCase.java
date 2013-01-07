@@ -19,7 +19,7 @@ public class WebDriverBaseCase extends WebDriverWebPublic {
      * @throws RuntimeException
     **/
     @BeforeTest(alwaysRun = true, timeOut=60000)
-    public void testSetup(){
+    protected void testSetup(){
     	String begins = string.formatedTime("yyyy-MM-dd HH-mm-ss-SSS");
         starts = System.currentTimeMillis();
         System.out.println("==============" + begins + "：案例【" + className + "】开始==============");
@@ -35,7 +35,7 @@ public class WebDriverBaseCase extends WebDriverWebPublic {
      * @throws RuntimeException
     **/
     @AfterTest(alwaysRun = true, timeOut=60000)
-    public void tearDown(){
+    protected void tearDown(){
         testTermination();
         vbs.killWin32Process("iexplore");
         vbs.killWin32Process("werfault");

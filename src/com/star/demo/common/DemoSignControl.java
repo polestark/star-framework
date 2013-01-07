@@ -14,7 +14,7 @@ public class DemoSignControl extends WebDriverWebPublic{
         
         startWebDriver(); 
         driver.get(setUpAddr + openUrl);
-		maximizeWindow();
+		windowMaximize();
 		
 		sendKeys(By.xpath("//input[@id='j_username']"), userName);
 		sendKeys(By.xpath("//input[@id='j_password']"), passWord);

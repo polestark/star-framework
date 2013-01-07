@@ -8,7 +8,7 @@ package com.star.toolapi.webdriver;
  * 3、SeleniumServer启动时创建logger，记录操作日志，停止时可选择是否转换为html格式日志，同时，
  * 	     服务器的文本格式日志可根据配置项选择是否打开（建议不打开），xml格式的日志也可选择是否保留；
  * 4、测试初始化和结束销毁是使用TestNG的BeforeTest(alwaysRun=true)形式来确保其始终执行的，建
- * 	     议不直接使用JUnit，更不要在测试代码中加入可能导致JVM crash的事务，否则日志可能记录不完整。
+ * 	  议不直接使用JUnit，更不要在测试代码中加入可能导致JVM crash的事务，否则日志可能记录不完整。
  * 
  * @author 测试仔刘毅
  */
@@ -34,6 +34,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 
+import com.star.frame.assertion.StarNewAssertion;
 import com.star.logging.frame.LoggingManager;
 import com.star.support.config.ParseProperties;
 import com.star.support.externs.BrowserGuiAuto;
@@ -50,6 +51,7 @@ public class WebDriverController {
 	protected static SeleniumServer server;
 	protected static Handler handler;
 	protected static Logger log4wd;
+	protected static StarNewAssertion ASSERT;
 
 	protected static final StringBufferUtils STRUTIL = new StringBufferUtils();
 	protected static final Win32GuiByVbs VBS = new Win32GuiByVbs();
@@ -59,16 +61,21 @@ public class WebDriverController {
 	protected static final ParseProperties CONFIG = property;
 	
 	protected final String ROOT_DIR = System.getProperty("user.dir");
-	protected final String LOG_NAME = new File(property.get("log")).getName();
+	protected final String LOG_NAME = new File(CONFIG.get("log")).getName();
 	protected final String LOG_REL = "./" + LOG_NAME + "/";
 	protected final String LOG_ABS = ROOT_DIR + "/" + LOG_NAME + "/";
+	protected final String EXECUTOR = VBS.getEnvironment("USERNAME");
 
 	private final InternetExplorerDriverLogLevel level = InternetExplorerDriverLogLevel.
-														valueOf(property.get("SERVER_LOG_LEVEL"));
+														valueOf(CONFIG.get("SERVER_LOG_LEVEL"));
 	private final LoggingManager LOG = new LoggingManager(WebDriverController.class.getName());
 	private final RemoteControlConfiguration RCC = new RemoteControlConfiguration();
-	private final Boolean SERVER_OUTPUT_ON = Boolean.parseBoolean(property.get("SERVER_OUTPUT_ON"));
-	private final Boolean USE_DRIVERSERVER = Boolean.parseBoolean(property.get("USE_DRIVERSERVER"));
+	
+	//是否打开server端详细文本日志的配置项
+	private final Boolean SERVER_OUTPUT_ON = Boolean.parseBoolean(CONFIG.get("SERVER_OUTPUT_ON"));
+	//是否使用selenium2.22.0版本以上的IEDriverServer模式的配置项
+	private final Boolean USE_DRIVERSERVER = Boolean.parseBoolean(CONFIG.get("USE_DRIVERSERVER"));
+	
 	private final String SMARK = "~";
 	private final String EXEFILE = "./lib/IEDriverServer.exe";
 
@@ -77,6 +84,7 @@ public class WebDriverController {
 	private static String fName;
 	private static long startTime;
 	private static long endTime;
+	private static String className;
 	
 	/**
 	 * choose a port to start the selenium server.
@@ -85,72 +93,97 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void startServer(String clsName) {
-		log4wd = remoteMessageRecord(clsName);
-		File log = new File(LOG_ABS + clsName + "_" + STRUTIL.getMilSecNow() + ".log");
+		WebDriverController.className = clsName;
+		log4wd = remoteMessageRecord(className);
+		File log = new File(LOG_ABS + className + "_" + STRUTIL.getMilSecNow() + ".log");
 
 		if (USE_DRIVERSERVER) {
-			Builder builder = new InternetExplorerDriverService.Builder();
-			System.setProperty("webdriver.ie.driver", EXEFILE);
-			try {
-				service = SERVER_OUTPUT_ON ? builder.usingAnyFreePort().withLogFile(log).withLogLevel(level)
-						.build() : builder.usingAnyFreePort().withLogLevel(level).build();
-				service.start();
-				System.out.println("server is started on this address: " + service.getUrl().toString());
-			} catch (Exception t) {
-				LOG.error(t);
-				throw new RuntimeException(t);
-			}
+			useDriverServer(log);
 		} else {
-			String portStr[] = property.get("serverPort").split(";");
-			for (int i = 0; i < portStr.length; i++) {
-				try {
-					RCC.setPort(Integer.parseInt(portStr[i]));
-					RCC.setDebugMode(false);
-					RCC.setSingleWindow(false);
-					RCC.setEnsureCleanSession(true);
-					RCC.setReuseBrowserSessions(false);
-					if (SERVER_OUTPUT_ON) {
-						RCC.setDontTouchLogging(false);
-						RCC.setBrowserSideLogEnabled(true);
-						RCC.setLogOutFile(log);
-					}
-					RCC.setTrustAllSSLCertificates(true);
-					server = new SeleniumServer(false, RCC);
-					server.start();
-					break;
-				} catch (Exception t) {
-					if (i == (portStr.length - 1)) {
-						LOG.error(t);
-						throw new RuntimeException(t);
-					}
-				}
-			}
-		}	
+			String[] portStr = CONFIG.get("serverPort").split(";");
+			useRemoteServer(log, portStr);
+		}
 	}
 
 	/**
-	 * stop the selenium server
+	 * start iedirver service with log print and exception handled.
+	 * 
+	 * @param logFile the log file File.
+	 * @throws RuntimeException
+	 */
+	private void useDriverServer(File logFile){
+		try {
+			startService(SERVER_OUTPUT_ON, logFile);
+			System.out.println("server started on: " + service.getUrl().toString());
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}		
+	}
+
+	/**
+	 * start iedirver service.
+	 * 
+	 * @param needLog bool if log needed.
+	 * @param logFile the log file File.
+	 * @throws Exception
+	 */
+	private void startService(boolean needLog, File logFile) throws Exception{
+		System.setProperty("webdriver.ie.driver", EXEFILE);
+		Builder builder = new InternetExplorerDriverService.Builder();
+		if (needLog) {
+			service = builder.usingAnyFreePort().withLogFile(logFile).withLogLevel(level).build();
+		} else {
+			service = builder.usingAnyFreePort().withLogLevel(level).build();
+		}
+		service.start();	
+	}
+
+	/**
+	 * start remote server.
+	 * 
+	 * @param logFile the log file File.
+	 * @param	portArray the usable port array.
 	 * 
 	 * @throws RuntimeException
 	 */
-	protected void stopServer() {
-		try {
-			if (USE_DRIVERSERVER) {
-				if (service != null){
-					service.stop();
-				}
-			} else {
-				if (server != null){
-					server.stop();
-				}
+	private void useRemoteServer(File logFile, String[] portArray){
+		//配置文件中指定可以使用哪些备用端口，逐个尝试。
+		Exception exception = null;
+		for (int index = 0; index < portArray.length - 1; index ++) {
+			try {
+				setRemoteControl(logFile, Integer.parseInt(portArray[index]));
+				server = new SeleniumServer(false, RCC);
+				server.start();
+				return;
+			} catch (Exception e) {
+				exception = e;
 			}
-			if (handler != null){
-				handler.close();
-			}
-		} catch (Exception t) {
-			LOG.error(t);
-			throw new RuntimeException(t.getMessage());
 		}
+		LOG.error(exception);
+		throw new RuntimeException(exception);
+	}
+
+	/**
+	 * config the remote server options.
+	 * 
+	 * @param logFile the log file File.
+	 * @param	port the port to be used for server.
+	 * 
+	 * @throws RuntimeException
+	 */
+	private void setRemoteControl(File logFile, int port) throws Exception{
+		RCC.setPort(port);
+		RCC.setDebugMode(false);
+		RCC.setSingleWindow(false);
+		RCC.setEnsureCleanSession(true);
+		RCC.setReuseBrowserSessions(false);
+		if (SERVER_OUTPUT_ON) {
+			RCC.setDontTouchLogging(false);
+			RCC.setBrowserSideLogEnabled(true);
+			RCC.setLogOutFile(logFile);
+		}
+		RCC.setTrustAllSSLCertificates(true);
 	}
 
 	/**
@@ -159,12 +192,61 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void startWebDriver(String browser) {
-		//判断是否在虚拟机上运行，如果是则初始化代理设置！
-		if (VBS.getEnvironment("USERNAME").toLowerCase().contains("autotest")){
+		if (EXECUTOR.toLowerCase().contains("autotest")){
+			setBrowserRemotely(browser);
+		}else{
+			setBrowserLocally(browser);
+		}		
+		try {
+			createDriverInstanse();
+			driver.manage().timeouts().implicitlyWait(10000, TimeUnit.MILLISECONDS);
+			driver.manage().timeouts().setScriptTimeout(10000, TimeUnit.MILLISECONDS);
+			driver.manage().timeouts().pageLoadTimeout(60000, TimeUnit.MILLISECONDS);
+			actionDriver = new Actions(driver);
+
+	        ASSERT = new StarNewAssertion(driver, LOG_ABS, className, log4wd);
+	        
+			pass("webdriver new instance created");	
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}		
+	}
+
+	/**
+	 * set browser mode on visual machines: close browsers already opened.
+	 * 
+	 * @throws IllegalArgumentException
+	 */
+	private void setBrowserRemotely(String browser){
+		if (browser.toLowerCase().contains("ie") || browser.toLowerCase().contains("internetexplorer")) {
+			capability = DesiredCapabilities.internetExplorer();
 			VBS.killWin32Process("iexplore");
-			VBS.executeVbsFile("./assist/ResetProxy.vbs");
-		}
-		
+		} else if (browser.toLowerCase().contains("ff") || browser.toLowerCase().contains("firefox")) {
+			capability = DesiredCapabilities.firefox();
+			VBS.killWin32Process("firefox");
+		} else if (browser.toLowerCase().contains("chrome")) {
+			capability = DesiredCapabilities.chrome();
+			VBS.killWin32Process("chrome");
+		} else if (browser.toLowerCase().contains("safari")) {
+			capability = DesiredCapabilities.safari();
+			VBS.killWin32Process("safari");
+		} else if (browser.toLowerCase().contains("opera")) {
+			capability = DesiredCapabilities.opera();
+			VBS.killWin32Process("opera");
+		} else if (browser.toLowerCase().contains("htmlunit")) {
+			capability = DesiredCapabilities.htmlUnit();
+		} else {
+			throw new IllegalArgumentException("you are using wrong mode of browser paltform!");
+		}		
+	}
+
+	/**
+	 * set browser mode on local machines: do not close browsers already opened.
+	 * 
+	 * @throws IllegalArgumentException
+	 */
+	private void setBrowserLocally(String browser){
 		if (browser.toLowerCase().contains("ie") || browser.toLowerCase().contains("internetexplorer")) {
 			capability = DesiredCapabilities.internetExplorer();
 		} else if (browser.toLowerCase().contains("ff") || browser.toLowerCase().contains("firefox")) {
@@ -179,23 +261,20 @@ public class WebDriverController {
 			capability = DesiredCapabilities.htmlUnit();
 		} else {
 			throw new IllegalArgumentException("you are using wrong mode of browser paltform!");
-		}
-		
-		try {
-			if (USE_DRIVERSERVER){
-				driver = new RemoteWebDriver(service.getUrl(), capability);	
-				driver.manage().timeouts().implicitlyWait(10000, TimeUnit.MILLISECONDS);
-				driver.manage().timeouts().setScriptTimeout(10000, TimeUnit.MILLISECONDS);
-				driver.manage().timeouts().pageLoadTimeout(60000, TimeUnit.MILLISECONDS);
-			}else{
-				URL url = new URL("http://localhost:" + server.getPort() + "/wd/hub");
-				driver = new RemoteWebDriver(url, capability);
-			}
-			pass("webdriver new instance created");
-			actionDriver = new Actions(driver);
-		} catch (Exception t) {
-			LOG.error(t);
-			throw new RuntimeException(t.getMessage());
+		}		
+	}
+
+	/**
+	 * start webdirver after capability settings completed.
+	 * 
+	 * @throws	Exception
+	 */
+	private void createDriverInstanse() throws Exception{
+		if (USE_DRIVERSERVER){//是否使用IEDirverServer
+			driver = new RemoteWebDriver(service.getUrl(), capability);	
+		}else{
+			URL url = new URL("http://localhost:" + server.getPort() + "/wd/hub");
+			driver = new RemoteWebDriver(url, capability);
 		}
 	}
 
@@ -212,14 +291,9 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void closeWebDriver() {
-		try {
-			if (driver != null) {
-				driver.close();
-				pass("closed current webdriver session");
-			}
-		} catch (Exception t) {
-			LOG.error(t);
-			throw new RuntimeException(t.getMessage());
+		if (driver != null) {
+			driver.close();
+			pass("closed current webdriver session");
 		}
 	}
 
@@ -229,14 +303,41 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void destroyWebDriver() {
-		try {
-			if (driver != null) {
-				driver.quit();
-				pass("all webdriver session closed");
-			}
-		} catch (Exception t) {
-			LOG.error(t);
-			throw new RuntimeException(t.getMessage());
+		if (driver != null) {
+			driver.quit();
+			pass("all webdriver session closed");
+		}
+	}
+
+	/**
+	 * stop the remote webdriver server.
+	 */
+	private void termiServer(){
+		if (server != null){
+			server.stop();
+		}
+	}
+
+	/**
+	 * stop the iedriver service.
+	 */
+	private void termiService(){
+		if (service != null){
+			service.stop();
+		}
+	}
+
+	/**
+	 * stop the selenium server
+	 */
+	protected void stopServer() {
+		if (USE_DRIVERSERVER) {
+			termiService();
+		} else {
+			termiServer();
+		}
+		if (handler != null){
+			handler.close();
 		}
 	}
 
@@ -294,29 +395,23 @@ public class WebDriverController {
 					message = message.replace("'", "&apos;");
 					message = message.replace("\"", "&quot;");
 					
-					sb.append("<record>\n");
-					
+					sb.append("<record>\n");					
 					sb.append("  <date>");// log current time
 					sb.append(STRUTIL.formatedTime("HH:mm:ss.SSS"));
-					sb.append("</date>\n");
-					
+					sb.append("</date>\n");					
 					sb.append("  <millis>");// log current milliseconds
 					sb.append(record.getMillis());
-					sb.append("</millis>\n");
-					
+					sb.append("</millis>\n");					
 					sb.append("  <method>");// log current method
 					sb.append(msgContent[1]);
-					sb.append("</method>\n");
-					
+					sb.append("</method>\n");					
 					sb.append("  <status>");// log current run status
 					sb.append(msgContent[2]);
-					sb.append("</status>\n");
-					
+					sb.append("</status>\n");					
 					sb.append("  <message>");// log current message details
 					sb.append(message);
 					sb.append("</message>");
-					sb.append("\n");
-					
+					sb.append("\n");					
 					sb.append("  <class>");// log current running classname
 					sb.append(msgContent[0]);
 					sb.append("</class>\n");
@@ -373,14 +468,12 @@ public class WebDriverController {
 						}
 						sb.append("  </exception>\n");
 					}
-
 					sb.append("</record>\n");
 					return sb.toString();
 				}
 
 				/**
 				 * create xml file head
-				 * 
 				 * @param h the logger file handler
 				 **/
 				@Override
@@ -388,13 +481,11 @@ public class WebDriverController {
 					StringBuffer sb = new StringBuffer();
 					String encoding;
 					sb.append("<?xml version=\"1.0\"");
-
 					if (h != null) {
 						encoding = h.getEncoding();
 					} else {
 						encoding = null;
 					}
-
 					if (encoding == null) {
 						encoding = java.nio.charset.Charset.defaultCharset().name();
 					}
@@ -403,7 +494,6 @@ public class WebDriverController {
 						encoding = cs.name();
 					} catch (Exception ex) {
 					}
-
 					sb.append(" encoding=\"");
 					sb.append(encoding);
 					sb.append("\"");
