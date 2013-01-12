@@ -14,18 +14,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import com.paic.dbproxy.client.DBAgent;
+import java.util.Properties;
+import com.paic.dbproxy.client.DB;
+import com.paic.dbproxy.client.DBHelper;
 import com.star.logging.frame.LoggingManager;
 import com.star.support.config.ParseProperties;
 
 public class DataBaseUtils {
 
-	private static final LoggingManager LOG = new LoggingManager(DataBaseUtils.class.getName());
-	private static ParseProperties property = new ParseProperties("config\\config.properties");
+	private final LoggingManager LOG = new LoggingManager(DataBaseUtils.class.getName());
+	private final ParseProperties CONFIG = new ParseProperties("config\\config.properties");
 	private String choice = "gbs";
-
-	/* connect to database use webservice */
-	private final String DB_PROXY = property.get("dbProxy");
+	private DBHelper dbConfig = new DBHelper();
+	private int timeBuffer = 10000;
+	private String connectMode = null;
+	private final String DB_PROXY = CONFIG.get("dbProxy");
 
 	/**
 	 * construct with initialize database choose operation.
@@ -33,25 +36,25 @@ public class DataBaseUtils {
 	 * @param	dbChoice	the db choice set in your config
 	 **/
 	public DataBaseUtils(String dbChoice) {
-		setDBChoice(dbChoice);
-	}
-
-	/**
-	 * set database choice
-	 * 
-	 * @param	dbChoice the db choice set in your config
-	 **/
-	private void setDBChoice(String dbChoice){
 		this.choice = dbChoice;
 	}
+	
+	public void setConnectMode(String mode){
+		this.connectMode = mode;
+	}
 
-	/**
-	 * get database choice
-	 * 
-	 * @return	daatbase choice in string
-	 **/
-	private String getDBChoice(){
-		return this.choice.toLowerCase();
+	public void setTimeBuffer(int timeout){
+		this.timeBuffer = timeout;		
+	}
+	
+	private void setDefaultConnectMode(){
+		Properties property = System.getProperties();
+		if (property.containsValue("int")){
+			setConnectMode(DBHelper.MODE_DIRECT);
+		}else{
+			setConnectMode(DBHelper.MODE_PROXY);
+		}
+		dbConfig.setConnectMode(connectMode);
 	}
 
 	/**
@@ -59,33 +62,38 @@ public class DataBaseUtils {
 	 * 
 	 * @throws	RuntimeException
 	 **/
-	protected synchronized DBAgent dbConn() {
-		DBAgent dbcon = null;
+	private DB dbConn() {
 		try {
-			String dbUSER = property.get(getDBChoice() + "User");
-			String dbDPWD = property.get(getDBChoice() + "Pwd");
-			String dbDDNS = property.get(getDBChoice() + "Dns");
-			String dbPORT = property.get(getDBChoice() + "Port");
-			String dbDSID = property.get(getDBChoice() + "Sid");
-			dbcon = new DBAgent(dbUSER, dbDPWD, dbDDNS, Integer.parseInt(dbPORT), dbDSID);			
-			dbcon.setUrl(DB_PROXY);
+			String dbUSER = CONFIG.get(this.choice.toLowerCase() + "User");
+			String dbDPWD = CONFIG.get(this.choice.toLowerCase() + "Pwd");
+			String dbDDNS = CONFIG.get(this.choice.toLowerCase() + "Dns");
+			String dbPORT = CONFIG.get(this.choice.toLowerCase() + "Port");
+			String dbDSID = CONFIG.get(this.choice.toLowerCase() + "Sid");
+			
+			if (null == connectMode) {
+				setDefaultConnectMode();
+			} else {
+				if (connectMode.equals(DBHelper.MODE_AUTO)) {
+					dbConfig.setTimeout(timeBuffer);
+				}
+			}
+
+			dbConfig.setWebserviceUrl(DB_PROXY);
+			return dbConfig.get(dbUSER, dbDPWD, dbDDNS, Integer.parseInt(dbPORT), dbDSID);	
 		} catch (Exception ex) {
 			LOG.error(ex);
 			throw new RuntimeException("Create DataBase Connection Failed:" + ex.getMessage());
 		}
-		return dbcon;
 	}
 
 	/**
 	 * put data into list use webservice.
 	 * 
-	 * @param	sql exam:
-	 *       		"select plan_code from plan where plan_code like ? and rownum <= ?"
-	 * @param	params exam: "P055%,10".split(",")
+	 * @param	sql exam: "select plan_code from plan where plan_code like ? and rownum <= ?"
+	 * @param	params exam: "P055%,10"
 	 * @throws	RuntimeException
 	 **/
 	public List<?> queryToList(String sql, String params) {
-		List<?> tempList = null;
 		String[] paraArray = null;
 		try {
 			if (params.contains(",")) {
@@ -93,20 +101,18 @@ public class DataBaseUtils {
 			} else {
 				paraArray = new String[] { params };
 			}
-			tempList = dbConn().query(sql, paraArray);
+			return dbConn().query(sql, paraArray);
 		} catch (Exception ex) {
 			LOG.error(ex);
 			throw new RuntimeException("queryToList Failed:" + ex.getMessage());
 		}
-		return tempList;
 	}
 
 	/**
 	 * put data into map use webservice.
 	 * 
-	 * @param	sql exam:
-	 *       		"select plan_code from plan where plan_code like ? and rownum <= ?"
-	 * @param	params exam: "P055%,10".split(",")
+	 * @param	sql exam: "select plan_code from plan where plan_code like ? and rownum <= ?"
+	 * @param	params exam: "P055%,10"
 	 * @param	lineNum exam: 5
 	 * @throws	RuntimeException
 	 **/
@@ -123,9 +129,8 @@ public class DataBaseUtils {
 	/**
 	 * override queryToMap method use default line number 1.
 	 * 
-	 * @param	sql exam:
-	 *       		"select plan_code from plan where plan_code like ? and rownum <= ?"
-	 * @param	params exam: "P055%,10".split(",")
+	 * @param	sql exam: "select plan_code from plan where plan_code like ? and rownum <= ?"
+	 * @param	params exam: "P055%,10"
 	 * @throws	RuntimeException
 	 **/
 	public Map<?, ?> queryToMap(String sql, String params) {
@@ -135,30 +140,27 @@ public class DataBaseUtils {
 	/**
 	 * execute dml(insert/delete/update)/ddl sql statement.
 	 * 
-	 * @param	sql exam:
-	 *       		"update plan set paln_code = plan_code where plan_code like ?"
+	 * @param	sql exam: "update plan set paln_code = plan_code where plan_code like ?"
 	 * @param	params exam: "P055%"
 	 * @throws	RuntimeException
 	 **/
 	public int execModify(String sql, String params) {
-		int tempNum = 0;
 		try {
-			tempNum = dbConn().execute(sql, params.split(","));
+			return dbConn().execute(sql, params.split(","));
 		} catch (Exception ex) {
 			LOG.error(ex);
 			throw new RuntimeException("execModify Failed:" + ex.getMessage());
 		}
-		return tempNum;
 	}
 
 	/**
-	 * execute procedure, get output in parameter list.
+	 * execute procedure, get output in parameter list.</BR>
+	 * exams: execProcedure("gpos_package_calculate.calc_susp_days", "iiiooo",</BR>
+	 *         "GP02000000469462,2012-01-01,2012-05-05,null,null,null");
 	 * 
 	 * @param	procName exam: package_name.procedure_name
 	 * @param	paramDesc exam: i:input, o:output; etc: "iiii" means 4 input parameters
 	 * @param	params all out parameter will be put in string typed array.
-	 * exams: execProcedure("gpos_package_calculate.calc_susp_days", "iiiooo",
-	 *         "GP02000000469462,2012-01-01,2012-05-05,null,null,null");
 	 * @throws	RuntimeException
 	 **/
 	public List<String> execProcedure(String procName, String paramDesc, String params) {
@@ -181,22 +183,20 @@ public class DataBaseUtils {
 	}
 
 	/**
-	 * execute function, get output in string.
+	 * execute function, get output in string.</BR>
+	 * exams: execFunction("add_months", "ii", "sysdate,3")
 	 * 
 	 * @param	funcName exam: add_months
 	 * @param	paramDesc exam: i:input, o:output; etc: "iiii" means 4 input parameters
 	 * @param	params out will be a string.
-	 * exams: 	execFunction("add_months", "ii", "sysdate,3")
 	 * @throws	RuntimeException
 	 **/
 	public String execFunction(String funcName, String paramDesc, String params) {
-		String tempStr = null;
 		try {
-			tempStr = dbConn().callFunction(funcName, paramDesc, params.split(","));
+			return dbConn().callFunction(funcName, paramDesc, params.split(","));
 		} catch (Exception ex) {
 			LOG.error(ex);
 			throw new RuntimeException("execFunction Failed:" + ex.getMessage());
 		}
-		return tempStr;
 	}
 }

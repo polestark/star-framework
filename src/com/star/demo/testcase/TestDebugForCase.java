@@ -34,8 +34,8 @@ public class TestDebugForCase extends DemoBaseCase {
 		this.click(By.linkText("收付汇总岗"));
 		this.click(By.linkText("收付汇总打印"));
 		this.selectFrame(By.id("content"));
+
 		ASSERT.assertTrue(elementExists(By.name("ipTable"), 1));
-		ASSERT.assertTrue("断言出错！", elementExists(By.name("ipTable"), 1));
 		
 		sendKeys(By.name("settlementNettingSeq"), "1110000227150");
 		click(By.name("button"));
@@ -44,3 +44,30 @@ public class TestDebugForCase extends DemoBaseCase {
 		click(tableChildElement(By.id("querySettlementNettingForLongTable_table"), 3, 3, "link", 1));
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

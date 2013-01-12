@@ -6,8 +6,8 @@ import com.star.toolapi.webdriver.WebDriverWebPublic;
 
 public class DemoSignControl extends WebDriverWebPublic{
 
-	private static String setUpAddr = property.get("setUpAddr");
-	private static String openUrl = property.get("openUrl");
+	private static String setUpAddr = CONFIG.get("setUpAddr");
+	private static String openUrl = CONFIG.get("openUrl");
 
 	/*egis-pos 用户登录*/
 	public void userLogin(String userName, String passWord){

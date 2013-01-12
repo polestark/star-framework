@@ -57,14 +57,18 @@ public class WebDriverController {
 	protected static final Win32GuiByVbs VBS = new Win32GuiByVbs();
 	protected static final Win32GuiByAu3 AU3 = new Win32GuiByAu3(); 
 	protected static final BrowserGuiAuto IEAU3 = new BrowserGuiAuto();
-	protected static final ParseProperties property = new ParseProperties("config/config.properties");
-	protected static final ParseProperties CONFIG = property;
+	protected static final ParseProperties CONFIG = new ParseProperties("config/config.properties");
+	protected static int maxWaitfor = 10;
+	protected static int maxLoadTime = 90;
+	protected static int stepTimeUnit = 1;
 	
 	protected final String ROOT_DIR = System.getProperty("user.dir");
 	protected final String LOG_NAME = new File(CONFIG.get("log")).getName();
 	protected final String LOG_REL = "./" + LOG_NAME + "/";
 	protected final String LOG_ABS = ROOT_DIR + "/" + LOG_NAME + "/";
 	protected final String EXECUTOR = VBS.getEnvironment("USERNAME");
+	protected final String COMPUTER = VBS.getEnvironment("COMPUTERNAME");
+	protected final String FORMATTER = "_yyyyMMddHHmmssSSS";
 
 	private final InternetExplorerDriverLogLevel level = InternetExplorerDriverLogLevel.
 														valueOf(CONFIG.get("SERVER_LOG_LEVEL"));
@@ -85,6 +89,35 @@ public class WebDriverController {
 	private static long startTime;
 	private static long endTime;
 	private static String className;
+
+	/**
+	 * config timeout setting for page load, default is 90 seconds</BR>
+	 * 配置页面加载的超时时间，默认是90秒钟。
+	 * 
+	 * @param 	timeout max wait time setting in seconds
+	 */
+	protected void setMaxLoadTime(int timeout) {
+		WebDriverController.maxLoadTime = timeout;
+	}
+
+	/**
+	 * config timeout setting for each step, default is 10 seconds</BR>
+	 * 配置单个步骤运行的最大超时时间，默认是10秒钟。
+	 * 
+	 * @param 	timeout max wait time setting in seconds
+	 */
+	protected void setMaxWaitTime(int timeout) {
+		WebDriverController.maxWaitfor = timeout;
+	}
+
+	/**
+	 * set sleep interval for loop wait.
+	 * 
+	 * @param 	interval milliseconds for each sleep
+	 */
+	protected void setSleepInterval(int interval) {
+		WebDriverWebPublic.stepTimeUnit = interval;
+	}
 	
 	/**
 	 * choose a port to start the selenium server.
@@ -114,7 +147,8 @@ public class WebDriverController {
 	private void useDriverServer(File logFile){
 		try {
 			startService(SERVER_OUTPUT_ON, logFile);
-			System.out.println("server started on: " + service.getUrl().toString());
+			System.out.println("server on " + EXECUTOR + "@" + COMPUTER 
+					+ " has started at: " + service.getUrl().toString());
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
@@ -155,6 +189,8 @@ public class WebDriverController {
 				setRemoteControl(logFile, Integer.parseInt(portArray[index]));
 				server = new SeleniumServer(false, RCC);
 				server.start();
+				System.out.println("server on " + EXECUTOR + "@" + COMPUTER + " has started at: " 
+						+ "http://localhost:" + server.getPort() + "/wd/hub");
 				return;
 			} catch (Exception e) {
 				exception = e;
@@ -199,12 +235,12 @@ public class WebDriverController {
 		}		
 		try {
 			createDriverInstanse();
-			driver.manage().timeouts().implicitlyWait(10000, TimeUnit.MILLISECONDS);
-			driver.manage().timeouts().setScriptTimeout(10000, TimeUnit.MILLISECONDS);
-			driver.manage().timeouts().pageLoadTimeout(60000, TimeUnit.MILLISECONDS);
+			driver.manage().timeouts().implicitlyWait(maxWaitfor, TimeUnit.SECONDS);
+			driver.manage().timeouts().setScriptTimeout(maxWaitfor, TimeUnit.SECONDS);
+			driver.manage().timeouts().pageLoadTimeout(maxLoadTime, TimeUnit.SECONDS);
 			actionDriver = new Actions(driver);
 
-	        ASSERT = new StarNewAssertion(driver, LOG_ABS, className, log4wd);
+	        ASSERT = new StarNewAssertion(driver, LOG_ABS, className, log4wd, SMARK);
 	        
 			pass("webdriver new instance created");	
 		} catch (Exception e) {

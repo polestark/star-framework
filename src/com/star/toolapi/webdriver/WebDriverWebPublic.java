@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.OutputType;
@@ -36,30 +38,8 @@ import com.star.toolapi.user.web.WebTable;
 public class WebDriverWebPublic extends WebDriverController {
 
 	private static final LoggingManager LOG = new LoggingManager(WebDriverWebPublic.class.getName());
-	protected static final String FORMATTER = "_yyyyMMddHHmmssSSS";
-	private static int maxWaitfor = 10;
-	private static long sleepUnit = 500;
 	protected static By tabFinder = null;
 	protected static WebTable webTable = null;
-
-	/**
-	 * set sleep interval for loop wait.
-	 * 
-	 * @param 	interval milliseconds for each sleep
-	 */
-	protected void setSleepInterval(long interval) {
-		WebDriverWebPublic.sleepUnit = interval;
-	}
-
-	/**
-	 * config timeout setting for each step, default is 10 seconds</BR>
-	 * 配置单个步骤运行的最大超时时间，默认是10秒钟。
-	 * 
-	 * @param 	timeout max wait time setting in seconds
-	 */
-	protected void setMaxWaitTime(int timeout) {
-		WebDriverWebPublic.maxWaitfor = timeout;
-	}
 
 	/**
 	 * wait util the element visible in max wait time setting</BR>
@@ -75,7 +55,6 @@ public class WebDriverWebPublic extends WebDriverController {
 		boolean isDisplayed = false;
 		while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
 			isDisplayed = (element == null)? false : element.isDisplayed();
-			pause(sleepUnit);
 		}
 		if (!isDisplayed){
 			throw new ElementNotVisibleException("the element is not visible in " + timeout + "seconds!");
@@ -107,13 +86,18 @@ public class WebDriverWebPublic extends WebDriverController {
 		WebElement element = null;
 		long start = System.currentTimeMillis();
 		boolean isDisplayed = false;
-		while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
-			element = findElement(by);
-			isDisplayed = (element == null)? false : element.isDisplayed();
-			pause(sleepUnit);
-		}
-		if (!isDisplayed){
-			throw new ElementNotVisibleException("the element is not visible in " + timeout + "seconds!");
+		try {
+			driver.manage().timeouts().implicitlyWait(stepTimeUnit, TimeUnit.SECONDS);
+			while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
+				element = findElement(by);
+				isDisplayed = (element == null) ? false : element.isDisplayed();
+			}
+			ASSERT.setExitOnAssertFailure(true);
+			ASSERT.assertTrue("the element " + by.toString() + " is still not visible within "
+					+ timeout + " seconds!", isDisplayed);
+		} catch (Exception e) {
+		} finally {
+			driver.manage().timeouts().implicitlyWait(maxWaitfor, TimeUnit.SECONDS);
 		}
 	}
 
@@ -267,7 +251,6 @@ public class WebDriverWebPublic extends WebDriverController {
 				driver.switchTo().alert();
 				return true;
 			} catch (NoAlertPresentException ne) {
-				pause(sleepUnit);
 			} catch (Exception e) {
 				LOG.error(e);
 				throw new RuntimeException(e);
@@ -303,10 +286,13 @@ public class WebDriverWebPublic extends WebDriverController {
 		boolean exists = false;
 		while (!exists && ((System.currentTimeMillis() - start) < seconds * 1000)) {
 			try {
+				driver.manage().timeouts().implicitlyWait(stepTimeUnit, TimeUnit.SECONDS);
 				exists = driver.findElements(by).size() > 0;
 			} catch (Exception e) {
 				LOG.error(e);
 				throw new RuntimeException(e);
+			}finally{
+				driver.manage().timeouts().implicitlyWait(maxWaitfor, TimeUnit.SECONDS);		
 			}
 		}
 		return exists;
@@ -338,6 +324,22 @@ public class WebDriverWebPublic extends WebDriverController {
 			driver.switchTo().window(defaultHandler);
 		}
 		return false;
+	}
+
+	/**
+	 * refresh current browser page by url re-navigate</BR>
+	 * 通过当前页面URL跳转的方式重新加载当前页面。
+	 * 
+	 * @throws RuntimeException
+	 */
+	protected void browserRefresh(){
+		try {
+			driver.navigate().to(driver.getCurrentUrl());
+			tableRefresh();
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -1710,6 +1712,8 @@ public class WebDriverWebPublic extends WebDriverController {
 				failValidation();
 				LOG.error(e);
 				throw new RuntimeException(e);
+			}finally{
+				driver.manage().timeouts().implicitlyWait(maxWaitfor, TimeUnit.SECONDS);
 			}
 		}
 		return false;

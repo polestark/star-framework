@@ -46,7 +46,7 @@ public class ReadWorkFolder{
 				testClassFiles(files.getAbsolutePath());
 			}
 		}else{
-			if (file.getAbsolutePath().endsWith("java")){
+			if (file.getAbsolutePath().endsWith("java") && file.getAbsolutePath().contains("webtestunit")){
 				fileList.add(file.getAbsolutePath());
 			}
 		}
@@ -68,7 +68,7 @@ public class ReadWorkFolder{
 				BufferedReader reader = new BufferedReader(isr);
 				boolean added = false;
 				while ((eachLine = reader.readLine()) != null && !added) {
-					if (eachLine.indexOf("@Test") != -1) {
+					if (eachLine.trim().indexOf("@Test") == 0) {
 						classCount++;
 						added = true;
 					}
@@ -95,7 +95,7 @@ public class ReadWorkFolder{
 			InputStreamReader isr = new InputStreamReader(fis, charSet);
 			BufferedReader reader = new BufferedReader(isr);
 			while((eachLine = reader.readLine()) != null){
-				if (eachLine.indexOf("@Test") != -1){
+				if (eachLine.trim().indexOf("@Test") == 0) {
 					testCount ++;
 				}
 			}			
