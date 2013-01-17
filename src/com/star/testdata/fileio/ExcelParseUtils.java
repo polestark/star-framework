@@ -51,6 +51,7 @@ public class ExcelParseUtils {
 	 * @param	subFolder the excel file path under public file path, named testdata.xls
 	 */
 	public ExcelParseUtils(String subFolder) {
+		subFolder = subFolder.endsWith("\\") ? subFolder : subFolder + "\\";
 		this.fileName = PROPERTY.get("datapath") + subFolder + "testdata.xls";
 	}
 

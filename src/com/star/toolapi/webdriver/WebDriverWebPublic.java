@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.OutputType;
@@ -38,6 +37,7 @@ import com.star.toolapi.user.web.WebTable;
 public class WebDriverWebPublic extends WebDriverController {
 
 	private static final LoggingManager LOG = new LoggingManager(WebDriverWebPublic.class.getName());
+	protected static final String FORMATTER = "_yyyyMMddHHmmssSSS";
 	protected static By tabFinder = null;
 	protected static WebTable webTable = null;
 
@@ -427,6 +427,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			while (it.hasNext()) {
 				driver.switchTo().window(it.next());
 			}
+			selectDefaultWindowFrame();
 			pass("switch to new window");
 		}  catch (Exception e) {
 			failValidation();
@@ -452,6 +453,7 @@ public class WebDriverWebPublic extends WebDriverController {
 				String title = driver.getTitle();
 				if (windowTitle.equals(title)) {
 					pass("switch to window [ " + windowTitle + " ]");
+					selectDefaultWindowFrame();
 					return;
 				}
 			}
