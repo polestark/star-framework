@@ -88,26 +88,8 @@ public class WebDriverController {
 	private static String className;
 
 	/**
-	 * Description: config the executable exe file of IEDriverServer.exe</BR>
-	 * 指定IEDriverServer.exe所在的位置，并且配置环境变量。
-	 */
-	protected void setExecutableIEDriverServer() {
-		String executable = "./lib/IEDriverServer.exe";
-		
-		if (!new File(executable).exists()) {
-			Properties properties = System.getProperties();
-			if (properties.containsKey("EXECUTABLE")){
-				executable = properties.getProperty("EXECUTABLE").toString() + "\\IEDriverServer.exe";
-			}else{
-				throw new RuntimeException("the file IEDriverServer.exe was not placed correctly!");
-			}
-		}
-		System.setProperty("webdriver.ie.driver", executable);
-	}
-
-	/**
 	 * Description: config timeout setting for page load, default is 90 seconds</BR>
-	 * 配置页面加载的超时时间，默认是90秒钟。
+	 * 内容描述：配置页面加载的超时时间，默认是90秒钟。
 	 * 
 	 * @param 	timeout max wait time setting in seconds
 	 */
@@ -117,7 +99,7 @@ public class WebDriverController {
 
 	/**
 	 * Description: config timeout setting for each step, default is 10 seconds</BR>
-	 * 配置单个步骤运行的最大超时时间，默认是10秒钟。
+	 * 内容描述：配置单个步骤运行的最大超时时间，默认是10秒钟。
 	 * 
 	 * @param 	timeout max wait time setting in seconds
 	 */
@@ -126,7 +108,8 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: set sleep interval for loop wait.
+	 * Description: set sleep interval for loop wait.</BR>
+	 * 内容描述：配置每个步骤中每次循环的最小时间单位。
 	 * 
 	 * @param 	interval milliseconds for each sleep
 	 */
@@ -135,10 +118,11 @@ public class WebDriverController {
 	}
 	
 	/**
-	 * Description: choose a port to start the selenium server.
+	 * Description: start the selenium server.</BR>
+	 * 内容描述：启动selenium/webdriver的代理服务。
 	 * 
 	 * @param clsName the runtime class name
-	 * @throws RuntimeException
+	 * @throws Exception
 	 */
 	protected void startServer(String clsName) throws Exception{
 		WebDriverController.className = clsName;
@@ -154,10 +138,202 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: start iedirver service with log print and exception handled.
+	 * Description: start webdirver</BR>
+	 * 内容描述：启动WebDriver实例。
+	 * 
+	 * @param browser the browser mode
+	 * @throws RuntimeException
+	 */
+	protected void startWebDriver(String browser) {
+		try {
+			setBuildEnvChoice(browser);
+			String url = driverObjectInitalize();//about:blank is useless on some machines.
+			driverStatusTest(driver, browser, url, 1);
+			driver.manage().timeouts().implicitlyWait(maxWaitfor, TimeUnit.SECONDS);
+			driver.manage().timeouts().setScriptTimeout(maxWaitfor, TimeUnit.SECONDS);
+			driver.manage().timeouts().pageLoadTimeout(maxLoadTime, TimeUnit.SECONDS);
+			actionDriver = new Actions(driver);
+			ASSERT = new StarNewAssertion(driver, LOG_ABS, className, log4wd, SMARK);
+			pass("webdriver new instance created");	
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}		
+	}
+
+	/**
+	 * Description: start webdirver using browser iexplore</BR>
+	 * 内容描述：默认选择IE模式创建WebDriver实例。
+	 */
+	protected void startWebDriver() {
+		startWebDriver("ie");
+	}
+
+	/**
+	 * Description: closeWebDriver, close current session opened by webdriver.</BR>
+	 * 内容描述：关闭当前WebDriver创建的当前浏览器进程。
+	 * 
+	 * @throws RuntimeException
+	 */
+	protected void closeWebDriver() {
+		if (driver != null) {
+			driver.close();
+			pass("closed current webdriver session");
+		}
+	}
+
+	/**
+	 * Description: quitWebDriver, close webdriver instance and clear all sessions.</BR>
+	 * 内容描述：销毁WebDriver实例。
+	 * 
+	 * @throws RuntimeException
+	 */
+	protected void destroyWebDriver() {
+		if (driver != null) {
+			driver.quit();
+			pass("all webdriver session closed");
+		}
+	}
+
+	/**
+	 * Description: stop the selenium server</BR>
+	 * 内容描述：停止WebDriver的服务，无论什么模式。
+	 */
+	protected void stopServer() throws Exception {
+		if (USE_DRIVERSERVER) {
+			termiService();
+		} else {
+			termiServer();
+		}
+		if (handler != null){
+			handler.close();
+		}
+	}
+
+	/**
+	 * Description: prepare to start tests, for testng beforetest.</BR>
+	 * 内容描述：测试初始化，创建日志对象，启动工具服务。
+	 * 
+	 * @param className the class name for log record file name
+	 * @throws RuntimeException
+	 */
+	protected void testCunstruction(String className) {
+		fName = LOG_ABS + className + ".xml";
+		html = new HtmlFormatter4WD(fName, "date;millis;method;status;message;class");
+		startTime = System.currentTimeMillis();
+		try {
+			startServer(className);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Description: stop all started tests, for testng aftertest.</BR>
+	 * 内容描述：测试销毁，停止测试工具服务，将日志转换为HTML格式。
+	 * 
+	 * @throws RuntimeException
+	 */
+	protected void testTermination() {
+		try {
+			stopServer();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}finally{
+			endTime = System.currentTimeMillis();
+			html.xmlTansToHtml(startTime, endTime);			
+		}
+	}
+
+	/**
+	 * Description: wait milli seconds.</BR>
+	 * 内容描述：进程等待，避免使用。
+	 * 
+	 * @param millis time to wait, in millisecond
+	 */
+	protected void pause(long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+		}
+	}
+
+	/**
+	 * Description: record to logs with fail info messages.</BR>
+	 * 内容描述：报告操作成功，记录对应信息日志。
+	 * 
+	 * @param message the message to be recroded to logs
+	 */
+	protected void pass(String message) {
+		report("passed", message);
+	}
+
+	/**
+	 * Description: record to logs with fail info messages.</BR>
+	 * 内容描述：报告操作失败，记录对应信息日志。
+	 * 
+	 * @param message the message to be recroded to logs
+	 */
+	protected void fail(String message) {
+		report("failed", message);
+	}
+
+	/**
+	 * Description: record to logs with fail info messages and exit run.</BR>
+	 * 内容描述：报告操作失败，并且退出本次运行，记录对应信息日志。
+	 * 
+	 * @param message the message to be recroded to logs
+	 */
+	protected void failAndExit(String message) {
+		report("failed", message);
+		throw new RuntimeException(message);
+	}
+
+	/**
+	 * Description: record to logs with fail info messages.</BR>
+	 * 内容描述：报告操作告警，记录对应信息日志。
+	 * 
+	 * @param message the message to be recroded to logs
+	 */
+	protected void warn(String message) {
+		report("warned", message);
+	}
+
+	/**
+	 * Description: get system properties by specified keyname</BR>
+	 * 内容描述：读取系统中指定名称的变量，如果没有设置则抛出Exception。
+	 * 
+	 * @param keyName the name of the property.
+	 * @throws RuntimeException
+	 */
+	private String getExecutableEnv(String keyName) {
+		Properties properties = System.getProperties();
+		if (properties.containsKey(keyName)){
+			return properties.getProperty(keyName).toString() + "\\IEDriverServer.exe";
+		}else{
+			throw new RuntimeException("the file IEDriverServer.exe was not placed correctly!");
+		}
+	}
+	
+	/**
+	 * Description: config the executable exe file of IEDriverServer.exe</BR>
+	 * 内容描述：指定IEDriverServer.exe所在的位置，并且配置环境变量。
+	 * @throws Exception
+	 */
+	private void setExecutableIEDriverServer() throws Exception{
+		String executable = "./lib/IEDriverServer.exe";
+		if (!new File(executable).exists()) {
+			executable = getExecutableEnv("EXECUTABLE");
+		}
+		System.setProperty("webdriver.ie.driver", executable);
+	}
+
+	/**
+	 * Description: start iedirver service with log print and exception handled.</BR>
+	 * 内容描述：启动IEDirverServer模式的WebDriver代理服务。
 	 * 
 	 * @param logFile the log file File.
-	 * @throws RuntimeException
+	 * @throws Exception
 	 */
 	private void useDriverServer(File logFile) throws Exception{
 		try {
@@ -171,7 +347,8 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: start iedirver service.
+	 * Description: start iedirver service.</BR>
+	 * 内容描述：启动IEDirverServer服务。
 	 * 
 	 * @param needLog bool if log needed.
 	 * @param logFile the log file File.
@@ -189,38 +366,51 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: start remote server.
+	 * Description: try some time to start remote server.</BR>
+	 * 内容描述：配置文件中指定可以使用哪些端口，逐个尝试启动RemoteWebDriver Server。
 	 * 
 	 * @param logFile the log file File.
-	 * @param	portArray the usable port array.
-	 * 
-	 * @throws RuntimeException
+	 * @param portArray the usable port list array.
+	 * @throws Exception
 	 */
 	private void useRemoteServer(File logFile, String[] portArray) throws Exception{
-		//配置文件中指定可以使用哪些备用端口，逐个尝试。
-		Exception exception = null;
-		for (int index = 0; index < portArray.length - 1; index ++) {
-			try {
-				setRemoteControl(logFile, Integer.parseInt(portArray[index]));
-				server = new SeleniumServer(false, RCC);
-				server.start();
-				System.out.println("server on " + EXECUTOR + "@" + COMPUTER + " has started at: " 
-						+ "http://localhost:" + server.getPort() + "/wd/hub");
-				return;
-			} catch (Exception e) {
-				exception = e;
-			}
+		Exception exception = new RuntimeException("init value");
+		int i = 0;
+		while (null != exception && i < portArray.length){
+			exception = startRemoteServer(logFile, Integer.parseInt(portArray[i]));
+			i ++;
 		}
-		LOG.error(exception);
-		throw new RuntimeException(exception);
+		if (null != exception){
+			throw new RuntimeException(exception);
+		}
 	}
 
 	/**
-	 * Description: config the remote server options.
+	 * Description: try to start remote server after remote server configed.</BR>
+	 * 内容描述：配置服务选项之后启动RemoteWebDriver Server。
 	 * 
 	 * @param logFile the log file File.
-	 * @param	port the port to be used for server.
+	 * @param port the port to start RemoteWebDriver server.
+	 */
+	private Exception startRemoteServer(File logFile, int port) {
+		try {
+			setRemoteControl(logFile, port);
+			server = new SeleniumServer(false, RCC);
+			server.start();
+			System.out.println("server on " + EXECUTOR + "@" + COMPUTER + " has started at: " 
+							 + "http://localhost:" + server.getPort() + "/wd/hub");
+			return null;
+		} catch (Exception e) {
+			return e;
+		}
+	}
+
+	/**
+	 * Description: config the remote server options.</BR>
+	 * 内容描述：为RemoteWebDriver Server做服务端选项么配置。
 	 * 
+	 * @param logFile the log file File.
+	 * @param port the port to be used for server.
 	 * @throws Exception
 	 */
 	private void setRemoteControl(File logFile, int port) throws Exception{
@@ -238,30 +428,8 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: start webdirver
-	 * @param browser the browser mode
-	 * 
-	 * @throws RuntimeException
-	 */
-	protected void startWebDriver(String browser) {
-		try {
-			setBuildEnvChoice(browser);
-			String url = createDriverInstanse();
-			driverStatusTest(driver, browser, 1, url);
-			driver.manage().timeouts().implicitlyWait(maxWaitfor, TimeUnit.SECONDS);
-			driver.manage().timeouts().setScriptTimeout(maxWaitfor, TimeUnit.SECONDS);
-			driver.manage().timeouts().pageLoadTimeout(maxLoadTime, TimeUnit.SECONDS);
-			actionDriver = new Actions(driver);
-	        ASSERT = new StarNewAssertion(driver, LOG_ABS, className, log4wd, SMARK);
-			pass("webdriver new instance created");	
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}		
-	}
-
-	/**
-	 * Description: judge and set the env choice of local or remote. 
+	 * Description: judge and set the env choice of local or remote. </BR>
+	 * 内容描述：根据配置选择是在本地运行还是远程代理环境。
 	 * 
 	 * @throws Exception
 	 */
@@ -274,11 +442,12 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: start webdirver after capability settings completed.
+	 * Description: start webdirver after capability settings completed.</BR>
+	 * 内容描述：在做好配置之后创建WebDriver实例。
 	 * 
 	 * @throws	Exception
 	 */
-	private String createDriverInstanse() throws Exception{
+	private String driverObjectInitalize() throws Exception{
 		if (USE_DRIVERSERVER){//是否使用IEDirverServer
 			driver = new RemoteWebDriver(service.getUrl(), capability);	
 			return service.getUrl().toString();
@@ -288,31 +457,48 @@ public class WebDriverController {
 			return "http://localhost:" + server.getPort() + "/wd/hub";
 		}
 	}
-	
+
 	/**
-	 * Description: catch page load timeout Exception and restart a new session.
+	 * Description: catch page load timeout Exception and restart a new session.</BR>
+	 * 内容描述：通过页面跳转是否超时来测试WebDriver启动时是否发生挂死异常。
 	 *
 	 * @param driver RemoteWebDriver object.
 	 * @param browser the browser mode.
+	 * @param testUrl the url used to navigate by the driver.get method.
 	 * @throws Exception
 	 */
-	private void driverStatusTest(RemoteWebDriver driver, String browser, int repeatTimes, String testUrl) throws Exception {
+	private void initLoadPageTest(RemoteWebDriver driver, String browser, String testUrl)throws Exception {
+		try {
+			driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
+			driver.get(testUrl);
+			return;
+		} catch (TimeoutException te) {
+			setBuildEnvChoice(browser);
+			driverObjectInitalize();
+		}		
+	}
+	
+	/**
+	 * Description: catch page load timeout Exception and restart a new session.</BR>
+	 * 内容描述：循环一定次数测试WebDriver启动是否挂死。
+	 *
+	 * @param driver RemoteWebDriver object.
+	 * @param browser the browser mode.
+	 * @param testUrl the url used to navigate by the driver.get method.
+	 * @param repeatTimes retry times.
+	 * @throws Exception
+	 */
+	private void driverStatusTest(RemoteWebDriver driver, String browser, String testUrl, int repeatTimes) throws Exception {
 		for (int i = 0; i < repeatTimes; i++) {
-			try {
-				driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
-				driver.navigate().to(testUrl);
-				return;
-			} catch (TimeoutException te) {
-				setBuildEnvChoice(browser);
-				createDriverInstanse();
-			}
+			initLoadPageTest(driver, browser, testUrl);
 		}
 	}
 
 	/**
-	 * set browser mode on visual machines: close browsers already opened.
+	 * set browser mode on visual machines: close browsers already opened.</BR>
+	 * 内容描述：选择在远程代理环境执行，需要比本地多一步杀浏览器进程的操作。
 	 * 
-	 * @throws IllegalArgumentException
+	 * @throws Exception
 	 */
 	private void setBrowserRemotely(String browser) throws Exception{
 		if (browser.toLowerCase().contains("ie") || browser.toLowerCase().contains("internetexplorer")) {
@@ -338,9 +524,10 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: set browser mode on local machines: do not close browsers already opened.
+	 * Description: set browser mode on local machines: do not close browsers already opened.</BR>
+	 * 内容描述：选择在本机执行，有人工干预，无需杀掉浏览器进程。
 	 * 
-	 * @throws IllegalArgumentException
+	 * @throws Exception
 	 */
 	private void setBrowserLocally(String browser) throws Exception{
 		if (browser.toLowerCase().contains("ie") || browser.toLowerCase().contains("internetexplorer")) {
@@ -361,38 +548,8 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: start webdirver using browser iexplore
-	 */
-	protected void startWebDriver() {
-		startWebDriver("ie");
-	}
-
-	/**
-	 * Description: closeWebDriver, close current session opened by webdriver.
-	 * 
-	 * @throws RuntimeException
-	 */
-	protected void closeWebDriver() {
-		if (driver != null) {
-			driver.close();
-			pass("closed current webdriver session");
-		}
-	}
-
-	/**
-	 * Description: quitWebDriver, close webdriver instance and clear all sessions.
-	 * 
-	 * @throws RuntimeException
-	 */
-	protected void destroyWebDriver() {
-		if (driver != null) {
-			driver.quit();
-			pass("all webdriver session closed");
-		}
-	}
-
-	/**
-	 * Description: stop the remote webdriver server.
+	 * Description: stop the remote webdriver server.</BR>
+	 * 内容描述：停止RemoteWebDriver Server。
 	 */
 	private void termiServer() throws Exception{
 		if (server != null){
@@ -401,7 +558,8 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: stop the iedriver service.
+	 * Description: stop the iedriver service.</BR>
+	 * 内容描述：停止IEDirverServer的服务。
 	 */
 	private void termiService() throws Exception{
 		if (service != null){
@@ -410,124 +568,26 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: stop the selenium server
-	 */
-	protected void stopServer() throws Exception {
-		if (USE_DRIVERSERVER) {
-			termiService();
-		} else {
-			termiServer();
-		}
-		if (handler != null){
-			handler.close();
-		}
-	}
-
-	/**
-	 * Description: prepare to start tests, for testng beforetest.
-	 * 
-	 * @param className the class name for log record file name
-	 * @throws RuntimeException
-	 */
-	protected void testCunstruction(String className) {
-		fName = LOG_ABS + className + ".xml";
-		html = new HtmlFormatter4WD(fName, "date;millis;method;status;message;class");
-		startTime = System.currentTimeMillis();
-		try {
-			startServer(className);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * Description: stop all started tests, for testng aftertest.
-	 * 
-	 * @throws RuntimeException
-	 */
-	protected void testTermination() {
-		try {
-			stopServer();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		endTime = System.currentTimeMillis();
-		html.xmlTansToHtml(startTime, endTime);
-	}
-
-	/**
-	 * Description: user defined log to append standard server log.
+	 * Description: user defined log to append standard server log.</BR>
+	 * 内容描述：创建日志对象。
 	 * 
 	 * @param clsName extra log filename to append
 	 * @return Logger
-	 * @throws RuntimeException
+	 * @throws Exception
 	 */
-	private Logger getLogger(String clsName) {
+	private Logger getLogger(String clsName) throws Exception{
 		Logger logger = Logger.getLogger(this.getClass().getName());
-		try {
-			UserXMLFormatter formatter = new UserXMLFormatter(SMARK);
-			handler = new FileHandler(LOG_ABS + clsName + ".xml", false);
-			handler.setLevel(Level.FINE);
-			handler.setFormatter(formatter);
-			logger.addHandler(handler);
-		} catch (Exception ex) {
-			LOG.error("can not create logger for remotewebdriver!");
-			throw new RuntimeException(ex.getMessage());
-		}
+		UserXMLFormatter formatter = new UserXMLFormatter(SMARK);
+		handler = new FileHandler(LOG_ABS + clsName + ".xml", false);
+		handler.setLevel(Level.FINE);
+		handler.setFormatter(formatter);
+		logger.addHandler(handler);
 		return logger;
 	}
 
 	/**
-	 * Description: wait milli seconds.
-	 * 
-	 * @param millis time to wait, in millisecond
-	 */
-	protected void pause(long millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-		}
-	}
-
-	/**
-	 * Description: record to logs with fail info messages.
-	 * 
-	 * @param message the message to be recroded to logs
-	 */
-	protected void pass(String message) {
-		report("passed", message);
-	}
-
-	/**
-	 * Description: record to logs with fail info messages.
-	 * 
-	 * @param message the message to be recroded to logs
-	 */
-	protected void fail(String message) {
-		report("failed", message);
-	}
-
-	/**
-	 * Description: record to logs with fail info messages and exit run.
-	 * 
-	 * @param message the message to be recroded to logs
-	 */
-	protected void failAndExit(String message) {
-		report("failed", message);
-		throw new RuntimeException(message);
-	}
-
-	/**
-	 * Description: record to logs with fail info messages.
-	 * 
-	 * @param message the message to be recroded to logs
-	 */
-	protected void warn(String message) {
-		report("warned", message);
-	}
-
-	/**
-	 * Description: record to logs with fail info messages.
+	 * Description: record to logs with fail info messages.</BR>
+	 * 内容描述：报告操作信息，根据不同的状态记录对应日志。
 	 * 
 	 * @param status the result status to be logged
 	 * @param message the message to be recroded to logs
