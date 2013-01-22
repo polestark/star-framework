@@ -22,9 +22,10 @@ public class StarNewAssertion {
 	private WebDriver driver = null;
 	private String captureTo = null;
 	private String className = null;
-	private String separateMark = null;
+	private String sMark = null;
 	private Logger logger = null;
 	private boolean exitRun = true;
+	private boolean needLog = false;
 	
 	/**
 	 * Description: cunstruction with parameter initialize.
@@ -33,15 +34,15 @@ public class StarNewAssertion {
 	 * @param captureToPath the log path to put the screen shot files. 
 	 * @param className class name which calling this method.
 	 * @param logger the Logger object that used this class.
-	 * @param separateMark the character that separate the log content. 
+	 * @param sMark the character that separate the log content. 
 	 */
 	public StarNewAssertion(WebDriver driver, String captureToPath, String className, Logger logger,
-			String separateMark) {
+			String sMark) {
 		this.driver = driver;
 		this.logger = logger;
 		this.captureTo = captureToPath;
 		this.className = className;
-		this.separateMark = separateMark;
+		this.sMark = sMark;
 	}
 
 	/**
@@ -50,10 +51,10 @@ public class StarNewAssertion {
 	 * @param driver the webdriver object.
 	 * @param captureToPath the log path to put the screen shot files. 
 	 * @param className class name which calling this method.
-	 * @param separateMark the character that separate the log content. 
+	 * @param sMark the character that separate the log content. 
 	 */
-	public StarNewAssertion(WebDriver driver, String captureToPath, String className, String separateMark) {
-		this(driver, captureToPath, className, null, separateMark);
+	public StarNewAssertion(WebDriver driver, String captureToPath, String className, String sMark) {
+		this(driver, captureToPath, className, null, sMark);
 	}
 	
 	/**
@@ -63,6 +64,42 @@ public class StarNewAssertion {
 	 */
 	public void setExitOnAssertFailure(boolean exitOnError){
 		this.exitRun = exitOnError;
+	}
+	
+	/**
+	 * Description: set if your want to record log after assert passed.
+	 *
+	 * @param needRecord if set true, it will record log after assert passed.
+	 */
+	public void setRecordOnSucceed(boolean needRecord){
+		this.needLog = needRecord;
+	}
+	
+	/**
+	 * Description:record log when assert passed.
+	 */
+	private void recordMessageAfterAssertion(String status, String message){
+		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+		int first = 3, last = 3;
+		String mtdName = trace[first].getMethodName();
+
+		for (int i = first; i < trace.length; i++) {
+			if (trace[i].getClassName().contains(".reflect.")) {
+				last = ((i - 1) <= first) ? first : (i - 1);
+				break;
+			}
+		}
+		String cName = trace[last].getClassName() + " # " + trace[last].getLineNumber();
+		logger.info(cName + sMark + mtdName + sMark + status + sMark + message);
+	}
+	
+	/**
+	 * Description:record log when assert passed.
+	 */
+	private void recordSuccessAfterAssertion(){
+		if (needLog){
+			recordMessageAfterAssertion("passed", "assert passed!");
+		}
 	}
 	
 	/**
@@ -86,27 +123,6 @@ public class StarNewAssertion {
 			throw new RuntimeException(message);
 		}
 	}
-	
-	/**
-	 * Description: record log info when assert failed.
-	 *
-	 * @param fileName screen shot file linked to the report.
-	 */
-	private void recordErrorMessageOnAssertionError(String fileName) {
-		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		int first = 3, last = 3;
-		String mtdName = trace[first].getMethodName();
-
-		for (int i = first; i < trace.length; i++) {
-			if (trace[i].getClassName().contains(".reflect.")) {
-				last = ((i - 1) <= first) ? first : (i - 1);
-				break;
-			}
-		}
-		String cName = trace[last].getClassName() + " # " + trace[last].getLineNumber();
-		logger.info(cName + separateMark + mtdName + separateMark + "failed" + separateMark 
-				+ "assert failed, screenshot is: [" + fileName + "]");
-	}
 
 	/**
 	 * Description: take screen shot by remotewebdriver.
@@ -120,7 +136,7 @@ public class StarNewAssertion {
 		File file = ((TakesScreenshot) rwd).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(file, new File(fileName));
 		if (null != logger){
-			recordErrorMessageOnAssertionError(fileName);
+			recordMessageAfterAssertion("failed", "assert failed, screenshot is: [" + fileName + "]");
 		}
 	}
 
@@ -133,6 +149,7 @@ public class StarNewAssertion {
 	public void assertTrue(String message, Boolean condition) {
 		try {
 			org.testng.AssertJUnit.assertTrue(message, condition);
+			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
 			try {
 				screenShot();
@@ -225,6 +242,7 @@ public class StarNewAssertion {
 	public void assertSame(String message, Object expected, Object actual) {
 		try {
 			org.testng.AssertJUnit.assertSame(message, expected, actual);
+			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
 			try {
 				screenShot();
@@ -261,6 +279,7 @@ public class StarNewAssertion {
 	public void assertNotSame(String message, Object expected, Object actual) {
 		try {
 			org.testng.AssertJUnit.assertNotSame(message, expected, actual);
+			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
 			try {
 				screenShot();
@@ -297,6 +316,7 @@ public class StarNewAssertion {
 	public void assertEquals(String message, Object expected, Object actual) {
 		try {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual);
+			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
 			try {
 				screenShot();
@@ -333,6 +353,7 @@ public class StarNewAssertion {
 	public void assertEquals(String message, String expected, String actual) {
 		try {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual);
+			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
 			try {
 				screenShot();
@@ -370,6 +391,7 @@ public class StarNewAssertion {
 	public void assertEquals(String message, double expected, double actual, double delta) {
 		try {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual, delta);
+			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
 			try {
 				screenShot();
@@ -408,6 +430,7 @@ public class StarNewAssertion {
 	public void assertEquals(String message, float expected, float actual, float delta) {
 		try {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual, delta);
+			logger.info(className + sMark + "Test-Assertion" + sMark  + "passed" + sMark + "assert passed!");
 		} catch (AssertionError ae) {
 			try {
 				screenShot();

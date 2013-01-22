@@ -51,16 +51,14 @@ public class WebDriverController {
 	protected static Handler handler;
 	protected static Logger log4wd;
 	protected static StarNewAssertion ASSERT;
-
 	protected static final StringBufferUtils STRUTIL = new StringBufferUtils();
 	protected static final Win32GuiByVbs VBS = new Win32GuiByVbs();
 	protected static final Win32GuiByAu3 AU3 = new Win32GuiByAu3(); 
 	protected static final BrowserGuiAuto IEAU3 = new BrowserGuiAuto();
 	protected static final ParseProperties CONFIG = new ParseProperties("config/config.properties");
-	protected static int maxWaitfor = 10;
-	protected static int maxLoadTime = 90;
-	protected static int stepTimeUnit = 1;
-	
+	protected static int maxWaitfor = 10;//单步操作超时时间
+	protected static int maxLoadTime = 90;//页面加载超时时间
+	protected static int stepTimeUnit = 500;//单次循环思考时间
 	protected final String ROOT_DIR = System.getProperty("user.dir");
 	protected final String LOG_NAME = new File(CONFIG.get("log")).getName();
 	protected final String LOG_REL = "./" + LOG_NAME + "/";
@@ -72,14 +70,11 @@ public class WebDriverController {
 														valueOf(CONFIG.get("SERVER_LOG_LEVEL"));
 	private final LoggingManager LOG = new LoggingManager(WebDriverController.class.getName());
 	private final RemoteControlConfiguration RCC = new RemoteControlConfiguration();
-	
 	//是否打开server端详细文本日志的配置项
 	private final Boolean SERVER_OUTPUT_ON = Boolean.parseBoolean(CONFIG.get("SERVER_OUTPUT_ON"));
 	//是否使用selenium2.22.0版本以上的IEDriverServer模式的配置项
 	private final Boolean USE_DRIVERSERVER = Boolean.parseBoolean(CONFIG.get("USE_DRIVERSERVER"));
-	
-	private final String SMARK = "~";
-
+	private final String seperateMark = "~";
 	private static DesiredCapabilities capability;
 	private static HtmlFormatter4WD html;
 	private static String fName;
@@ -91,7 +86,7 @@ public class WebDriverController {
 	 * Description: config timeout setting for page load, default is 90 seconds</BR>
 	 * 内容描述：配置页面加载的超时时间，默认是90秒钟。
 	 * 
-	 * @param 	timeout max wait time setting in seconds
+	 * @param timeout max wait time setting in seconds
 	 */
 	protected void setMaxLoadTime(int timeout) {
 		WebDriverController.maxLoadTime = timeout;
@@ -101,7 +96,7 @@ public class WebDriverController {
 	 * Description: config timeout setting for each step, default is 10 seconds</BR>
 	 * 内容描述：配置单个步骤运行的最大超时时间，默认是10秒钟。
 	 * 
-	 * @param 	timeout max wait time setting in seconds
+	 * @param timeout max wait time setting in seconds
 	 */
 	protected void setMaxWaitTime(int timeout) {
 		WebDriverController.maxWaitfor = timeout;
@@ -111,12 +106,12 @@ public class WebDriverController {
 	 * Description: set sleep interval for loop wait.</BR>
 	 * 内容描述：配置每个步骤中每次循环的最小时间单位。
 	 * 
-	 * @param 	interval milliseconds for each sleep
+	 * @param interval milliseconds for each sleep
 	 */
 	protected void setSleepInterval(int interval) {
 		WebDriverWebPublic.stepTimeUnit = interval;
 	}
-	
+
 	/**
 	 * Description: start the selenium server.</BR>
 	 * 内容描述：启动selenium/webdriver的代理服务。
@@ -153,7 +148,7 @@ public class WebDriverController {
 			driver.manage().timeouts().setScriptTimeout(maxWaitfor, TimeUnit.SECONDS);
 			driver.manage().timeouts().pageLoadTimeout(maxLoadTime, TimeUnit.SECONDS);
 			actionDriver = new Actions(driver);
-			ASSERT = new StarNewAssertion(driver, LOG_ABS, className, log4wd, SMARK);
+			ASSERT = new StarNewAssertion(driver, LOG_ABS, className, log4wd, seperateMark);
 			pass("webdriver new instance created");	
 		} catch (Exception e) {
 			LOG.error(e);
@@ -201,9 +196,9 @@ public class WebDriverController {
 	 */
 	protected void stopServer() throws Exception {
 		if (USE_DRIVERSERVER) {
-			termiService();
+			terminateService();
 		} else {
-			termiServer();
+			terminateServer();
 		}
 		if (handler != null){
 			handler.close();
@@ -314,7 +309,7 @@ public class WebDriverController {
 			throw new RuntimeException("the file IEDriverServer.exe was not placed correctly!");
 		}
 	}
-	
+
 	/**
 	 * Description: config the executable exe file of IEDriverServer.exe</BR>
 	 * 内容描述：指定IEDriverServer.exe所在的位置，并且配置环境变量。
@@ -467,17 +462,19 @@ public class WebDriverController {
 	 * @param testUrl the url used to navigate by the driver.get method.
 	 * @throws Exception
 	 */
-	private void initLoadPageTest(RemoteWebDriver driver, String browser, String testUrl)throws Exception {
+	private boolean hasLoadPageSucceeded(RemoteWebDriver driver, String browser, String testUrl) throws Exception {
 		try {
 			driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
 			driver.get(testUrl);
-			return;
+			return true;
 		} catch (TimeoutException te) {
+			LOG.error("******************本次启动WebDriver异常挂起******************");
 			setBuildEnvChoice(browser);
 			driverObjectInitalize();
+			return false;
 		}		
 	}
-	
+
 	/**
 	 * Description: catch page load timeout Exception and restart a new session.</BR>
 	 * 内容描述：循环一定次数测试WebDriver启动是否挂死。
@@ -489,8 +486,14 @@ public class WebDriverController {
 	 * @throws Exception
 	 */
 	private void driverStatusTest(RemoteWebDriver driver, String browser, String testUrl, int repeatTimes) throws Exception {
-		for (int i = 0; i < repeatTimes; i++) {
-			initLoadPageTest(driver, browser, testUrl);
+		int index = 0;
+		boolean suspended = true;
+		while (index < repeatTimes && suspended){
+			suspended = !hasLoadPageSucceeded(driver, browser, testUrl);
+			index ++;
+		}
+		if (index == repeatTimes && suspended){
+			throw new RuntimeException("can not start webdriver successfully, it's suspended!");
 		}
 	}
 
@@ -551,7 +554,7 @@ public class WebDriverController {
 	 * Description: stop the remote webdriver server.</BR>
 	 * 内容描述：停止RemoteWebDriver Server。
 	 */
-	private void termiServer() throws Exception{
+	private void terminateServer() throws Exception{
 		if (server != null){
 			server.stop();
 		}
@@ -561,7 +564,7 @@ public class WebDriverController {
 	 * Description: stop the iedriver service.</BR>
 	 * 内容描述：停止IEDirverServer的服务。
 	 */
-	private void termiService() throws Exception{
+	private void terminateService() throws Exception{
 		if (service != null){
 			service.stop();
 		}
@@ -577,7 +580,7 @@ public class WebDriverController {
 	 */
 	private Logger getLogger(String clsName) throws Exception{
 		Logger logger = Logger.getLogger(this.getClass().getName());
-		UserXMLFormatter formatter = new UserXMLFormatter(SMARK);
+		UserXMLFormatter formatter = new UserXMLFormatter(seperateMark);
 		handler = new FileHandler(LOG_ABS + clsName + ".xml", false);
 		handler.setLevel(Level.FINE);
 		handler.setFormatter(formatter);
@@ -604,7 +607,7 @@ public class WebDriverController {
 			}
 		}
 		String traceClass = trace[last].getClassName() + " # " + trace[last].getLineNumber();
-		log4wd.info(traceClass + SMARK + methodName + SMARK + status + SMARK
-				+ message.replace(SMARK, "-").replace("&", "&"));
+		log4wd.info(traceClass + seperateMark + methodName + seperateMark + status 
+				+ seperateMark + message.replace(seperateMark, "-").replace("&", "&"));
 	}
 }

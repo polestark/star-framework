@@ -16,9 +16,10 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.Augmenter;
@@ -30,6 +31,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.apache.commons.io.FileUtils;
+
 import com.star.logging.frame.LoggingManager;
 import com.star.toolapi.user.web.JSCollection;
 import com.star.toolapi.user.web.WebTable;
@@ -87,7 +89,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		long start = System.currentTimeMillis();
 		boolean isDisplayed = false;
 		try {
-			driver.manage().timeouts().implicitlyWait(stepTimeUnit, TimeUnit.SECONDS);
+			driver.manage().timeouts().implicitlyWait(stepTimeUnit, TimeUnit.MILLISECONDS);
 			while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
 				element = findElement(by);
 				isDisplayed = (element == null) ? false : element.isDisplayed();
@@ -206,7 +208,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the screenShot method, using default path and name</BR>
+	 * rewrite the screenShot method, using default path and name</BR>
 	 * 网页截图操作，默认路径为工程日志目录，文件名为运行的class名和时间戳拼接而成。
 	 * 
 	 * @throws RuntimeException
@@ -286,7 +288,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		boolean exists = false;
 		while (!exists && ((System.currentTimeMillis() - start) < seconds * 1000)) {
 			try {
-				driver.manage().timeouts().implicitlyWait(stepTimeUnit, TimeUnit.SECONDS);
+				driver.manage().timeouts().implicitlyWait(stepTimeUnit, TimeUnit.MILLISECONDS);
 				exists = driver.findElements(by).size() > 0;
 			} catch (Exception e) {
 				LOG.error(e);
@@ -427,7 +429,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			while (it.hasNext()) {
 				driver.switchTo().window(it.next());
 			}
-			selectDefaultWindowFrame();
+			driver.switchTo().defaultContent();
 			pass("switch to new window");
 		}  catch (Exception e) {
 			failValidation();
@@ -453,7 +455,7 @@ public class WebDriverWebPublic extends WebDriverController {
 				String title = driver.getTitle();
 				if (windowTitle.equals(title)) {
 					pass("switch to window [ " + windowTitle + " ]");
-					selectDefaultWindowFrame();
+					driver.switchTo().defaultContent();
 					return;
 				}
 			}
@@ -724,20 +726,58 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the get method, adding user defined log</BR>
-	 * 地址跳转方法，与WebDriver原生get方法内容完全一致。
+	 * rewrite the get method, adding user defined log</BR>
+	 * 地址跳转方法，使用WebDriver原生get方法，加入失败重试的次数定义。
 	 * 
-	 * @param url the url you want to open
+	 * @param url the url you want to open.
+	 * @param actionCount retry times when load timeout occuers.
+	 * @throws RuntimeException
+	 */
+	protected void get(String url, int actionCount) {
+		boolean inited = false;
+		int index = 0, timeout = 10;
+		while (!inited && index < actionCount){
+			timeout = (index == actionCount - 1) ? maxLoadTime : 10;
+			inited = navigateAndLoad(url, timeout);
+			index ++;
+		}
+		if (!inited && index == actionCount){
+			throw new RuntimeException("can not get the url [" + url + "] after retry " + actionCount + "times!");
+		}
+	}
+
+	/**
+	 * rewrite the get method, adding user defined log</BR>
+	 * 地址跳转方法，使用WebDriver原生get方法，默认加载超重试【1】次。
+	 * 
+	 * @param url the url you want to open.
 	 * @throws RuntimeException
 	 */
 	protected void get(String url) {
+		get(url, 2);
+	}
+
+	/**
+	 * judge if the url has navigate and page load completed.</BR>
+	 * 跳转到指定的URL并且返回是否跳转完整的结果。
+	 * 
+	 * @param url the url you want to open.
+	 * @param timeout the timeout for page load in seconds.
+	 * @return if page load completed.
+	 */
+	private boolean navigateAndLoad(String url, int timeout){
 		try {
+			driver.manage().timeouts().pageLoadTimeout(timeout, TimeUnit.SECONDS);
 			driver.get(url);
-			pass("navigate to url [ " + url + " ]");
+			return true;
+		} catch (TimeoutException e) {
+			return false;
 		} catch (Exception e) {
 			failValidation();
 			LOG.error(e);
 			throw new RuntimeException(e);
+		}finally{
+			driver.manage().timeouts().pageLoadTimeout(maxLoadTime, TimeUnit.SECONDS);
 		}
 	}
 
@@ -794,7 +834,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the click method, adding user defined log</BR>
+	 * rewrite the click method, adding user defined log</BR>
 	 * 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param element the webelement you want to operate
@@ -813,7 +853,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the click method, click on the element to be find by By</BR>
+	 * rewrite the click method, click on the element to be find by By</BR>
 	 * 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param by the locator you want to find the element
@@ -937,7 +977,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the submit method, adding user defined log</BR>
+	 * rewrite the submit method, adding user defined log</BR>
 	 * 在等到指定对象可见之后在该对象上做确认/提交的操作。
 	 * 
 	 * @param element the webelement you want to operate
@@ -956,7 +996,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the submit method, submit on the element to be find by By</BR>
+	 * rewrite the submit method, submit on the element to be find by By</BR>
 	 * 在等到指定对象可见之后在该对象上做确认/提交的操作。
 	 * 
 	 * @param by the locator you want to find the element
@@ -975,7 +1015,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the clear method, adding user defined log</BR>
+	 * rewrite the clear method, adding user defined log</BR>
 	 * 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
 	 * 
 	 * @param element the webelement you want to operate
@@ -994,7 +1034,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the clear method, clear on the element to be find by By</BR>
+	 * rewrite the clear method, clear on the element to be find by By</BR>
 	 * 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1014,7 +1054,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, adding user defined log</BR>
+	 * rewrite the sendKeys method, adding user defined log</BR>
 	 * 以追加文本的模式在指定可编辑对象中输入文本，操作之前自动等待到对象可见。
 	 * 
 	 * @param element the webelement you want to operate
@@ -1034,7 +1074,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, sendKeys on the element to be find by By</BR>
+	 * rewrite the sendKeys method, sendKeys on the element to be find by By</BR>
 	 * 以追加文本的模式在指定可编辑对象中输入文本，操作之前自动等待到对象可见。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1055,7 +1095,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, adding user defined log</BR>
+	 * rewrite the sendKeys method, adding user defined log</BR>
 	 * 清理指定对象中已经输入的内容重新输入，操作之前自动等待到对象可见。
 	 * 
 	 * @param element the webelement you want to operate
@@ -1076,7 +1116,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the sendKeys method, sendKeys on the element to be find by By</BR>
+	 * rewrite the sendKeys method, sendKeys on the element to be find by By</BR>
 	 * 清理指定对象中已经输入的内容重新输入，操作之前自动等待到对象可见。
 	 * 
 	 * @param by the locator you want to find the element
@@ -1444,7 +1484,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the findElements method, adding user defined log</BR>
+	 * rewrite the findElements method, adding user defined log</BR>
 	 * 按照指定的定位方式寻找象。
 	 * 
 	 * @param by the locator of the elements to be find
@@ -1464,7 +1504,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the findElement method, adding user defined log</BR>
+	 * rewrite the findElement method, adding user defined log</BR>
 	 * 按照指定的定位方式寻找象。
 	 * 
 	 * @param by the locator of the element to be find
@@ -1609,7 +1649,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForElementVisible(By by, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds);
+		WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
 		try {
 			return wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null;
 		} catch (Exception e) {
@@ -1628,7 +1668,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException.
 	 */
 	protected boolean waitForElementVisible(WebElement element, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds);
+		WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
 		try {
 			return wait.until(ExpectedConditions.visibilityOf(element)) != null;
 		} catch (Exception e) {
@@ -1647,7 +1687,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForElementClickable(By by, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds);
+		WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
 		try {
 			return wait.until(ExpectedConditions.elementToBeClickable(by)) != null;
 		} catch (Exception e) {
@@ -1667,7 +1707,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForTextOnElement(By by, String text, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds);
+		WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
 		try {
 			return wait.until(ExpectedConditions.textToBePresentInElement(by, text)) != null;
 		} catch (Exception e) {
@@ -1687,7 +1727,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean waitForTextOfElementAttr(By by, String text, int seconds) {
-		WebDriverWait wait = new WebDriverWait((WebDriver) driver, seconds);
+		WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
 		try {
 			return wait.until(ExpectedConditions.textToBePresentInElementValue(by, text)) != null;
 		} catch (Exception e) {
@@ -1698,7 +1738,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for alert disappears in the time united by seconds</BR>
+	 * wait for alert disappears in the time unit ofseconds</BR>
 	 * 在指定时间内等待，对话框（Dialog）消失，用以缓冲运行，增加健壮性。
 	 * 
 	 * @throws RuntimeException
@@ -1714,11 +1754,23 @@ public class WebDriverWebPublic extends WebDriverController {
 				failValidation();
 				LOG.error(e);
 				throw new RuntimeException(e);
-			}finally{
-				driver.manage().timeouts().implicitlyWait(maxWaitfor, TimeUnit.SECONDS);
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * wait for window appears in the time unit seconds</BR>
+	 * 在指定时间内等待窗口出现，超时则报错，用以缓冲运行，增加健壮性。
+	 */
+	protected boolean waitForWindowPresent(String winTitle, int seconds) {
+		long start = System.currentTimeMillis();
+		boolean winExists = false;
+		while (!winExists && (System.currentTimeMillis() - start) < seconds * 1000) {
+			winExists = browserExists(winTitle);
+		}
+		ASSERT.assertTrue(winExists);
+		return winExists;
 	}
 
 	/**
@@ -1727,7 +1779,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void ensrueBeforeAlert() {
 		jsExecutor(JSCollection.ENSRUEBEFOREALERT.getName(),
-				"override js to ensure alert before it appears");
+				"rewrite js to ensure alert before it appears");
 	}
 
 	/**
@@ -1736,7 +1788,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void ensureBeforeWinClose() {
 		jsExecutor(JSCollection.ENSUREBEFOREWINCLOSE.getName(),
-				"override js to ensure window close event");
+				"rewrite js to ensure window close event");
 	}
 
 	/**
@@ -1745,7 +1797,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void ensureBeforeConfirm() {
 		jsExecutor(JSCollection.ENSUREBEFORECONFIRM.getName(),
-				"override js to ensure confirm before it appears");
+				"rewrite js to ensure confirm before it appears");
 	}
 
 	/**
@@ -1754,7 +1806,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void dismissBeforeConfirm() {
 		jsExecutor(JSCollection.DISMISSBEFORECONFIRM.getName(),
-				"override js to dismiss confirm before it appears");
+				"rewrite js to dismiss confirm before it appears");
 	}
 
 	/**
@@ -1763,7 +1815,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void ensureBeforePrompt() {
 		jsExecutor(JSCollection.ENSUREBEFOREPROMPT.getName(),
-				"override js to ensure prompt before it appears");
+				"rewrite js to ensure prompt before it appears");
 	}
 
 	/**
@@ -1772,7 +1824,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void dismisBeforePrompt() {
 		jsExecutor(JSCollection.DISMISBEFOREPROMPT.getName(),
-				"override js to dismiss prompt before it appears");
+				"rewrite js to dismiss prompt before it appears");
 	}
 
 	/**
@@ -1855,7 +1907,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void makeElementUnHidden(WebElement element) {
 		jsExecutor(JSCollection.MAKEELEMENTUNHIDDEN.getName(), 
-				"override js to make elements to be visible", element);
+				"rewrite js to make elements to be visible", element);
 	}
 
 	/**
@@ -1866,11 +1918,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void makeElementUnHidden(By by) {
 		jsExecutor(JSCollection.MAKEELEMENTUNHIDDEN.getName(), 
-				"override js to make elements to be visible", driver.findElement(by));
+				"rewrite js to make elements to be visible", driver.findElement(by));
 	}
 
 	/**
-	 * override the getTitle method, adding user defined log</BR>
+	 * rewrite the getTitle method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the title on your current session
@@ -1890,7 +1942,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getCurrentUrl method, adding user defined log</BR>
+	 * rewrite the getCurrentUrl method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the url on your current session
@@ -1910,7 +1962,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getWindowHandles method, adding user defined log</BR>
+	 * rewrite the getWindowHandles method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the window handlers set
@@ -1931,7 +1983,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getWindowHandle method, adding user defined log</BR>
+	 * rewrite the getWindowHandle method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the window handler string
@@ -1951,7 +2003,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getPageSource method, adding user defined log</BR>
+	 * rewrite the getPageSource method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the page source string
@@ -1971,7 +2023,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getSessionId method, adding user defined log</BR>
+	 * rewrite the getSessionId method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return current session id string
@@ -1991,7 +2043,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getTagName method, adding user defined log</BR>
+	 * rewrite the getTagName method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2012,7 +2064,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getTagName method, find the element by By and get its tag name</BR>
+	 * rewrite the getTagName method, find the element by By and get its tag name</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2033,7 +2085,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getAttribute method, adding user defined log</BR>
+	 * rewrite the getAttribute method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2055,7 +2107,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getAttribute method, find the element by By and get its attribute value</BR>
+	 * rewrite the getAttribute method, find the element by By and get its attribute value</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2077,7 +2129,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isSelected method, adding user defined log</BR>
+	 * rewrite the isSelected method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2098,7 +2150,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isSelected method, the element to be find by By</BR>
+	 * rewrite the isSelected method, the element to be find by By</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2119,7 +2171,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isEnabled method, adding user defined log</BR>
+	 * rewrite the isEnabled method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2140,7 +2192,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isEnabled method, the element to be find by By</BR>
+	 * rewrite the isEnabled method, the element to be find by By</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2161,7 +2213,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getText method, adding user defined log</BR>
+	 * rewrite the getText method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2181,7 +2233,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the getText method, find the element by By and get its own text</BR>
+	 * rewrite the getText method, find the element by By and get its own text</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
@@ -2202,7 +2254,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isDisplayed method, adding user defined log</BR>
+	 * rewrite the isDisplayed method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
@@ -2223,7 +2275,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * override the isDisplayed method, the element to be find by By</BR>
+	 * rewrite the isDisplayed method, the element to be find by By</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
