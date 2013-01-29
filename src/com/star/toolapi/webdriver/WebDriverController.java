@@ -113,6 +113,36 @@ public class WebDriverController {
 	}
 
 	/**
+	 * Description: set page load timeout.</BR>
+	 * 内容描述：设置页面加载超时时间.
+	 * 
+	 * @param seconds timeout in timeunit of seconds.
+	 */
+	protected void setPageLoadTimeout(int seconds){
+		driver.manage().timeouts().pageLoadTimeout(seconds, TimeUnit.SECONDS);		
+	}
+	
+	/**
+	 * Description: set element locate timeout.</BR>
+	 * 内容描述：设置对象查找超时时间.
+	 * 
+	 * @param seconds timeout in timeunit of seconds.
+	 */
+	protected void setElementLocateTimeout(int seconds){
+		driver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);		
+	}
+
+	/**
+	 * Description: set scripts execute timeout.</BR>
+	 * 内容描述：设置脚本执行超时时间.
+	 * 
+	 * @param seconds timeout in timeunit of seconds.
+	 */
+	protected void setScriptingTimeout(int seconds){
+		driver.manage().timeouts().setScriptTimeout(seconds, TimeUnit.SECONDS);		
+	}
+
+	/**
 	 * Description: start the selenium server.</BR>
 	 * 内容描述：启动selenium/webdriver的代理服务。
 	 * 
@@ -144,9 +174,11 @@ public class WebDriverController {
 			setBuildEnvChoice(browser);
 			String url = driverObjectInitalize();//about:blank is useless on some machines.
 			driverStatusTest(driver, browser, url, 1);
-			driver.manage().timeouts().implicitlyWait(maxWaitfor, TimeUnit.SECONDS);
-			driver.manage().timeouts().setScriptTimeout(maxWaitfor, TimeUnit.SECONDS);
-			driver.manage().timeouts().pageLoadTimeout(maxLoadTime, TimeUnit.SECONDS);
+			
+			setPageLoadTimeout(maxLoadTime);
+			setElementLocateTimeout(maxWaitfor);
+			setScriptingTimeout(maxWaitfor);
+			
 			actionDriver = new Actions(driver);
 			ASSERT = new StarNewAssertion(driver, LOG_ABS, className, log4wd, seperateMark);
 			pass("webdriver new instance created");	
