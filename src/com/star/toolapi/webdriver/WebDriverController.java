@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import java.util.logging.Handler;
 import java.util.logging.FileHandler;
 
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
@@ -31,6 +32,7 @@ import org.openqa.selenium.server.SeleniumServer;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.RemoteControlConfiguration;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
 
 import com.star.frame.assertion.StarNewAssertion;
 import com.star.logging.frame.LoggingManager;
@@ -41,15 +43,16 @@ import com.star.support.externs.Win32GuiByVbs;
 import com.star.logging.webdriver.HtmlFormatter4WD;
 import com.star.logging.webdriver.UserXMLFormatter;
 import com.star.testdata.string.StringBufferUtils;
+import com.star.toolapi.webdriver.user.WebDriverListener;
 
 public class WebDriverController {
 
 	protected static InternetExplorerDriverService service;
-	protected static RemoteWebDriver driver;
+	protected static WebDriver driver;
 	protected static Actions actionDriver;
 	protected static SeleniumServer server;
 	protected static Handler handler;
-	protected static Logger log4wd;
+	protected static Logger logger;
 	protected static StarNewAssertion ASSERT;
 	protected static final StringBufferUtils STRUTIL = new StringBufferUtils();
 	protected static final Win32GuiByVbs VBS = new Win32GuiByVbs();
@@ -151,7 +154,7 @@ public class WebDriverController {
 	 */
 	protected void startServer(String clsName) throws Exception{
 		WebDriverController.className = clsName;
-		log4wd = getLogger(className);
+		logger = getLogger(className);
 		File log = new File(LOG_ABS + className + "_" + STRUTIL.getMilSecNow() + ".log");
 
 		if (USE_DRIVERSERVER) {
@@ -180,7 +183,7 @@ public class WebDriverController {
 			setScriptingTimeout(maxWaitfor);
 			
 			actionDriver = new Actions(driver);
-			ASSERT = new StarNewAssertion(driver, LOG_ABS, className, log4wd, seperateMark);
+			ASSERT = new StarNewAssertion(driver, LOG_ABS, className, logger, seperateMark);
 			pass("webdriver new instance created");	
 		} catch (Exception e) {
 			LOG.error(e);
@@ -286,7 +289,7 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: record to logs with fail info messages.</BR>
+	 * Description: record to logs with passed info messages.</BR>
 	 * 内容描述：报告操作成功，记录对应信息日志。
 	 * 
 	 * @param message the message to be recroded to logs
@@ -475,12 +478,14 @@ public class WebDriverController {
 	 * @throws	Exception
 	 */
 	private String driverObjectInitalize() throws Exception{
+		WebDriverListener listener = new WebDriverListener(LOG_ABS, className, logger, seperateMark); 
+		
 		if (USE_DRIVERSERVER){//是否使用IEDirverServer
-			driver = new RemoteWebDriver(service.getUrl(), capability);	
+			driver = new EventFiringWebDriver(new RemoteWebDriver(service.getUrl(),capability)).register(listener);
 			return service.getUrl().toString();
 		}else{
 			URL url = new URL("http://localhost:" + server.getPort() + "/wd/hub");
-			driver = new RemoteWebDriver(url, capability);
+			driver = new EventFiringWebDriver(new RemoteWebDriver(url, capability)).register(listener);
 			return "http://localhost:" + server.getPort() + "/wd/hub";
 		}
 	}
@@ -494,7 +499,7 @@ public class WebDriverController {
 	 * @param testUrl the url used to navigate by the driver.get method.
 	 * @throws Exception
 	 */
-	private boolean hasLoadPageSucceeded(RemoteWebDriver driver, String browser, String testUrl) throws Exception {
+	private boolean hasLoadPageSucceeded(WebDriver driver, String browser, String testUrl) throws Exception {
 		try {
 			driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
 			driver.get(testUrl);
@@ -517,7 +522,7 @@ public class WebDriverController {
 	 * @param repeatTimes retry times.
 	 * @throws Exception
 	 */
-	private void driverStatusTest(RemoteWebDriver driver, String browser, String testUrl, int repeatTimes) throws Exception {
+	private void driverStatusTest(WebDriver driver, String browser, String testUrl, int repeatTimes) throws Exception {
 		int index = 0;
 		boolean suspended = true;
 		while (index < repeatTimes && suspended){
@@ -639,7 +644,7 @@ public class WebDriverController {
 			}
 		}
 		String traceClass = trace[last].getClassName() + " # " + trace[last].getLineNumber();
-		log4wd.info(traceClass + seperateMark + methodName + seperateMark + status 
+		logger.info(traceClass + seperateMark + methodName + seperateMark + status 
 				+ seperateMark + message.replace(seperateMark, "-").replace("&", "&"));
 	}
 }

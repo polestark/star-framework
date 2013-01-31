@@ -13,7 +13,7 @@ public class UserTestCase extends WebDriverBaseCase {
 
 		startWebDriver();
 		
-		maximizeWindow();
+		windowMaximize();
 
 		get("http://www.baidu.com/");
 		sendKeys(By.id("kw"), searchText);

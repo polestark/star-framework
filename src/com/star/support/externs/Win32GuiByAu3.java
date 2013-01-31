@@ -1,6 +1,7 @@
 package com.star.support.externs;
 
 import com.star.frame.executor.ThreadExecutor;
+import com.star.logging.frame.LoggingManager;
 
 /**
  * 说明：
@@ -14,6 +15,26 @@ public class Win32GuiByAu3 {
 
 	private static final String ASSIST = System.getProperty("user.dir") + "/assist/";
 	private final ThreadExecutor execute = new ThreadExecutor();
+	private final long orgTimeout = execute.getThreadTimeOut();
+	private final LoggingManager LOG = new LoggingManager(Win32GuiByAu3.class.getName());
+	
+	/**
+	 * Description: if user need to use time longer than default timeout setting, change to max.
+	 *
+	 * @param timeout timeout setting.
+	 */
+	private void setExecuteTimeout(int timeout){
+		if (timeout * 1000 > execute.getThreadTimeOut()){
+			execute.setThreadTimeOut(timeout * 1000);
+		}
+	}
+	
+	/**
+	 * Description: reset the default timeout setting.
+	 */
+	private void setOrginalTimeout(){
+		execute.setThreadTimeOut(orgTimeout);
+	}
 
 	/**
 	 * upload file in win32 gui using autoit compiled exe</BR>
@@ -27,8 +48,16 @@ public class Win32GuiByAu3 {
 	public void fileUpload(String title, String fileName, int timeout){
 		String fileExec = ASSIST + "Upload.exe";
 		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" + fileName + "\" \"" + timeout + "\"";
-		execute.executeCommands(cmd);
-		closeWindow(title, 1);
+		try{
+			setExecuteTimeout(timeout);
+			execute.executeCommands(cmd);			
+		}catch (Exception e){
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}finally{
+			setOrginalTimeout();
+			closeWindow(title, 1);			
+		}
 	}
 	
 	/**
@@ -58,9 +87,17 @@ public class Win32GuiByAu3 {
 		String fileExec = ASSIST + "Download.exe";
 		String cmd = "\"" + fileExec + "\" \"" + fstTitle + "\" \"" 
 					+ sndTitle + "\" \"" + saveAs + "\" \"" + timeout + "\"";
-		execute.executeCommands(cmd);
-		closeWindow(fstTitle, 1);
-		closeWindow(sndTitle, 1);
+		try{
+			setExecuteTimeout(timeout);
+			execute.executeCommands(cmd);			
+		}catch (Exception e){
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}finally{
+			setOrginalTimeout();
+			closeWindow(fstTitle, 1);
+			closeWindow(sndTitle, 1);		
+		}
 	}
 
 	/**
@@ -90,8 +127,16 @@ public class Win32GuiByAu3 {
 		String fileExec = ASSIST + "ClickAlert.exe";
 		String cmd = "\"" + fileExec + "\" \"" + dialogTitle + "\" \""
 				+ buttonName + "\" \"" + timeout + "\"";
-		execute.executeCommands(cmd);
-		closeWindow(dialogTitle, 1);
+		try{
+			setExecuteTimeout(timeout);
+			execute.executeCommands(cmd);			
+		}catch (Exception e){
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}finally{
+			setOrginalTimeout();
+			closeWindow(dialogTitle, 1);			
+		}
 	}
 
 	/**
@@ -121,8 +166,16 @@ public class Win32GuiByAu3 {
 		String fileExec = ASSIST + "TypeAlert.exe";
 		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" 
 					+ locator + "\" \"" + text + "\" \"" + timeout + "\"";
-		execute.executeCommands(cmd);
-		closeWindow(title, 1);
+		try{
+			setExecuteTimeout(timeout);
+			execute.executeCommands(cmd);			
+		}catch (Exception e){
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}finally{
+			setOrginalTimeout();
+			closeWindow(title, 1);			
+		}
 	}
 
 	/**
@@ -150,7 +203,15 @@ public class Win32GuiByAu3 {
 	public void closeWindow(String title, int timeout){
 		String fileExec = ASSIST + "CloseWindow.exe";
 		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" + timeout + "\"";
-		execute.executeCommands(cmd);
+		try{
+			setExecuteTimeout(timeout);
+			execute.executeCommands(cmd);			
+		}catch (Exception e){
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}finally{
+			setOrginalTimeout();
+		}
 	}
 
 	/**
@@ -176,7 +237,15 @@ public class Win32GuiByAu3 {
 	public void activateWindow(String title, int timeout){
 		String fileExec = ASSIST + "ActivateWindow.exe";
 		String cmd = "\"" + fileExec + "\" \"" + title + "\" \"" + timeout + "\"";
-		execute.executeCommands(cmd);
+		try{
+			setExecuteTimeout(timeout);
+			execute.executeCommands(cmd);			
+		}catch (Exception e){
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}finally{
+			setOrginalTimeout();
+		}
 	}
 
 	/**
@@ -201,11 +270,19 @@ public class Win32GuiByAu3 {
 	 * @param	timeout time out setting to find the pop window
 	 * @throws	RuntimeException
 	 **/
-	public void assertErrors(String title, String upIdName, String eleType, String fileName, long timeout){
+	public void assertErrors(String title, String upIdName, String eleType, String fileName, int timeout){
 		String execName = ASSIST + "WriteErrorMessage.exe";
 		String cmd = "\"" + execName + "\" \"" + title + "\" \"" + upIdName + "\" \"" 
 				+ eleType + "\" \""	+ fileName + "\" \"" + String.valueOf(timeout) + "\"";
-		execute.executeCommands(cmd);
-		closeWindow(title, 1);
+		try{
+			setExecuteTimeout(timeout);
+			execute.executeCommands(cmd);			
+		}catch (Exception e){
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}finally{
+			setOrginalTimeout();
+			closeWindow(title, 1);			
+		}
 	}
 }

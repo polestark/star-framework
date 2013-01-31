@@ -1,4 +1,4 @@
-package com.star.toolapi.user.web;
+package com.star.toolapi.webdriver.user;
 
 /**
  * WebTable测试类：

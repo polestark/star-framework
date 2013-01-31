@@ -16,24 +16,25 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
+import org.apache.commons.io.FileUtils;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.ElementNotVisibleException;
-import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.apache.commons.io.FileUtils;
 
 import com.star.logging.frame.LoggingManager;
-import com.star.toolapi.user.web.JSCollection;
-import com.star.toolapi.user.web.WebTable;
+import com.star.toolapi.webdriver.user.JSCollection;
+import com.star.toolapi.webdriver.user.WebTable;
 
 public class WebDriverWebPublic extends WebDriverController {
 
@@ -41,7 +42,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected static final String FORMATTER = "_yyyyMMddHHmmssSSS";
 	protected static By tabFinder = null;
 	protected static WebTable webTable = null;
-
+	protected String EXPECTED_ALERTS = CONFIG.get("EXPECTED_ALERTS");
+	
 	/**
 	 * wait util the element visible in max wait time setting</BR>
 	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
@@ -114,70 +116,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * UnhandledAlertException handle</BR>
-	 * 预期之外的弹出对话框处理。
-	 * 
-	 * @param methodName the method name to record logs.
-	 */
-	private void ModalDialogPresentHandler(String methodName) {
-		try {
-			setPageLoadTimeout(0);
-			String message = driver.switchTo().alert().getText();
-			driver.switchTo().alert().accept();
-			fail("method [" + methodName + "] failed, there is modal dialog present: [" + message + "]");
-		} catch (NoAlertPresentException nae) {
-			System.out.println("==========Not Alert Present!===========");
-		} finally {
-			setPageLoadTimeout(maxLoadTime);
-		}
-	}
-
-	/**
-	 * unexpected modal windows handle</BR>
-	 * 预期之外的非对话框式的模态窗口处理。
-	 * 
-	 * @param fileName the screenshot file name.
-	 */
-	private void ModalWindowPresentHandler(String fileName) {
-		try {
-			takeScreenShot(fileName);
-		} catch (UnhandledAlertException alert) {
-			Object[] handles = driver.getWindowHandles().toArray();
-			driver.switchTo().window(handles[handles.length - 1].toString());
-			driver.switchTo().defaultContent();
-			driver.close();
-			takeScreenShot(fileName);
-		}
-	}
-
-	/**
-	 * unexpected modal windows handle</BR>
-	 * 预期之外的模态窗口处理。
-	 * 
-	 * @param methodName the method name to record logs.
-	 * @param fileName the screenshot file name.
-	 */
-	private void ModalsPresentExceptionHandler(String methodName, String fileName) {
-		ModalDialogPresentHandler(methodName);
-		ModalWindowPresentHandler(fileName);
-	}
-
-	/**
-	 * take screenshot and report to users when operation fails</BR>
-	 * 在发生操作异常之后进行截图和日志记录操作。
-	 */
-	private void failureValidationAndHandle() {
-		String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-		String file = LOG_REL + this.getClass().getName() + STRUTIL.formatedTime(FORMATTER) + ".png";
-		try{
-			takeScreenShot(file);
-		}catch(UnhandledAlertException alert){
-			ModalsPresentExceptionHandler(method, file);
-		}
-		fail("method [" + method + "] failed, screenshot is: [" + file + "]");
-	}
-
-	/**
 	 * execute js functions to do something</BR>
 	 * 使用remote webdriver执行JS函数。
 	 * 
@@ -187,15 +125,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @throws RuntimeException
 	 */
-	protected void jsExecutor(String js, String report, Object args){
-		try {
-			driver.executeScript(js, args);
-			pass(report);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+	protected void jsExecutor(String js, String report, Object args) {
+		((JavascriptExecutor) driver).executeScript(js, args);
+		pass(report);
 	}
 
 	/**
@@ -208,14 +140,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void jsExecutor(String js, String report){
-		try {
-			driver.executeScript(js);
-			pass(report);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}		
+		((JavascriptExecutor)driver).executeScript(js);
+		pass(report);
 	}
 
 	/**
@@ -226,15 +152,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected Object jsReturner(String js){
-		Object object = null;
-		try {
-			object = driver.executeScript(js);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
-		return object;
+		return ((JavascriptExecutor)driver).executeScript(js);
 	}
 
 	/**
@@ -281,9 +199,6 @@ public class WebDriverWebPublic extends WebDriverController {
 		} catch (NoAlertPresentException ne) {
 			warn("no alert is present");
 			return false;
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -301,9 +216,6 @@ public class WebDriverWebPublic extends WebDriverController {
 				driver.switchTo().alert();
 				return true;
 			} catch (NoAlertPresentException ne) {
-			} catch (Exception e) {
-				LOG.error(e);
-				throw new RuntimeException(e);
 			}
 		}
 		return false;
@@ -316,12 +228,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the element locator By
 	 */
 	protected boolean elementExists(By by) {
-		try {
-			return (driver.findElements(by).size() > 0) ? true : false;
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		return (driver.findElements(by).size() > 0) ? true : false;
 	}
 
 	/**
@@ -338,9 +245,6 @@ public class WebDriverWebPublic extends WebDriverController {
 			try {
 				setElementLocateTimeout(1);
 				exists = driver.findElements(by).size() > 0;
-			} catch (Exception e) {
-				LOG.error(e);
-				throw new RuntimeException(e);
 			}finally{
 				setElementLocateTimeout(maxWaitfor);
 			}
@@ -357,22 +261,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected boolean browserExists(String browserTitle) {
 		String defaultHandler = driver.getWindowHandle();
-		Set<String> windowHandles = null;
-		try {
-			windowHandles = driver.getWindowHandles();
-			windowHandles = driver.getWindowHandles();
-			for (String handler : windowHandles) {
-				driver.switchTo().window(handler);
-				if (driver.getTitle().contains(browserTitle)) {
-					return true;
-				}
+		Set<String> windowHandles = driver.getWindowHandles();
+		windowHandles = driver.getWindowHandles();
+		for (String handler : windowHandles) {
+			driver.switchTo().window(handler);
+			if (driver.getTitle().contains(browserTitle)) {
+				return true;
 			}
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException(e);
-		} finally {
-			driver.switchTo().window(defaultHandler);
 		}
+		driver.switchTo().window(defaultHandler);
 		return false;
 	}
 
@@ -383,13 +280,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void browserRefresh(){
-		try {
-			driver.navigate().to(driver.getCurrentUrl());
-			tableRefresh();
-		} catch (Exception e) {
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.navigate().to(driver.getCurrentUrl());
+		tableRefresh();
 	}
 
 	/**
@@ -432,14 +324,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectDefaultWindowFrame() {
-		try {
-			driver.switchTo().defaultContent();
-			pass("switch to default frame on window");
-		}  catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().defaultContent();
+		pass("switch to default frame on window");
 	}
 
 	/**
@@ -449,14 +335,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void focusOnActiveElement() {
-		try {
-			driver.switchTo().activeElement();
-			pass("switch to active element");
-		}  catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().activeElement();
+		pass("switch to active element");
 	}
 
 	/**
@@ -469,21 +349,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected void selectNewWindow(String firstHandler) {
 		Set<String> handlers = null;
 		Iterator<String> it = null;
-		try {
-			handlers = driver.getWindowHandles();
-			handlers = driver.getWindowHandles();
-			handlers.remove(firstHandler);
-			it = handlers.iterator();
-			while (it.hasNext()) {
-				driver.switchTo().window(it.next());
-			}
-			driver.switchTo().defaultContent();
-			pass("switch to new window");
-		}  catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
+		handlers = driver.getWindowHandles();
+		handlers = driver.getWindowHandles();
+		handlers.remove(firstHandler);
+		it = handlers.iterator();
+		while (it.hasNext()) {
+			driver.switchTo().window(it.next());
 		}
+		driver.switchTo().defaultContent();
+		pass("switch to new window");
 	}
 
 	/**
@@ -495,25 +369,19 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void selectWindow(String windowTitle) {
 		Set<String> windowHandles = null;
-		try {
-			windowHandles = driver.getWindowHandles();
-			windowHandles = driver.getWindowHandles();
-			for (String handler : windowHandles) {
-				driver.switchTo().window(handler);
-				String title = driver.getTitle();
-				if (windowTitle.equals(title)) {
-					pass("switch to window [ " + windowTitle + " ]");
-					driver.switchTo().defaultContent();
-					return;
-				}
+		windowHandles = driver.getWindowHandles();
+		windowHandles = driver.getWindowHandles();
+		for (String handler : windowHandles) {
+			driver.switchTo().window(handler);
+			String title = driver.getTitle();
+			if (windowTitle.equals(title)) {
+				pass("switch to window [ " + windowTitle + " ]");
+				driver.switchTo().defaultContent();
+				return;
 			}
-			LOG.error("there is no window named [ " + windowTitle + " ]");
-			failAndExit("there is no window named [ " + windowTitle + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
 		}
+		LOG.error("there is no window named [ " + windowTitle + " ]");
+		failAndExit("there is no window named [ " + windowTitle + " ]");
 	}
 
 	/**
@@ -527,24 +395,18 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected void closeWindow(String windowTitle, int index) {
 		Object[] winArray = null;
 		List<String> winList = new ArrayList<String>();
-		try {
-			winArray = driver.getWindowHandles().toArray();
-			winArray = driver.getWindowHandles().toArray();
-			for (int i = 0; i < winArray.length - 1; i++) {
-				driver.switchTo().window(winArray[i].toString());
-				if (windowTitle.equals(driver.getTitle())) {
-					winList.add(winArray[i].toString());
-				}
+		winArray = driver.getWindowHandles().toArray();
+		winArray = driver.getWindowHandles().toArray();
+		for (int i = 0; i < winArray.length - 1; i++) {
+			driver.switchTo().window(winArray[i].toString());
+			if (windowTitle.equals(driver.getTitle())) {
+				winList.add(winArray[i].toString());
 			}
-			driver.switchTo().window(winList.get(index - 1));
-			driver.switchTo().defaultContent();
-			driver.close();
-			pass("window [ " + windowTitle + " ] closed by index [" + index + "]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
 		}
+		driver.switchTo().window(winList.get(index - 1));
+		driver.switchTo().defaultContent();
+		driver.close();
+		pass("window [ " + windowTitle + " ] closed by index [" + index + "]");
 	}
 
 	/**
@@ -555,24 +417,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void closeWindow(String windowTitle) {
-		Object[] winArray = null;
-		try {
-			winArray = driver.getWindowHandles().toArray();
-			winArray = driver.getWindowHandles().toArray();
-			for (int i = winArray.length - 1; i > 0; i--) {
-				driver.switchTo().window(winArray[i].toString());
-				if (windowTitle.equals(driver.getTitle())) {
-					driver.switchTo().defaultContent();
-					driver.close();
-					break;
-				}
+		Object[] winArray = driver.getWindowHandles().toArray();
+		winArray = driver.getWindowHandles().toArray();
+		for (int i = winArray.length - 1; i > 0; i--) {
+			driver.switchTo().window(winArray[i].toString());
+			if (windowTitle.equals(driver.getTitle())) {
+				driver.switchTo().defaultContent();
+				driver.close();
+				break;
 			}
-			pass("window [ " + windowTitle + " ] closed ");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
 		}
+		pass("window [ " + windowTitle + " ] closed ");
 	}
 
 	/**
@@ -583,24 +438,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void closeWindowExcept(String windowTitle) {
-		Set<String> windowHandles = null;
-		try {
-			windowHandles = driver.getWindowHandles();
-			windowHandles = driver.getWindowHandles();
-			for (String handler : windowHandles) {
-				driver.switchTo().window(handler);
-				String title = driver.getTitle();
-				if (!windowTitle.equals(title)) {
-					driver.switchTo().defaultContent();
-					driver.close();
-				}
+		Set<String> windowHandles = driver.getWindowHandles();
+		windowHandles = driver.getWindowHandles();
+		for (String handler : windowHandles) {
+			driver.switchTo().window(handler);
+			String title = driver.getTitle();
+			if (!windowTitle.equals(title)) {
+				driver.switchTo().defaultContent();
+				driver.close();
 			}
-			pass("all windows closed except [ " + windowTitle + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
 		}
+		pass("all windows closed except [ " + windowTitle + " ]");
 	}
 
 	/**
@@ -612,35 +460,27 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void closeWindowExcept(String windowTitle, int index) {
-		Set<String> windowHandles = null;
-		Object[] winArray = null;
-		try {
-			windowHandles = driver.getWindowHandles();
-			windowHandles = driver.getWindowHandles();
-			for (String handler : windowHandles) {
-				driver.switchTo().window(handler);
-				String title = driver.getTitle();
-				if (!windowTitle.equals(title)) {
-					driver.switchTo().defaultContent();
-					driver.close();
-				}
+		Set<String> windowHandles = driver.getWindowHandles();
+		windowHandles = driver.getWindowHandles();
+		for (String handler : windowHandles) {
+			driver.switchTo().window(handler);
+			String title = driver.getTitle();
+			if (!windowTitle.equals(title)) {
+				driver.switchTo().defaultContent();
+				driver.close();
 			}
-
-			winArray = driver.getWindowHandles().toArray();
-			winArray = driver.getWindowHandles().toArray();
-			for (int i = 0; i < winArray.length; i++) {
-				driver.switchTo().window(winArray[i].toString());
-				if (i + 1 != index) {
-					driver.switchTo().defaultContent();
-					driver.close();
-				}
-			}
-			pass("keep only window [ " + windowTitle + " ] by title index [ " + index + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
 		}
+
+		Object[] winArray = driver.getWindowHandles().toArray();
+		winArray = driver.getWindowHandles().toArray();
+		for (int i = 0; i < winArray.length; i++) {
+			driver.switchTo().window(winArray[i].toString());
+			if (i + 1 != index) {
+				driver.switchTo().defaultContent();
+				driver.close();
+			}
+		}
+		pass("keep only window [ " + windowTitle + " ] by title index [ " + index + " ]");
 	}
 
 	/**
@@ -689,14 +529,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectFrame(int index) {
-		try {
-			driver.switchTo().frame(index);
-			pass("select frame by index [ " + index + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().frame(index);
+		pass("select frame by index [ " + index + " ]");
 	}
 
 	/**
@@ -707,14 +541,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectFrame(String nameOrId) {
-		try {
-			driver.switchTo().frame(nameOrId);
-			pass("select frame by name or id [ " + nameOrId + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().frame(nameOrId);
+		pass("select frame by name or id [ " + nameOrId + " ]");
 	}
 
 	/**
@@ -725,14 +553,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectFrame(WebElement frameElement) {
-		try {
-			driver.switchTo().frame(frameElement);
-			pass("select frame by frameElement");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().frame(frameElement);
+		pass("select frame by frameElement");
 	}
 
 	/**
@@ -743,14 +565,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectFrame(By by) {
-		try {
-			driver.switchTo().frame(driver.findElement(by));
-			pass("select frame by frame locator [ " + by.toString() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().frame(driver.findElement(by));
+		pass("select frame by frame locator [ " + by.toString() + " ]");
 	}
 
 	/**
@@ -762,15 +578,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void editFrameText(By by, String text) {
-		try {
-			driver.switchTo().frame(driver.findElement(by));
-			driver.switchTo().activeElement().sendKeys(text);
-			pass("input text [ " + text + " ] to frame [ " + by.toString() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().frame(driver.findElement(by));
+		driver.switchTo().activeElement().sendKeys(text);
+		pass("input text [ " + text + " ] to frame [ " + by.toString() + " ]");
 	}
 
 	/**
@@ -820,10 +630,6 @@ public class WebDriverWebPublic extends WebDriverController {
 			return true;
 		} catch (TimeoutException e) {
 			return false;
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
 		}finally{
 			setPageLoadTimeout(maxLoadTime);
 		}
@@ -837,14 +643,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void navigateTo(String url){
-		try {
-			driver.navigate().to(url);
-			pass("navigate to url [ " + url + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}		
+		driver.navigate().to(url);
+		pass("navigate to url [ " + url + " ]");
 	}
 
 	/**
@@ -854,14 +654,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void navigateBack(){
-		try {
-			driver.navigate().back();
-			pass("navigate back");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}		
+		driver.navigate().back();
+		pass("navigate back");
 	}
 
 	/**
@@ -871,14 +665,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void navigateForward(){
-		try {
-			driver.navigate().forward();
-			pass("navigate forward");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}	
+		driver.navigate().forward();
+		pass("navigate forward");
 	}
 
 	/**
@@ -889,15 +677,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void click(WebElement element) {
-		try {
-			waitUtilElementVisible(element);
-			element.click();
-			pass("click on WebElement");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		element.click();
+		pass("click on WebElement");
 	}
 
 	/**
@@ -908,15 +690,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void click(By by) {
-		try {
-			waitUtilElementVisible(driver.findElement(by));
-			driver.findElement(by).click();
-			pass("click on element [ " + by.toString() + " ] ");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(driver.findElement(by));
+		driver.findElement(by).click();
+		pass("click on element [ " + by.toString() + " ] ");
 	}
 
 	/**
@@ -952,16 +728,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void doubleClick(WebElement element) {
-		try {
-			waitUtilElementVisible(element);
-			actionDriver.doubleClick(element);
-			actionDriver.perform();
-			pass("doubleClick on element ");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		actionDriver.doubleClick(element);
+		actionDriver.perform();
+		pass("doubleClick on element ");
 	}
 
 	/**
@@ -972,16 +742,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void doubleClick(By by) {
-		try {
-			waitUtilElementVisible(driver.findElement(by));
-			actionDriver.doubleClick(findElement(by));
-			actionDriver.perform();
-			pass("doubleClick on element [ " + by.toString() + " ] ");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(driver.findElement(by));
+		actionDriver.doubleClick(findElement(by));
+		actionDriver.perform();
+		pass("doubleClick on element [ " + by.toString() + " ] ");
 	}
 
 	/**
@@ -992,16 +756,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void rightClick(WebElement element) {
-		try {
-			waitUtilElementVisible(element);
-			actionDriver.contextClick(element);
-			actionDriver.perform();
-			pass("rightClick on element ");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		actionDriver.contextClick(element);
+		actionDriver.perform();
+		pass("rightClick on element ");
 	}
 
 	/**
@@ -1012,16 +770,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void rightClick(By by) {
-		try {
-			waitUtilElementVisible(driver.findElement(by));
-			actionDriver.contextClick(findElement(by));
-			actionDriver.perform();
-			pass("rightClick on element [ " + by.toString() + " ] ");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(driver.findElement(by));
+		actionDriver.contextClick(findElement(by));
+		actionDriver.perform();
+		pass("rightClick on element [ " + by.toString() + " ] ");
 	}
 
 	/**
@@ -1032,15 +784,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void submit(WebElement element) {
-		try {
-			waitUtilElementVisible(element);
-			element.submit();
-			pass("submit on element");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		element.submit();
+		pass("submit on element");
 	}
 
 	/**
@@ -1051,15 +797,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void submit(By by) {
-		try {
-			waitUtilElementVisible(driver.findElement(by));
-			driver.findElement(by).submit();
-			pass("submit on element [ " + by.toString() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(driver.findElement(by));
+		driver.findElement(by).submit();
+		pass("submit on element [ " + by.toString() + " ]");
 	}
 
 	/**
@@ -1070,15 +810,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void clear(WebElement element) {
-		try {
-			waitUtilElementVisible(element);
-			element.clear();
-			pass("element cleared");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		element.clear();
+		pass("element cleared");
 	}
 
 	/**
@@ -1089,16 +823,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void clear(By by) {
-		try {
-			WebElement element = driver.findElement(by);
-			waitUtilElementVisible(element);
-			element.clear();
-			pass("element [ " + by.toString() + " ] cleared");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		WebElement element = driver.findElement(by);
+		waitUtilElementVisible(element);
+		element.clear();
+		pass("element [ " + by.toString() + " ] cleared");
 	}
 
 	/**
@@ -1110,15 +838,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeysAppend(WebElement element, String text) {
-		try {
-			waitUtilElementVisible(element);
-			element.sendKeys(text);
-			pass("send text [ " + text + " ] to element");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		element.sendKeys(text);
+		pass("send text [ " + text + " ] to element");
 	}
 
 	/**
@@ -1130,16 +852,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeysAppend(By by, String text) {
-		try {
-			WebElement element = driver.findElement(by);
-			waitUtilElementVisible(element);
-			element.sendKeys(text);
-			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		WebElement element = driver.findElement(by);
+		waitUtilElementVisible(element);
+		element.sendKeys(text);
+		pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
 	}
 
 	/**
@@ -1151,16 +867,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeys(WebElement element, String text) {
-		try {
-			waitUtilElementVisible(element);
-			element.clear();
-			element.sendKeys(text);
-			pass("send text [ " + text + " ] to WebEdit");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		element.clear();
+		element.sendKeys(text);
+		pass("send text [ " + text + " ] to WebEdit");
 	}
 
 	/**
@@ -1172,17 +882,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeys(By by, String text) {
-		try {
-			WebElement element = driver.findElement(by);
-			waitUtilElementVisible(element);
-			element.clear();
-			element.sendKeys(text);
-			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		WebElement element = driver.findElement(by);
+		waitUtilElementVisible(element);
+		element.clear();
+		element.sendKeys(text);
+		pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
 	}
 
 	/**
@@ -1261,16 +965,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeysByKeybord(WebElement element, String text) {
-		try {
-			waitUtilElementVisible(element);
-			actionDriver.sendKeys(element, text);
-			actionDriver.perform();
-			pass("send text [ " + text + " ] to WebEdit");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		actionDriver.sendKeys(element, text);
+		actionDriver.perform();
+		pass("send text [ " + text + " ] to WebEdit");
 	}
 
 	/**
@@ -1282,17 +980,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void sendKeysByKeybord(By by, String text) {
-		try {
-			WebElement element = driver.findElement(by);
-			waitUtilElementVisible(element);
-			actionDriver.sendKeys(element, text);
-			actionDriver.perform();
-			pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		WebElement element = driver.findElement(by);
+		waitUtilElementVisible(element);
+		actionDriver.sendKeys(element, text);
+		actionDriver.perform();
+		pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
 	}
 
 	/**
@@ -1316,16 +1008,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByIndex(WebElement element, int index) {
-		try {
-			waitUtilElementVisible(element);
-			Select select = new Select(element);
-			select.selectByIndex(index);
-			pass("item selected by index [ " + index + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		Select select = new Select(element);
+		select.selectByIndex(index);
+		pass("item selected by index [ " + index + " ]");
 	}
 
 	/**
@@ -1337,17 +1023,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByIndex(By by, int index) {
-		try {
-			WebElement element = driver.findElement(by);
-			waitUtilElementVisible(element);
-			Select select = new Select(element);
-			select.selectByIndex(index);
-			pass("item selected by index [ " + index + " ] on [ " + by.toString() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		WebElement element = driver.findElement(by);
+		waitUtilElementVisible(element);
+		Select select = new Select(element);
+		select.selectByIndex(index);
+		pass("item selected by index [ " + index + " ] on [ " + by.toString() + " ]");
 	}
 
 	/**
@@ -1359,16 +1039,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByValue(WebElement element, String itemValue) {
-		try {
-			waitUtilElementVisible(element);
-			Select select = new Select(element);
-			select.selectByValue(itemValue);
-			pass("item selected by item value [ " + itemValue + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		Select select = new Select(element);
+		select.selectByValue(itemValue);
+		pass("item selected by item value [ " + itemValue + " ]");
 	}
 
 	/**
@@ -1380,17 +1054,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByValue(By by, String itemValue) {
-		try {
-			WebElement element = driver.findElement(by);
-			waitUtilElementVisible(element);
-			Select select = new Select(element);
-			select.selectByValue(itemValue);
-			pass("item selected by item value [ " + itemValue + " ] on [ " + by.toString() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		WebElement element = driver.findElement(by);
+		waitUtilElementVisible(element);
+		Select select = new Select(element);
+		select.selectByValue(itemValue);
+		pass("item selected by item value [ " + itemValue + " ] on [ " + by.toString() + " ]");
 	}
 
 	/**
@@ -1402,16 +1070,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByVisibleText(WebElement element, String text) {
-		try {
-			waitUtilElementVisible(element);
-			Select select = new Select(element);
-			select.selectByVisibleText(text);
-			pass("item selected by visible text [ " + text + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		waitUtilElementVisible(element);
+		Select select = new Select(element);
+		select.selectByVisibleText(text);
+		pass("item selected by visible text [ " + text + " ]");
 	}
 
 	/**
@@ -1423,17 +1085,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void selectByVisibleText(By by, String text) {
-		try {
-			WebElement element = driver.findElement(by);
-			waitUtilElementVisible(element);
-			Select select = new Select(element);
-			select.selectByVisibleText(text);
-			pass("item selected by visible text [ " + text + " ] on [ " + by.toString() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		WebElement element = driver.findElement(by);
+		waitUtilElementVisible(element);
+		Select select = new Select(element);
+		select.selectByVisibleText(text);
+		pass("item selected by visible text [ " + text + " ] on [ " + by.toString() + " ]");
 	}
 
 	/**
@@ -1445,19 +1101,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void setCheckBox(WebElement element, String onOrOff) {
-		try {
-			WebElement checkElement = element.findElement(By.tagName("input"));
-			waitUtilElementVisible(checkElement);
-			if ((onOrOff.toLowerCase().contains("on") && !checkElement.isSelected())
-					|| (onOrOff.toLowerCase().contains("off") && checkElement.isSelected())) {
-				element.click();
-			}
-			pass("the checkbox is set to [ " + onOrOff.toUpperCase() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
+		WebElement checkElement = element.findElement(By.tagName("input"));
+		waitUtilElementVisible(checkElement);
+		if ((onOrOff.toLowerCase().contains("on") && !checkElement.isSelected())
+				|| (onOrOff.toLowerCase().contains("off") && checkElement.isSelected())) {
+			element.click();
 		}
+		pass("the checkbox is set to [ " + onOrOff.toUpperCase() + " ]");
 	}
 
 	/**
@@ -1469,21 +1119,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void setCheckBox(By by, String onOrOff) {
-		try {
-			WebElement checkBox = driver.findElement(by);
-			waitUtilElementVisible(checkBox);
-			WebElement checkElement = checkBox.findElement(By.tagName("input"));
-			if ((onOrOff.toLowerCase().contains("on") && !checkElement.isSelected())
-					|| (onOrOff.toLowerCase().contains("off") && checkElement.isSelected())) {
-				checkBox.click();
-			}
-			pass("the checkbox [ " + by.toString() + " ] is set to [ " 
-					+ onOrOff.toUpperCase() + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
+		WebElement checkBox = driver.findElement(by);
+		waitUtilElementVisible(checkBox);
+		WebElement checkElement = checkBox.findElement(By.tagName("input"));
+		if ((onOrOff.toLowerCase().contains("on") && !checkElement.isSelected())
+				|| (onOrOff.toLowerCase().contains("off") && checkElement.isSelected())) {
+			checkBox.click();
 		}
+		pass("the checkbox [ " + by.toString() + " ] is set to [ " + onOrOff.toUpperCase() + " ]");
 	}
 
 	/**
@@ -1496,26 +1139,19 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected List<WebElement> findDisplayedElments(By by) {
 		List<WebElement> elementList = new ArrayList<WebElement>();
-		List<WebElement> elements = null;
 		WebElement element;
-		try {
-			elements = driver.findElements(by);
-			Iterator<WebElement> it = elements.iterator();
-			while ((element = it.next()) != null && element.isDisplayed()) {
-				elementList.add(element);
-			}
-			int eleNum = elementList.size();
-			if (eleNum > 0){
-				pass("got" + eleNum + "displayed elements [ " + by.toString() + " ]");
-			}else{
-				warn("there is not displayed element found by [" + by.toString() + " ]");
-			}
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
+		List<WebElement> elements = driver.findElements(by);
+		Iterator<WebElement> it = elements.iterator();
+		while ((element = it.next()) != null && element.isDisplayed()) {
+			elementList.add(element);
 		}
-		return elementList;
+		int eleNum = elementList.size();
+		if (eleNum > 0){
+			pass("got" + eleNum + "displayed elements [ " + by.toString() + " ]");
+		}else{
+			warn("there is not displayed element found by [" + by.toString() + " ]");
+		}
+	return elementList;
 	}
 
 	/**
@@ -1540,15 +1176,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected List<WebElement> findElements(By by) {
-		List<WebElement> elements = null;
-		try {
-			elements = driver.findElements(by);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
-		return elements;
+		return driver.findElements(by);
 	}
 
 	/**
@@ -1604,16 +1232,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected int tableRowCount(By tabBy) {
-		int rowCount = 0;
-		try {
-			webTable = tableCache(tabBy);
-			rowCount = webTable.rowCount();
-			pass("the webTable " + tabBy.toString() + "has row count: [ " + rowCount + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		webTable = tableCache(tabBy);
+		int rowCount = webTable.rowCount();
+		pass("the webTable " + tabBy.toString() + "has row count: [ " + rowCount + " ]");
 		return rowCount;
 	}
 
@@ -1627,17 +1248,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected int tableColCount(By tabBy, int rowNum) {
-		int colCount = 0;
-		try {
-			webTable = tableCache(tabBy);
-			colCount = webTable.colCount(rowNum);
-			pass("count columns of the webTable " + tabBy.toString() 
-				+ " on the row [ " + rowNum + " ], got: [ " + colCount + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		webTable = tableCache(tabBy);
+		int colCount = webTable.colCount(rowNum);
+		pass("count columns of the webTable " + tabBy.toString() 
+			+ " on the row [ " + rowNum + " ], got: [ " + colCount + " ]");
 		return colCount;
 	}
 
@@ -1654,14 +1268,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected WebElement tableChildElement(By tabBy, int row, int col, String type, int index) {
-		try {
-			webTable = tableCache(tabBy);
-			return webTable.childItem(row, col, type, index);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		return tableCache(tabBy).childItem(row, col, type, index);
 	}
 
 	/**
@@ -1675,150 +1282,64 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String tableCellText(By tabBy, int row, int col) {
-		String text = null;
-		try {
-			webTable = tableCache(tabBy);
-			text = webTable.cellText(row, col);
-			pass("the text of cell[" + row + "," + col + "] is: [ " + text + " ]");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		webTable = tableCache(tabBy);
+		String text = webTable.cellText(row, col);
+		pass("the text of cell[" + row + "," + col + "] is: [ " + text + " ]");
 		return text;
-	}
-
-	/**
-	 * wait for the element visiable in timeout setting</BR>
-	 * 在指定时间内等待，直到对象可见。
-	 * 
-	 * @param by the element locator By
-	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
-	 */
-	protected boolean waitForElementVisible(By by, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		try {
-			return wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null;
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * wait for the element visiable in timeout setting</BR>
-	 * 在指定时间内等待，直到对象可见。
-	 * 
-	 * @param element the element to be found.
-	 * @param seconds timeout in seconds.
-	 * @throws RuntimeException.
-	 */
-	protected boolean waitForElementVisible(WebElement element, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		try {
-			return wait.until(ExpectedConditions.visibilityOf(element)) != null;
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * wait for the element clickable in timeout setting</BR>
-	 * 在指定时间内等待，直到对象能够被点击。
-	 * 
-	 * @param by the element locator By
-	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
-	 */
-	protected boolean waitForElementClickable(By by, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		try {
-			return wait.until(ExpectedConditions.elementToBeClickable(by)) != null;
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * wait for text appears on element in timeout setting</BR>
-	 * 在指定时间内等待，直到指定对象上出现指定文本。
-	 * 
-	 * @param by the element locator By
-	 * @param text the text to be found of element
-	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
-	 */
-	protected boolean waitForTextOnElement(By by, String text, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		try {
-			return wait.until(ExpectedConditions.textToBePresentInElement(by, text)) != null;
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * wait for text appears in element attributes in timeout setting</BR>
-	 * 在指定时间内等待，直到指定对象的某个属性值等于指定文本。
-	 * 
-	 * @param by the element locator By
-	 * @param text the text to be found in element attributes
-	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
-	 */
-	protected boolean waitForTextOfElementAttr(By by, String text, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		try {
-			return wait.until(ExpectedConditions.textToBePresentInElementValue(by, text)) != null;
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * wait for alert disappears in the time unit ofseconds</BR>
-	 * 在指定时间内等待，对话框（Dialog）消失，用以缓冲运行，增加健壮性。
-	 * 
-	 * @throws RuntimeException
-	 */
-	protected boolean waitForAlertDisappear(int seconds) {
-		long start = System.currentTimeMillis();
-		while ((System.currentTimeMillis() - start) < seconds * 1000) {
-			try {
-				driver.switchTo().alert();
-			} catch (NoAlertPresentException ne) {
-				return true;
-			} catch (Exception e) {
-				failureValidationAndHandle();
-				LOG.error(e);
-				throw new RuntimeException(e);
-			}
-		}
-		return false;
 	}
 
 	/**
 	 * wait for window appears in the time unit seconds</BR>
 	 * 在指定时间内等待窗口出现，超时则报错，用以缓冲运行，增加健壮性。
+	 * 
+	 * @param browserTitle the title of the browser window.
+	 * @param seconds timeout in timeunit of seconds.
 	 */
-	protected boolean waitForWindowPresent(String winTitle, int seconds) {
+	protected boolean waitForWindowPresent(String browserTitle, int seconds) {
 		long start = System.currentTimeMillis();
 		boolean winExists = false;
 		while (!winExists && (System.currentTimeMillis() - start) < seconds * 1000) {
-			winExists = browserExists(winTitle);
+			pause(stepTimeUnit);
+			Object[] winArray = driver.getWindowHandles().toArray();
+			for (int i = 0; i < winArray.length && !winExists; i ++) {
+				driver.switchTo().window(winArray[i].toString());
+				winExists = driver.getTitle().contains(browserTitle);
+			}
 		}
-		ASSERT.assertTrue(winExists);
-		return winExists;
+		ASSERT.assertTrue("window is not present after " + seconds + "seconds!", winExists);
+		return true;
+	}
+
+	/**
+	 * wait for window appears in the time unit seconds</BR>
+	 * 在指定时间内等待新窗口出现，超时则报错，用以缓冲运行，增加健壮性。
+	 */
+	protected boolean waitForNewWindowOpened(int oldCount, int seconds) {
+		ASSERT.assertTrue("new window did not opened in " + seconds + "seconds!",isNewWindowExits(oldCount, seconds));
+		return true;
+	}
+
+	/**
+	 * wait for window appears in the time unit seconds</BR>
+	 * 在指定时间内等待新窗口出现，超时则报错，用以缓冲运行，增加健壮性。
+	 */
+	protected boolean waitForNewWindowOpened(Set<String> oldHandlers, int seconds) {
+		ASSERT.assertTrue("new window did not opened in " + seconds + "seconds!",
+				isNewWindowExits(oldHandlers, seconds));
+		return true;
+	}
+
+	/**
+	 * wait for and switch to frame when avilable in timeout setting</BR>
+	 * 在指定时间内等待，直到指定框架出现并且选择他。
+	 * 
+	 * @param locator the id or name of frames.
+	 * @param seconds timeout in seconds
+	 * @throws RuntimeException
+	 */
+	protected boolean waitForAndSwitchToFrame(String locator, int seconds) {
+		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
+		return wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(locator)) != null;
 	}
 	
 	/**
@@ -1838,16 +1359,139 @@ public class WebDriverWebPublic extends WebDriverController {
 	 *
 	 * @param timeout max time used to load page.
 	 */
-	protected void waitForPageToLoad(int timeout){
+	protected boolean waitForPageToLoad(int timeout){
 		long start = System.currentTimeMillis();
 		boolean loadCompleted = false;
 		while (!loadCompleted && ((System.currentTimeMillis() - start) < timeout * 1000)) {
 			loadCompleted = pageLoadSucceed();
 			pause(stepTimeUnit);
 		}
-		if (!loadCompleted){
-			throw new TimeoutException("the page did not load complete in " + timeout + "seconds!");
+		ASSERT.assertTrue("the page did not load complete in " + timeout + "seconds!",loadCompleted);
+		return true;
+	}
+
+	/**
+	 * wait for alert appears in the time unit of seconds</BR>
+	 * 在指定时间内等待，对话框（Dialog）出现，用以缓冲运行，增加健壮性。
+	 */
+	protected boolean waitForAlertPresent(int seconds) {
+		ASSERT.assertTrue("alert does not appear in " + seconds + " seconds!", alertExists(seconds));
+		return true;
+	}
+
+	/**
+	 * wait for alert disappears in the time unit of seconds</BR>
+	 * 在指定时间内等待，对话框（Dialog）消失，用以缓冲运行，增加健壮性。
+	 * 
+	 * @throws RuntimeException
+	 */
+	protected boolean waitForAlertDisappear(int seconds) {
+		long start = System.currentTimeMillis();
+		boolean exists = true;
+		while ((System.currentTimeMillis() - start) < seconds * 1000) {
+			try {
+				driver.switchTo().alert();
+			} catch (NoAlertPresentException ne) {
+				exists = false;
+				break;
+			}
 		}
+		ASSERT.assertFalse("alert does not disappear in " + seconds + " seconds!", exists);
+		return exists;
+	}
+
+
+	/**
+	 * wait for the element visiable in timeout setting</BR>
+	 * 在指定时间内等待，直到对象可见。
+	 * 
+	 * @param by the element locator By
+	 * @param seconds timeout in seconds
+	 * @throws RuntimeException
+	 */
+	protected boolean waitForElementVisible(By by, int seconds) {
+		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
+		return wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null;
+	}
+
+	/**
+	 * wait for the element visiable in timeout setting</BR>
+	 * 在指定时间内等待，直到对象可见。
+	 * 
+	 * @param element the element to be found.
+	 * @param seconds timeout in seconds.
+	 * @throws RuntimeException.
+	 */
+	protected boolean waitForElementVisible(WebElement element, int seconds) {
+		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
+		return wait.until(ExpectedConditions.visibilityOf(element)) != null;
+	}
+
+	/**
+	 * wait for the element not visiable in timeout setting</BR>
+	 * 在指定时间内等待，直到对象不可见。
+	 * 
+	 * @param by the element locator.
+	 * @param seconds timeout in seconds.
+	 * @throws RuntimeException.
+	 */
+	protected boolean waitForElementNotVisible(By by, int seconds) {
+		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
+		return wait.until(ExpectedConditions.invisibilityOfElementLocated(by)) != null;
+	}
+
+	/**
+	 * wait for the element present in timeout setting</BR>
+	 * 在指定时间内等待，直到对象出现在页面上。
+	 * 
+	 * @param by the element locator.
+	 * @param seconds timeout in seconds.
+	 * @throws RuntimeException.
+	 */
+	protected boolean waitForElementPresent(By by, int seconds) {
+		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
+		return wait.until(ExpectedConditions.presenceOfElementLocated(by)) != null;
+	}
+
+	/**
+	 * wait for the element clickable in timeout setting</BR>
+	 * 在指定时间内等待，直到对象能够被点击。
+	 * 
+	 * @param by the element locator By
+	 * @param seconds timeout in seconds
+	 * @throws RuntimeException
+	 */
+	protected boolean waitForElementClickable(By by, int seconds) {
+		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
+		return wait.until(ExpectedConditions.elementToBeClickable(by)) != null;
+	}
+
+	/**
+	 * wait for text appears on element in timeout setting</BR>
+	 * 在指定时间内等待，直到指定对象上出现指定文本。
+	 * 
+	 * @param by the element locator By
+	 * @param text the text to be found of element
+	 * @param seconds timeout in seconds
+	 * @throws RuntimeException
+	 */
+	protected boolean waitForTextOnElement(By by, String text, int seconds) {
+		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
+		return wait.until(ExpectedConditions.textToBePresentInElement(by, text)) != null;
+	}
+
+	/**
+	 * wait for text appears in element attributes in timeout setting</BR>
+	 * 在指定时间内等待，直到指定对象的某个属性值等于指定文本。
+	 * 
+	 * @param by the element locator By
+	 * @param text the text to be found in element attributes
+	 * @param seconds timeout in seconds
+	 * @throws RuntimeException
+	 */
+	protected boolean waitForTextOfElementAttr(By by, String text, int seconds) {
+		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
+		return wait.until(ExpectedConditions.textToBePresentInElementValue(by, text)) != null;
 	}
 
 	/**
@@ -1911,14 +1555,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void chooseOKOnAlert() {
-		try {
-			driver.switchTo().alert().accept();
-			pass("click OK button on alert");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().alert().accept();
+		pass("click OK button on alert");
 	}
 
 	/**
@@ -1928,14 +1566,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void chooseCancelOnAlert() {
-		try {
-			driver.switchTo().alert().dismiss();
-			pass("click Cancel on alert dialog");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().alert().dismiss();
+		pass("click Cancel on alert dialog");
 	}
 
 	/**
@@ -1946,15 +1578,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getTextOfAlert() {
-		String alerts = null;
-		try {
-			alerts = driver.switchTo().alert().getText();
-			pass("the text of the alert is: " + alerts);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String alerts = driver.switchTo().alert().getText();
+		pass("the text of the alert is: " + alerts);
 		return alerts;
 	}
 
@@ -1966,14 +1591,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void setTextOnAlert(String text) {
-		try {
-			driver.switchTo().alert().sendKeys(text);
-			pass("set text [ " + text + " ] on alert");
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		driver.switchTo().alert().sendKeys(text);
+		pass("set text [ " + text + " ] on alert");
 	}
 
 	/**
@@ -2006,15 +1625,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getWindowTitle() {
-		String title = null;
-		try {
-			title = driver.getTitle();
-			pass("current window title is :" + title);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String title = driver.getTitle();
+		pass("current window title is :" + title);
 		return title;
 	}
 
@@ -2026,15 +1638,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getCurrentUrl() {
-		String url = null;
-		try {
-			url = driver.getCurrentUrl();
-			pass("current session url is :" + url);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String url = driver.getCurrentUrl();
+		pass("current session url is :" + url);
 		return url;
 	}
 
@@ -2046,16 +1651,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected Set<String> getWindowHandles() {
-		Set<String> handler = null;
-		try {
-			handler = driver.getWindowHandles();
-			handler = driver.getWindowHandles();
-			pass("window handlers are: " + handler.toString());
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		Set<String> handler = driver.getWindowHandles();
+		handler = driver.getWindowHandles();
+		pass("window handlers are: " + handler.toString());
 		return handler;
 	}
 
@@ -2067,15 +1665,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getWindowHandle() {
-		String handler = null;
-		try {
-			handler = driver.getWindowHandle();
-			pass("current window handler is:" + handler);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String handler = driver.getWindowHandle();
+		pass("current window handler is:" + handler);
 		return handler;
 	}
 
@@ -2087,15 +1678,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getPageSource() {
-		String source = null;
-		try {
-			source = driver.getPageSource();
-			pass("page source begins with: " + source.substring(0, 50));
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String source = driver.getPageSource();
+		pass("page source begins with: " + source.substring(0, 50));
 		return source;
 	}
 
@@ -2107,15 +1691,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getSessionId() {
-		String sessionId = null;
-		try {
-			sessionId = driver.getSessionId().toString();
-			pass("current sessionid is:" + sessionId);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String sessionId = ((RemoteWebDriver)driver).getSessionId().toString();
+		pass("current sessionid is:" + sessionId);
 		return sessionId;
 	}
 
@@ -2128,15 +1705,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getTagName(WebElement element) {
-		String tagName = null;
-		try {
-			tagName = element.getTagName();
-			pass("element's TagName is: " + tagName);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String tagName = element.getTagName();
+		pass("element's TagName is: " + tagName);
 		return tagName;
 	}
 
@@ -2149,15 +1719,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getTagName(By by) {
-		String tagName = null;
-		try {
-			tagName = driver.findElement(by).getTagName();
-			pass("element [ " + by.toString() + " ]'s TagName is: " + tagName);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String tagName = driver.findElement(by).getTagName();
+		pass("element [ " + by.toString() + " ]'s TagName is: " + tagName);
 		return tagName;
 	}
 
@@ -2171,15 +1734,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getAttribute(WebElement element, String attributeName) {
-		String value = null;
-		try {
-			value = element.getAttribute(attributeName);
-			pass("element's " + attributeName + "is: " + value);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String value = element.getAttribute(attributeName);
+		pass("element's " + attributeName + "is: " + value);
 		return value;
 	}
 
@@ -2193,15 +1749,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getAttribute(By by, String attributeName) {
-		String value = null;
-		try {
-			value = driver.findElement(by).getAttribute(attributeName);
-			pass("element [ " + by.toString() + " ]'s " + attributeName + "is: " + value);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String value = driver.findElement(by).getAttribute(attributeName);
+		pass("element [ " + by.toString() + " ]'s " + attributeName + "is: " + value);
 		return value;
 	}
 
@@ -2214,15 +1763,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isSelected(WebElement element) {
-		boolean isSelected = false;
-		try {
-			isSelected = element.isSelected();
-			pass("element selected? " + String.valueOf(isSelected));
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		boolean isSelected = element.isSelected();
+		pass("element selected? " + String.valueOf(isSelected));
 		return isSelected;
 	}
 
@@ -2235,15 +1777,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isSelected(By by) {
-		boolean isSelected = false;
-		try {
-			isSelected = driver.findElement(by).isSelected();
-			pass("element [ " + by.toString() + " ] selected? "	+ String.valueOf(isSelected));
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		boolean isSelected = driver.findElement(by).isSelected();
+		pass("element [ " + by.toString() + " ] selected? "	+ String.valueOf(isSelected));
 		return isSelected;
 	}
 
@@ -2256,15 +1791,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isEnabled(WebElement element) {
-		boolean isEnabled = false;
-		try {
-			isEnabled = element.isEnabled();
-			pass("element enabled? " + String.valueOf(isEnabled));
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		boolean isEnabled = element.isEnabled();
+		pass("element enabled? " + String.valueOf(isEnabled));
 		return isEnabled;
 	}
 
@@ -2277,15 +1805,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isEnabled(By by) {
-		boolean isEnabled = false;
-		try {
-			isEnabled = driver.findElement(by).isEnabled();
-			pass("element [ " + by.toString() + " ] enabled? " + String.valueOf(isEnabled));
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		boolean isEnabled = driver.findElement(by).isEnabled();
+		pass("element [ " + by.toString() + " ] enabled? " + String.valueOf(isEnabled));
 		return isEnabled;
 	}
 
@@ -2297,15 +1818,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getText(WebElement element) {
-		String text = null;
-		try {
-			text = element.getText();
-			pass("element text is:" + text);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String text = element.getText();
+		pass("element text is:" + text);
 		return text;
 	}
 
@@ -2318,15 +1832,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getText(By by) {
-		String text = null;
-		try {
-			text = driver.findElement(by).getText();
-			pass("element [ " + by.toString() + " ]'s text is: " + text);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String text = driver.findElement(by).getText();
+		pass("element [ " + by.toString() + " ]'s text is: " + text);
 		return text;
 	}
 
@@ -2339,15 +1846,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isDisplayed(WebElement element) {
-		boolean isDisplayed = false;
-		try {
-			isDisplayed = element.isDisplayed();
-			pass("element displayed? " + String.valueOf(isDisplayed));
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		boolean isDisplayed = element.isDisplayed();
+		pass("element displayed? " + String.valueOf(isDisplayed));
 		return isDisplayed;
 	}
 
@@ -2360,15 +1860,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected boolean isDisplayed(By by) {
-		boolean isDisplayed = false;
-		try {
-			isDisplayed = driver.findElement(by).isDisplayed();
-			pass("element [ " + by.toString() + " ] displayed? " + String.valueOf(isDisplayed));
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		boolean isDisplayed = driver.findElement(by).isDisplayed();
+		pass("element [ " + by.toString() + " ] displayed? " + String.valueOf(isDisplayed));
 		return isDisplayed;
 	}
 
@@ -2382,15 +1875,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getCssValue(WebElement element, String propertyName) {
-		String cssValue = null;
-		try {
-			cssValue = element.getCssValue(propertyName);
-			pass("element's css [" + propertyName + "] value is:" + cssValue);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
+		String cssValue = element.getCssValue(propertyName);
+		pass("element's css [" + propertyName + "] value is:" + cssValue);
 		return cssValue;
 	}
 
@@ -2404,16 +1890,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected String getCssValue(By by, String propertyName) {
-		String cssValue = null;
-		try {
-			cssValue = driver.findElement(by).getCssValue(propertyName);
-			pass("element [ " + by.toString() + " ]'s css[" 
+		String cssValue = driver.findElement(by).getCssValue(propertyName);
+		pass("element [ " + by.toString() + " ]'s css[" 
 				+ propertyName + "] value is: " + cssValue);
-		} catch (Exception e) {
-			failureValidationAndHandle();
-			LOG.error(e);
-			throw new RuntimeException(e);
-		}
 		return cssValue;
 	}
 }

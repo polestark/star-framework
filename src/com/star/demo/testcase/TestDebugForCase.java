@@ -35,8 +35,6 @@ public class TestDebugForCase extends DemoBaseCase {
 		this.click(By.linkText("收付汇总打印"));
 		this.selectFrame(By.id("content"));
 
-		ASSERT.assertTrue(elementExists(By.name("ipTable"), 1));
-		
 		sendKeys(By.name("settlementNettingSeq"), "1110000227150");
 		click(By.name("button"));
 		

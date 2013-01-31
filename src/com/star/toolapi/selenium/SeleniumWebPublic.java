@@ -821,9 +821,9 @@ public class SeleniumWebPublic extends SeleniumController {
 	 * @param 	timeout time out setting to find the pop window
 	 * @throws	RuntimeException
 	 */
-	protected void assertErrors(String title, String idOrName, String eleType, long timeout) {
+	protected void assertErrors(String title, String idOrName, String eleType, int timeout) {
 		String fileName = ROOT_DIR + "/error_info_" + SBF.getMilSecNow() + ".txt";
-		AU3.assertErrors(title, idOrName, eleType, fileName, timeout / 1000);
+		AU3.assertErrors(title, idOrName, eleType, fileName, timeout);
 		StringBuffer buffer = new StringBuffer();
 		File file = null;
 		BufferedReader br = null;

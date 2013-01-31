@@ -1,4 +1,4 @@
-package com.star.toolapi.user.web;
+package com.star.toolapi.webdriver.user;
 
 public enum JSCollection{
 	MAXIMIZE_WINDOW("if(document.all) { self.moveTo(0, 0); "

@@ -18,7 +18,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  * @author 测试仔刘毅
  */
 public class StarNewAssertion {
-
+	
 	private WebDriver driver = null;
 	private String captureTo = null;
 	private String className = null;
@@ -26,7 +26,7 @@ public class StarNewAssertion {
 	private Logger logger = null;
 	private boolean exitRun = true;
 	private boolean needLog = false;
-
+	
 	/**
 	 * Description: cunstruction with parameter initialize.
 	 * 
@@ -56,7 +56,7 @@ public class StarNewAssertion {
 	public StarNewAssertion(WebDriver driver, String captureToPath, String className, String sMark) {
 		this(driver, captureToPath, className, null, sMark);
 	}
-
+	
 	/**
 	 * Description: set if exit on condition assert failed.
 	 *
@@ -65,7 +65,7 @@ public class StarNewAssertion {
 	public void setExitOnAssertFailure(boolean exitOnError){
 		this.exitRun = exitOnError;
 	}
-
+	
 	/**
 	 * Description: set if your want to record log after assert passed.
 	 *
@@ -74,7 +74,7 @@ public class StarNewAssertion {
 	public void setRecordOnSucceed(boolean needRecord){
 		this.needLog = needRecord;
 	}
-
+	
 	/**
 	 * Description:record log when assert passed.
 	 */
@@ -92,16 +92,16 @@ public class StarNewAssertion {
 		String cName = trace[last].getClassName() + " # " + trace[last].getLineNumber();
 		logger.info(cName + sMark + mtdName + sMark + status + sMark + message);
 	}
-
+	
 	/**
 	 * Description:record log when assert passed.
 	 */
 	private void recordSuccessAfterAssertion(){
-		if (needLog){
+		if (needLog && null != logger){
 			recordMessageAfterAssertion("passed", "assert passed!");
 		}
 	}
-
+	
 	/**
 	 * Description:throw RuntimeException has been caught that stops the test run.
 	 *
@@ -112,7 +112,7 @@ public class StarNewAssertion {
 			throw new RuntimeException(exception);
 		}				
 	}
-
+	
 	/**
 	 * Description: throw user defined RuntimeException that stops the test run.
 	 *

@@ -6,15 +6,24 @@ import java.io.InputStreamReader;
 import java.util.concurrent.TimeoutException;
 
 public class ThreadExecutor{
-	private long threadTimeOut = 60000;
-	private long readTimeOut = 20000;
+	private long readTimeOut = 30000;
+	private long threadTimeOut = 90000;
 
 	/**
 	 * set process execute timeout 
 	 * @param timeOut timeout of milliseconds.
 	 */
 	public void setThreadTimeOut(long timeOut){
-		this.threadTimeOut = timeOut;
+		this.threadTimeOut = timeOut + this.readTimeOut;
+	}
+
+	/**
+	 * Description:get the thread execute timeout setting.
+	 *
+	 * @return timeout setting
+	 */
+	public long getThreadTimeOut(){
+		return this.threadTimeOut;
 	}
 
 	/**
@@ -23,6 +32,15 @@ public class ThreadExecutor{
 	 */
 	public void setReadTimeOut(long timeOut){
 		this.readTimeOut = timeOut;
+	}
+	
+	/**
+	 * Description:get the buffer read timeout setting.
+	 *
+	 * @return timeout setting
+	 */
+	public long getReadTimeOut(){
+		return this.readTimeOut;
 	}
 	
 	/**
