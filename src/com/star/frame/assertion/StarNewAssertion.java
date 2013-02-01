@@ -1,13 +1,8 @@
 package com.star.frame.assertion;
 
-import java.io.File;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.remote.RemoteWebDriver;
+import com.star.toolapi.webdriver.user.RuntimeSupport;
 
 /**
  * Description: use org.testng.AssertJUnit and add user defined operations</BR>
@@ -19,6 +14,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  */
 public class StarNewAssertion {
 	
+	private RuntimeSupport supprt;
 	private WebDriver driver = null;
 	private String captureTo = null;
 	private String className = null;
@@ -39,6 +35,7 @@ public class StarNewAssertion {
 	public StarNewAssertion(WebDriver driver, String captureToPath, String className, Logger logger,
 			String sMark) {
 		this.driver = driver;
+		this.supprt = new RuntimeSupport(this.driver);
 		this.logger = logger;
 		this.captureTo = captureToPath;
 		this.className = className;
@@ -129,12 +126,10 @@ public class StarNewAssertion {
 	 *
 	 * @throws Exception
 	 */
-	private void screenShot() throws Exception{
+	private void screenShotOnAssertionError(){
 		String time = String.valueOf(System.currentTimeMillis());
 		String fileName = captureTo + className + "_assertion_" + time + ".png";
-		RemoteWebDriver rwd = (RemoteWebDriver) new Augmenter().augment(driver);
-		File file = ((TakesScreenshot) rwd).getScreenshotAs(OutputType.FILE);
-		FileUtils.copyFile(file, new File(fileName));
+		supprt.screenShot(fileName);
 		if (null != logger){
 			recordMessageAfterAssertion("failed", "assert failed, screenshot is: [" + fileName + "]");
 		}
@@ -151,11 +146,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertTrue(message, condition);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			try {
-				screenShot();
-			} catch (Exception e) {
-				throw new RuntimeException("take screen shot failed with unexpected Exception!");
-			}
+			screenShotOnAssertionError();
 			if (null == message) {
 				ae.printStackTrace();
 				exitOnAssertionError(ae);
@@ -244,11 +235,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertSame(message, expected, actual);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			try {
-				screenShot();
-			} catch (Exception e) {
-				throw new RuntimeException("take screen shot failed with unexpected Exception!");
-			}
+			screenShotOnAssertionError();
 			if (null == message) {
 				ae.printStackTrace();
 				exitOnAssertionError(ae);
@@ -281,11 +268,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertNotSame(message, expected, actual);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			try {
-				screenShot();
-			} catch (Exception e) {
-				throw new RuntimeException("take screen shot failed with unexpected Exception!");
-			}
+			screenShotOnAssertionError();
 			if (null == message) {
 				ae.printStackTrace();
 				exitOnAssertionError(ae);
@@ -318,11 +301,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			try {
-				screenShot();
-			} catch (Exception e) {
-				throw new RuntimeException("take screen shot failed with unexpected Exception!");
-			}
+			screenShotOnAssertionError();
 			if (null == message) {
 				ae.printStackTrace();
 				exitOnAssertionError(ae);
@@ -355,11 +334,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			try {
-				screenShot();
-			} catch (Exception e) {
-				throw new RuntimeException("take screen shot failed with unexpected Exception!");
-			}
+			screenShotOnAssertionError();
 			if (null == message) {
 				ae.printStackTrace();
 				exitOnAssertionError(ae);
@@ -393,11 +368,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual, delta);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			try {
-				screenShot();
-			} catch (Exception e) {
-				throw new RuntimeException("take screen shot failed with unexpected Exception!");
-			}
+			screenShotOnAssertionError();
 			if (null == message) {
 				ae.printStackTrace();
 				exitOnAssertionError(ae);
@@ -432,11 +403,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual, delta);
 			logger.info(className + sMark + "Test-Assertion" + sMark  + "passed" + sMark + "assert passed!");
 		} catch (AssertionError ae) {
-			try {
-				screenShot();
-			} catch (Exception e) {
-				throw new RuntimeException("take screen shot failed with unexpected Exception!");
-			}
+			screenShotOnAssertionError();
 			if (null == message) {
 				ae.printStackTrace();
 				exitOnAssertionError(ae);

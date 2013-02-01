@@ -2,6 +2,7 @@ package com.star.support.externs;
 
 import com.star.frame.executor.ThreadExecutor;
 import com.star.logging.frame.LoggingManager;
+import com.star.testdata.string.StringBufferUtils;
 
 /**
  * 说明：
@@ -53,6 +54,7 @@ public class Win32GuiByAu3 {
 			execute.executeCommands(cmd);			
 		}catch (Exception e){
 			LOG.error(e);
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}finally{
 			setOrginalTimeout();
@@ -92,6 +94,7 @@ public class Win32GuiByAu3 {
 			execute.executeCommands(cmd);			
 		}catch (Exception e){
 			LOG.error(e);
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}finally{
 			setOrginalTimeout();
@@ -132,6 +135,7 @@ public class Win32GuiByAu3 {
 			execute.executeCommands(cmd);			
 		}catch (Exception e){
 			LOG.error(e);
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}finally{
 			setOrginalTimeout();
@@ -171,6 +175,7 @@ public class Win32GuiByAu3 {
 			execute.executeCommands(cmd);			
 		}catch (Exception e){
 			LOG.error(e);
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}finally{
 			setOrginalTimeout();
@@ -208,6 +213,7 @@ public class Win32GuiByAu3 {
 			execute.executeCommands(cmd);			
 		}catch (Exception e){
 			LOG.error(e);
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}finally{
 			setOrginalTimeout();
@@ -242,6 +248,7 @@ public class Win32GuiByAu3 {
 			execute.executeCommands(cmd);			
 		}catch (Exception e){
 			LOG.error(e);
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}finally{
 			setOrginalTimeout();
@@ -257,6 +264,28 @@ public class Win32GuiByAu3 {
 	 **/
 	public void activateWindow(String title){
 		activateWindow(title, 5);
+	}
+
+	/**
+	 * take screen capture on windows desktop</BR>
+	 * you can use it like this: screenShot("D:\\abc.png");
+	 * 
+	 * @param	fileName file name of screen capture to be saved.
+	 * @throws	RuntimeException
+	 **/
+	public void screenCapture(String fileName){
+		
+		new StringBufferUtils().createFoldersNeeded(fileName);
+		
+		String fileExec = ASSIST + "ScreenCapture.exe";
+		String cmd = "\"" + fileExec + "\" \"" + fileName + "\"";
+		try{
+			execute.executeCommands(cmd);
+		}catch (Exception e){
+			LOG.error(e);
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -279,6 +308,7 @@ public class Win32GuiByAu3 {
 			execute.executeCommands(cmd);			
 		}catch (Exception e){
 			LOG.error(e);
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}finally{
 			setOrginalTimeout();

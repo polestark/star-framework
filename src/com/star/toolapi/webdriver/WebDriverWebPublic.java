@@ -10,19 +10,13 @@ package com.star.toolapi.webdriver;
  * @author 测试仔刘毅
  */
 
-import java.io.File;
 import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-import org.apache.commons.io.FileUtils;
-
 import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.Select;
@@ -33,16 +27,17 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.star.logging.frame.LoggingManager;
-import com.star.toolapi.webdriver.user.JSCollection;
-import com.star.toolapi.webdriver.user.WebTable;
+import com.star.toolapi.webdriver.user.JScriptCollection;
+import com.star.toolapi.webdriver.user.RuntimeSupport;
+import com.star.toolapi.webdriver.user.WebDriverTable;
 
 public class WebDriverWebPublic extends WebDriverController {
 
 	private static final LoggingManager LOG = new LoggingManager(WebDriverWebPublic.class.getName());
-	protected static final String FORMATTER = "_yyyyMMddHHmmssSSS";
+	protected static final String FORMATTER = "_yyyyMMdd_HHmmssSSS";
 	protected static By tabFinder = null;
-	protected static WebTable webTable = null;
-	protected String EXPECTED_ALERTS = CONFIG.get("EXPECTED_ALERTS");
+	protected static WebDriverTable webTable = null;
+	protected final RuntimeSupport supprt = new RuntimeSupport(driver);
 	
 	/**
 	 * wait util the element visible in max wait time setting</BR>
@@ -86,21 +81,16 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws ElementNotVisibleException
 	 */
 	protected void waitUtilElementVisible(By by, int timeout) {
-		WebElement element = null;
 		long start = System.currentTimeMillis();
 		boolean isDisplayed = false;
-		try {
-			setElementLocateTimeout(1);
-			while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
-				element = findElement(by);
-				isDisplayed = (element == null) ? false : element.isDisplayed();
-			}
-			ASSERT.setExitOnAssertFailure(true);
-			ASSERT.assertTrue("element " + by.toString() + " not visible in " + timeout + " seconds!", isDisplayed);
-		} catch (Exception e) {
-		} finally {
-			setElementLocateTimeout(maxWaitfor);
+		setElementLocateTimeout(1);
+		while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
+			WebElement element = findElement(by);
+			isDisplayed = (element == null) ? false : element.isDisplayed();
 		}
+		ASSERT.setExitOnAssertFailure(true);
+		ASSERT.assertTrue("element " + by.toString() + " not visible in " + timeout + " seconds!", isDisplayed);
+		setElementLocateTimeout(maxWaitfor);
 	}
 
 	/**
@@ -164,13 +154,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void takeScreenShot(String fileName) {
-		try {
-			RemoteWebDriver swd = (RemoteWebDriver) new Augmenter().augment(driver);
-			File file = ((TakesScreenshot) swd).getScreenshotAs(OutputType.FILE);
-			FileUtils.copyFile(file, new File(fileName));
-		} catch (Exception e) {
-			throw new RuntimeException("unexpected Exception occured: " + e.getMessage());
-		}
+		supprt.screenShot(fileName);
 	}
 
 	/**
@@ -241,14 +225,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected boolean elementExists(final By by, int seconds) {
 		long start = System.currentTimeMillis();
 		boolean exists = false;
+		setElementLocateTimeout(1);
 		while (!exists && ((System.currentTimeMillis() - start) < seconds * 1000)) {
-			try {
-				setElementLocateTimeout(1);
-				exists = driver.findElements(by).size() > 0;
-			}finally{
-				setElementLocateTimeout(maxWaitfor);
-			}
+			exists = driver.findElements(by).size() > 0;
 		}
+		setElementLocateTimeout(maxWaitfor);
 		return exists;
 	}
 
@@ -306,7 +287,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 网页窗口最大化操作。
 	 */
 	protected void maximizeWindow() {
-		jsExecutor(JSCollection.MAXIMIZE_WINDOW.getValue(), "current window maximized");
+		jsExecutor(JScriptCollection.MAXIMIZE_WINDOW.getValue(), "current window maximized");
 	}
 
 	/**
@@ -704,7 +685,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void clickByJavaScript(WebElement element) {
 		waitUtilElementVisible(element);
-		jsExecutor(JSCollection.CLICK_BY_JAVASCRIPT.getValue(), "click on element", element);
+		jsExecutor(JScriptCollection.CLICK_BY_JAVASCRIPT.getValue(), "click on element", element);
 	}
 
 	/**
@@ -716,7 +697,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void clickByJavaScript(By by) {
 		waitUtilElementVisible(driver.findElement(by));
-		jsExecutor(JSCollection.CLICK_BY_JAVASCRIPT.getValue(), 
+		jsExecutor(JScriptCollection.CLICK_BY_JAVASCRIPT.getValue(), 
 				"click on element [ " + by.toString() + " ] ", driver.findElement(by));
 	}
 
@@ -1199,17 +1180,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param tabBy the element locator By
 	 */
-	private synchronized WebTable tableCache(By tabBy) {
+	private synchronized WebDriverTable tableCache(By tabBy) {
 		waitUtilElementVisible(tabBy);
 		if (tabFinder == null) {
 			tabFinder = tabBy;
-			return new WebTable(driver, tabBy);
+			return new WebDriverTable(driver, tabBy);
 		} else {
 			if (tabBy.toString().equals(tabFinder.toString())) {
 				return webTable;
 			} else {
 				tabFinder = tabBy;
-				return new WebTable(driver, tabBy);
+				return new WebDriverTable(driver, tabBy);
 			}
 		}
 	}
@@ -1349,7 +1330,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return load comploete or not.
 	 */
 	protected boolean pageLoadSucceed() {
-		Object loadCompleted = jsReturner(JSCollection.BROWSER_READY_STATUS.getValue());
+		Object loadCompleted = jsReturner(JScriptCollection.BROWSER_READY_STATUS.getValue());
 		return loadCompleted.toString().toLowerCase().equals("complete");
 	}
 
@@ -1499,7 +1480,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在对话框（Alert）出现之前点击掉它，或者说等价于不让其出现。
 	 */
 	protected void ensrueBeforeAlert() {
-		jsExecutor(JSCollection.ENSRUE_BEFORE_ALERT.getValue(),
+		jsExecutor(JScriptCollection.ENSRUE_BEFORE_ALERT.getValue(),
 				"rewrite js to ensure alert before it appears");
 	}
 
@@ -1508,7 +1489,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在浏览器窗口关闭之前除去它的告警提示。
 	 */
 	protected void ensureBeforeWinClose() {
-		jsExecutor(JSCollection.ENSURE_BEFORE_WINCLOSE.getValue(),
+		jsExecutor(JScriptCollection.ENSURE_BEFORE_WINCLOSE.getValue(),
 				"rewrite js to ensure window close event");
 	}
 
@@ -1517,7 +1498,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 */
 	protected void ensureBeforeConfirm() {
-		jsExecutor(JSCollection.ENSURE_BEFORE_CONFIRM.getValue(),
+		jsExecutor(JScriptCollection.ENSURE_BEFORE_CONFIRM.getValue(),
 				"rewrite js to ensure confirm before it appears");
 	}
 
@@ -1526,7 +1507,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在确认框（Confirm）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 */
 	protected void dismissBeforeConfirm() {
-		jsExecutor(JSCollection.DISMISS_BEFORE_CONFIRM.getValue(),
+		jsExecutor(JScriptCollection.DISMISS_BEFORE_CONFIRM.getValue(),
 				"rewrite js to dismiss confirm before it appears");
 	}
 
@@ -1535,7 +1516,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击确认，或者说等价于不让其出现而直接确认。
 	 */
 	protected void ensureBeforePrompt() {
-		jsExecutor(JSCollection.ENSURE_BEFORE_PROMPT.getValue(),
+		jsExecutor(JScriptCollection.ENSURE_BEFORE_PROMPT.getValue(),
 				"rewrite js to ensure prompt before it appears");
 	}
 
@@ -1544,7 +1525,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 通过JS函数重载，在提示框（Prompt）出现之前点击取消，或者说等价于不让其出现而直接取消。
 	 */
 	protected void dismisBeforePrompt() {
-		jsExecutor(JSCollection.DISMISS_BEFORE_PROMPT.getValue(),
+		jsExecutor(JScriptCollection.DISMISS_BEFORE_PROMPT.getValue(),
 				"rewrite js to dismiss prompt before it appears");
 	}
 
@@ -1602,7 +1583,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the element to be operate
 	 */
 	protected void makeElementUnHidden(WebElement element) {
-		jsExecutor(JSCollection.MAKE_ELEMENT_UNHIDDEN.getValue(), 
+		jsExecutor(JScriptCollection.MAKE_ELEMENT_UNHIDDEN.getValue(), 
 				"rewrite js to make elements to be visible", element);
 	}
 
@@ -1613,7 +1594,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the By locator to find the element
 	 */
 	protected void makeElementUnHidden(By by) {
-		jsExecutor(JSCollection.MAKE_ELEMENT_UNHIDDEN.getValue(), 
+		jsExecutor(JScriptCollection.MAKE_ELEMENT_UNHIDDEN.getValue(), 
 				"rewrite js to make elements to be visible", driver.findElement(by));
 	}
 

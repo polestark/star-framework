@@ -1,6 +1,6 @@
 package com.star.toolapi.webdriver.user;
 
-public enum JSCollection{
+public enum JScriptCollection{
 	MAXIMIZE_WINDOW("if(document.all) { self.moveTo(0, 0); "
 					+ "self.resizeTo(screen.availWidth, screen.availHeight); self.focus();}"),
 	CLICK_BY_JAVASCRIPT("return arguments[0].click();"),
@@ -16,7 +16,7 @@ public enum JSCollection{
 
 	private String javaScript;
 
-	private JSCollection(String jsContext) {
+	private JScriptCollection(String jsContext) {
 		this.javaScript = jsContext;
 	}
 

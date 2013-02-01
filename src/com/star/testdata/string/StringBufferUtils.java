@@ -1,5 +1,6 @@
 package com.star.testdata.string;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -100,6 +101,22 @@ public class StringBufferUtils {
 			count++;
 		}
 		return count;
+	}	
+	
+	/**
+	 * create folders before file write, if father folder not exists.
+	 *
+	 * @param fileName the file to be analyzed.
+	 */
+	public void createFoldersNeeded(String fileName){
+		String[] folders = fileName.split("\\\\");
+		String folderName = folders[0] + "\\";		
+		for (int i = 1; i < folders.length - 1; i ++){
+			folderName += folders[i] + "\\";
+		}				
+		if (!new File(folderName).exists()){
+			new File(folderName).mkdirs();
+		}
 	}
 
 	/**

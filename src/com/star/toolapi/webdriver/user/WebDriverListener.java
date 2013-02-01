@@ -15,25 +15,25 @@ import com.star.logging.frame.LoggingManager;
 import com.star.testdata.string.StringBufferUtils;
 
 public class WebDriverListener extends AbstractWebDriverEventListener {
-	
+
 	private String className = WebDriverListener.class.getName();
 	private String devidor = "~";
 	private String filePath = "./log/";
 	private Logger logger = null;
 	private final StringBufferUtils STR = new StringBufferUtils();
 	private final LoggingManager LOG = new LoggingManager(WebDriverListener.class.getName());
-	
+
 	public WebDriverListener() {
 		throw new IllegalArgumentException("you must config the parameter correctly!");
 	}
-	
+
 	public WebDriverListener(String location, String runClassName,Logger logger, String seperateMark) {
 		this.className = runClassName;
 		this.filePath = location.endsWith("/") || location.endsWith("\\") ? location : location + "/";
 		this.logger = logger;
 		this.devidor = seperateMark;
 	}
-	
+
 	@Override
 	public void onException(Throwable unexpected, WebDriver driver) {
 		String fileName = filePath + className + STR.formatedTime("_yyyyMMdd_HHmmssSSS") + ".png";
@@ -61,13 +61,13 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 	private void recordError(String methodName, String fileName) {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 		int index = getTraceClassLevel(trace);
-		
+
 		String traceClass = trace[index].getClassName() + " # " + trace[index].getLineNumber();
 		logger.info(traceClass + devidor + methodName + devidor + "failed" + devidor 
 				+ "method [" + methodName + "] failed, screenshot is: [" 
 				+ fileName + "]".replace(devidor, "-").replace("&", "&"));
 	}
-	
+
 	/**
 	 * get the trace level index of the running test class. 
 	 * 
@@ -82,7 +82,7 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * get the trace level index of the running test method. 
 	 * 

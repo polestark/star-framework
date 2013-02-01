@@ -16,7 +16,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class WebTable{
+public class WebDriverTable{
 	
 	private By tabBy = null;
 	private WebElement table = null;
@@ -29,7 +29,7 @@ public class WebTable{
 	 * @param	tabFinder the By locator of the table.
 	 * @param	bodyOrHead choice of table body and head to operate.
 	 */
-	public WebTable(WebDriver driver, By tabFinder, String bodyOrHead){
+	public WebDriverTable(WebDriver driver, By tabFinder, String bodyOrHead){
 		this.tabBy = tabFinder;
 		this.table = driver.findElement(tabBy);
 		this.tabRows = table.findElements(By.tagName(bodyOrHead)).get(0).findElements(By.tagName("tr"));
@@ -41,7 +41,7 @@ public class WebTable{
 	 * @param	driver the WebDriver instance.
 	 * @param	tabFinder the By locator of the table.
 	 */
-	public WebTable(WebDriver driver, By tabFinder){
+	public WebDriverTable(WebDriver driver, By tabFinder){
 		this.tabBy = tabFinder;
 		this.table = driver.findElement(tabBy);
 		this.tabRows = table.findElements(By.xpath("*/tr"));
