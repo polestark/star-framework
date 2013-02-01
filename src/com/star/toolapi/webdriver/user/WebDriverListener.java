@@ -1,16 +1,8 @@
 package com.star.toolapi.webdriver.user;
 
-import java.io.File;
 import java.util.logging.Logger;
-
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
-
 import com.star.logging.frame.LoggingManager;
 import com.star.testdata.string.StringBufferUtils;
 
@@ -21,6 +13,7 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 	private String filePath = "./log/";
 	private Logger logger = null;
 	private final StringBufferUtils STR = new StringBufferUtils();
+	private final RuntimeSupport SUPPORT = new RuntimeSupport();
 	private final LoggingManager LOG = new LoggingManager(WebDriverListener.class.getName());
 
 	public WebDriverListener() {
@@ -40,9 +33,7 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 		String methodName = trace[getTraceMethodLevel(trace)].getMethodName();
 		try {
-			RemoteWebDriver swd = (RemoteWebDriver) new Augmenter().augment(driver);
-			File file = ((TakesScreenshot) swd).getScreenshotAs(OutputType.FILE);
-			FileUtils.copyFile(file, new File(fileName));
+			SUPPORT.screenShot(driver, fileName);
 			recordError(methodName, fileName);
 			throw new RuntimeException(unexpected);
 		} catch (Exception e) {
