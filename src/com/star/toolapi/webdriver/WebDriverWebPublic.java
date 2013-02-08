@@ -1,12 +1,6 @@
 package com.star.toolapi.webdriver;
 
-/**
- * 封装整体思路：
- * 1、封装常用方法，每个方法对WebDriverException进行捕获，其余的直接抛出RuntimeException；
- * 2、对于封装过的方法，存在WebDriverException的操作为失败，否则默认为成功，失败的操作在
- * 	  failValidation中进行截图、报告错误、抛出RuntimeException操作，强制出错则停止运行；
- * 3、部分方法是使用javascript执行来达到目的，建议非不得已尽量避免使用。
- *  
+/**  
  * @author 测试仔刘毅
  */
 
@@ -38,7 +32,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected static By tabFinder = null;
 	protected static WebDriverTable webTable = null;
 	protected final RuntimeSupport supprt = new RuntimeSupport(driver);
-	
+
 	/**
 	 * wait util the element visible in max wait time setting</BR>
 	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
@@ -78,7 +72,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the WebElement locator
 	 * @param timeout timeout setting in seconds
-	 * @throws ElementNotVisibleException
 	 */
 	protected void waitUtilElementVisible(By by, int timeout) {
 		long start = System.currentTimeMillis();
@@ -99,7 +92,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在指定时间内循环等待，直到对象可见，使用用户指定的默认超时设置。
 	 * 
 	 * @param by the WebElement locator
-	 * @throws ElementNotVisibleException
 	 */
 	protected void waitUtilElementVisible(By by) {
 		waitUtilElementVisible(by, maxWaitfor);
@@ -112,8 +104,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param js js function string
 	 * @param report text content to be reported
 	 * @param args js execute parameters
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void jsExecutor(String js, String report, Object args) {
 		((JavascriptExecutor) driver).executeScript(js, args);
@@ -126,8 +116,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param js js function string
 	 * @param report text content to be reported
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void jsExecutor(String js, String report){
 		((JavascriptExecutor)driver).executeScript(js);
@@ -139,7 +127,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 使用remote webdriver执行JS函数并且获得返回值。
 	 * 
 	 * @param js js function string
-	 * @throws RuntimeException
 	 */
 	protected Object jsReturner(String js){
 		return ((JavascriptExecutor)driver).executeScript(js);
@@ -150,8 +137,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
 	 * @param fileName the file path&name of the screenshot to be saved
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void takeScreenShot(String fileName) {
 		supprt.screenShot(fileName);
@@ -160,8 +145,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * rewrite the screenShot method, using default path and name</BR>
 	 * 网页截图操作，默认路径为工程日志目录，文件名为运行的class名和时间戳拼接而成。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void takeScreenShot() {
 		String time = STRUTIL.formatedTime(FORMATTER);
@@ -173,15 +156,12 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * judge if the alert is existing</BR>
 	 * 判断弹出的对话框（Dialog）是否存在。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected boolean alertExists() {
 		try {
 			driver.switchTo().alert();
 			return true;
 		} catch (NoAlertPresentException ne) {
-			warn("no alert is present");
 			return false;
 		}
 	}
@@ -191,7 +171,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在指定的时间内判断弹出的对话框（Dialog）是否存在。
 	 * 
 	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
 	 */
 	protected boolean alertExists(int seconds) {
 		long start = System.currentTimeMillis();
@@ -238,27 +217,28 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 按照网页标题判断页面是否存在，标题可使用部分内容匹配。
 	 * 
 	 * @param browserTitle part of the title to see if browser exists
-	 * @throws RuntimeException
 	 */
 	protected boolean browserExists(String browserTitle) {
-		String defaultHandler = driver.getWindowHandle();
-		Set<String> windowHandles = driver.getWindowHandles();
-		windowHandles = driver.getWindowHandles();
-		for (String handler : windowHandles) {
-			driver.switchTo().window(handler);
-			if (driver.getTitle().contains(browserTitle)) {
-				return true;
+		try{
+			String defaultHandle = driver.getWindowHandle();
+			Set<String> windowHandles = driver.getWindowHandles();
+			windowHandles = driver.getWindowHandles();
+			for (String handle : windowHandles) {
+				driver.switchTo().window(handle);
+				if (driver.getTitle().contains(browserTitle)) {
+					driver.switchTo().window(defaultHandle);
+					return true;
+				}
 			}
+			driver.switchTo().window(defaultHandle);
+		}catch(Exception e){			
 		}
-		driver.switchTo().window(defaultHandler);
 		return false;
 	}
 
 	/**
 	 * refresh current browser page by url re-navigate</BR>
 	 * 通过当前页面URL跳转的方式重新加载当前页面。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void browserRefresh(){
 		driver.navigate().to(driver.getCurrentUrl());
@@ -271,7 +251,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param browserTitle part of the title to see if browser exists
 	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
 	 */
 	protected boolean browserExists(String browserTitle, int seconds) {
 		long start = System.currentTimeMillis();
@@ -301,8 +280,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * select default window and default frame</BR>
 	 * 在当前页面中自动选择默认的页面框架（frame）。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void selectDefaultWindowFrame() {
 		driver.switchTo().defaultContent();
@@ -312,8 +289,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * switch to active element</BR>
 	 * 在当前操作的页面和对象时自动选择已被激活的对象。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void focusOnActiveElement() {
 		driver.switchTo().activeElement();
@@ -322,20 +297,40 @@ public class WebDriverWebPublic extends WebDriverController {
 
 	/**
 	 * switch to new window supporting, by deleting first hanlder</BR>
-	 * 选择最新弹出的窗口，需要预存第一个窗口的handler。
+	 * 选择最新弹出的窗口，需要预存第一个窗口的handle。
 	 * 
-	 * @param firstHandler the first window handle
-	 * @throws RuntimeException
+	 * @param firstHandle the first window handle
 	 */
-	protected void selectNewWindow(String firstHandler) {
-		Set<String> handlers = null;
+	protected void selectNewWindow(String firstHandle) {
+		Set<String> handles = null;
 		Iterator<String> it = null;
-		handlers = driver.getWindowHandles();
-		handlers = driver.getWindowHandles();
-		handlers.remove(firstHandler);
-		it = handlers.iterator();
+		handles = driver.getWindowHandles();
+		handles = driver.getWindowHandles();
+		handles.remove(firstHandle);
+		it = handles.iterator();
 		while (it.hasNext()) {
 			driver.switchTo().window(it.next());
+		}
+		driver.switchTo().defaultContent();
+		pass("switch to new window");
+	}
+
+	/**
+	 * switch to new window supporting, by deleting original hanlde</BR>
+	 * 选择最新弹出的窗口，需要预存所有已有窗口的handles。
+	 * 
+	 * @param originalHandles the old window handles
+	 */
+	protected void selectNewWindow(Set<String> originalHandles) {
+		Set<String> newHandles = driver.getWindowHandles();
+		newHandles = driver.getWindowHandles();
+		Iterator<String> olds = originalHandles.iterator();
+		while(olds.hasNext()){
+			newHandles.remove(olds.next());			
+		}
+		Iterator<String> news = newHandles.iterator();
+		while (news.hasNext()) {
+			driver.switchTo().window(news.next());
 		}
 		driver.switchTo().defaultContent();
 		pass("switch to new window");
@@ -346,14 +341,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 按照网页标题选择窗口，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be switched to
-	 * @throws RuntimeException
 	 */
 	protected void selectWindow(String windowTitle) {
 		Set<String> windowHandles = null;
 		windowHandles = driver.getWindowHandles();
 		windowHandles = driver.getWindowHandles();
-		for (String handler : windowHandles) {
-			driver.switchTo().window(handler);
+		for (String handle : windowHandles) {
+			driver.switchTo().window(handle);
 			String title = driver.getTitle();
 			if (windowTitle.equals(title)) {
 				pass("switch to window [ " + windowTitle + " ]");
@@ -366,12 +360,41 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
+	 * switch to window by title</BR>
+	 * 按照网页标题选择窗口，标题内容需要全部匹配，超时未出现则报错。
+	 * 
+	 * @param windowTitle the title of the window to be switched to.
+	 * @param timeout time to wait for the window appears, unit of seconds.
+	 */
+	protected void selectWindowWithTimeout(String windowTitle, int timeout) {
+		ASSERT.assertTrue("window is not present after " + timeout + "seconds!", 
+				browserExists(windowTitle, timeout));
+		selectWindow(windowTitle);
+	}
+	
+	/**
+	 * switch to parent window when child was closed unexpectly.</BR>
+	 * 在打开的子窗口被意外（被动、非工具预期的行为）关闭之后，切换回父窗口。
+	 *
+	 * @param handles handles set when child windows are still alive.
+	 * @param childHandle child window whitch to be closed.
+	 * @param parentHandle the parent handle of windows.
+	 */
+	protected void selectParentWindow(Set<String> handles, String childHandle, String parentHandle){
+		if (!handles.toString().contains(childHandle) || !handles.toString().contains(parentHandle)){
+			throw new IllegalArgumentException("you are using the wrong parameters!");
+		}
+		handles.remove(childHandle);
+		driver.switchTo().window(parentHandle);
+		waitForAlertDisappear(5);
+	}
+
+	/**
 	 * close window by window title and its index if has the same title, by string full pattern</BR>
 	 * 按照网页标题选择并且关闭窗口，重名窗口按照指定的重名的序号关闭，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be closed.
 	 * @param index the index of the window which shared the same title, begins with 1.
-	 * @throws RuntimeException
 	 */
 	protected void closeWindow(String windowTitle, int index) {
 		Object[] winArray = null;
@@ -395,7 +418,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 按照网页标题选择窗口，适用于无重名的窗口，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be closed.
-	 * @throws RuntimeException
 	 */
 	protected void closeWindow(String windowTitle) {
 		Object[] winArray = driver.getWindowHandles().toArray();
@@ -416,13 +438,12 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 关闭除了指定标题页面之外的所有窗口，适用于例外窗口无重名的情况，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window not to be closed
-	 * @throws RuntimeException
 	 */
 	protected void closeWindowExcept(String windowTitle) {
 		Set<String> windowHandles = driver.getWindowHandles();
 		windowHandles = driver.getWindowHandles();
-		for (String handler : windowHandles) {
-			driver.switchTo().window(handler);
+		for (String handle : windowHandles) {
+			driver.switchTo().window(handle);
 			String title = driver.getTitle();
 			if (!windowTitle.equals(title)) {
 				driver.switchTo().defaultContent();
@@ -438,13 +459,12 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param windowTitle the title of the window not to be closed
 	 * @param index the index of the window to keep shared the same title with others, begins with 1.
-	 * @throws RuntimeException
 	 */
 	protected void closeWindowExcept(String windowTitle, int index) {
 		Set<String> windowHandles = driver.getWindowHandles();
 		windowHandles = driver.getWindowHandles();
-		for (String handler : windowHandles) {
-			driver.switchTo().window(handler);
+		for (String handle : windowHandles) {
+			driver.switchTo().window(handle);
 			String title = driver.getTitle();
 			if (!windowTitle.equals(title)) {
 				driver.switchTo().defaultContent();
@@ -487,17 +507,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * wait for new window which has no title in few seconds</BR>
 	 * 判断在指定的时间内是否有新的窗口弹出，无论其是否有标题。
 	 * 
-	 * @param oldHandlers windows handler Set before new window appears.
+	 * @param oldHandles windows handle Set before new window appears.
 	 * @param seconds time unit in seconds.
 	 */
-	protected boolean isNewWindowExits(Set<String> oldHandlers, int seconds) {
+	protected boolean isNewWindowExits(Set<String> oldHandles, int seconds) {
 		boolean isExist = false;
 		Set<String> windowHandles = null;
 		long begins = System.currentTimeMillis();
 		while ((System.currentTimeMillis() - begins < seconds * 1000) && !isExist) {
 			windowHandles = driver.getWindowHandles();
 			windowHandles = driver.getWindowHandles();
-			isExist = (windowHandles.size() > oldHandlers.size()) ? true : false;
+			isExist = (windowHandles.size() > oldHandles.size()) ? true : false;
 		}
 		return isExist;
 	}
@@ -507,7 +527,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 按照序号选择框架（frame）。
 	 * 
 	 * @param index the index of the frame to select
-	 * @throws RuntimeException
 	 */
 	protected void selectFrame(int index) {
 		driver.switchTo().frame(index);
@@ -519,7 +538,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 按照名称或者ID选择框架（frame）。
 	 * 
 	 * @param nameOrId the name or id of the frame to select
-	 * @throws RuntimeException
 	 */
 	protected void selectFrame(String nameOrId) {
 		driver.switchTo().frame(nameOrId);
@@ -531,7 +549,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 按照框架对象本身选择框架（frame）。
 	 * 
 	 * @param frameElement the frame element to select
-	 * @throws RuntimeException
 	 */
 	protected void selectFrame(WebElement frameElement) {
 		driver.switchTo().frame(frameElement);
@@ -543,9 +560,33 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 按照指定的元素定位方式选择框架（frame）。
 	 * 
 	 * @param by the frame element locator
-	 * @throws RuntimeException
 	 */
 	protected void selectFrame(By by) {
+		driver.switchTo().frame(driver.findElement(by));
+		pass("select frame by frame locator [ " + by.toString() + " ]");
+	}
+
+	/**
+	 * select a frame by name or id, throw exception when timeout.</BR>
+	 * 按照名称或者ID选择框架（frame），在指定时间内frame不存在则报错。
+	 * 
+	 * @param nameOrId the name or id of the frame to select.
+	 * @param timeout time to wait for the frame available, unit of seconds.
+	 */
+	protected void selectFrameWithTimeout(String nameOrId, int timeout) {
+		waitForAndSwitchToFrame(nameOrId, timeout);
+		pass("select frame by name or id [ " + nameOrId + " ]");
+	}
+
+	/**
+	 * select a frame by frame element locator: By.</BR>
+	 * 按照指定的元素定位方式选择框架（frame），在指定时间内frame不存在则报错。
+	 * 
+	 * @param by the frame element locator.
+	 * @param timeout time to wait for the frame available, unit of seconds.
+	 */
+	protected void selectFrameWithTimeout(By by, int timeout) {
+		waitForElementPresent(by, timeout);
 		driver.switchTo().frame(driver.findElement(by));
 		pass("select frame by frame locator [ " + by.toString() + " ]");
 	}
@@ -556,7 +597,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the frame element locaotr
 	 * @param text the text string to be input
-	 * @throws RuntimeException
 	 */
 	protected void editFrameText(By by, String text) {
 		driver.switchTo().frame(driver.findElement(by));
@@ -570,18 +610,20 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param url the url you want to open.
 	 * @param actionCount retry times when load timeout occuers.
-	 * @throws RuntimeException
 	 */
 	protected void get(String url, int actionCount) {
-		boolean inited = false;
-		int index = 0, timeout = 10;
-		while (!inited && index < actionCount){
-			timeout = (index == actionCount - 1) ? maxLoadTime : 10;
-			inited = navigateAndLoad(url, timeout);
-			index ++;
-		}
-		if (!inited && index == actionCount){
-			throw new RuntimeException("can not get the url [" + url + "] after retry " + actionCount + "times!");
+		for (int i = 0; i < actionCount; i ++){
+			if (i == 0){
+				setPageLoadTimeout(30);
+			}
+			try {
+				driver.get(url);
+				pass("navigate to url [ " + url + " ]");
+				return;
+			} catch (TimeoutException e) {
+			} finally{
+				setPageLoadTimeout(maxLoadTime);				
+			}
 		}
 	}
 
@@ -590,30 +632,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 地址跳转方法，使用WebDriver原生get方法，默认加载超重试【1】次。
 	 * 
 	 * @param url the url you want to open.
-	 * @throws RuntimeException
 	 */
 	protected void get(String url) {
 		get(url, 2);
-	}
-
-	/**
-	 * judge if the url has navigate and page load completed.</BR>
-	 * 跳转到指定的URL并且返回是否跳转完整的结果。
-	 * 
-	 * @param url the url you want to open.
-	 * @param timeout the timeout for page load in seconds.
-	 * @return if page load completed.
-	 */
-	private boolean navigateAndLoad(String url, int timeout){
-		try {
-			setPageLoadTimeout(timeout);
-			driver.get(url);
-			return true;
-		} catch (TimeoutException e) {
-			return false;
-		}finally{
-			setPageLoadTimeout(maxLoadTime);
-		}
 	}
 
 	/**
@@ -621,7 +642,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 地址跳转方法，与WebDriver原生navigate.to方法内容完全一致。
 	 * 
 	 * @param url the url you want to open
-	 * @throws RuntimeException
 	 */
 	protected void navigateTo(String url){
 		driver.navigate().to(url);
@@ -642,8 +662,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * navigate forward</BR>
 	 * 地址跳转方法，与WebDriver原生navigate.forward方法内容完全一致。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void navigateForward(){
 		driver.navigate().forward();
@@ -655,7 +673,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param element the webelement you want to operate
-	 * @throws RuntimeException
 	 */
 	protected void click(WebElement element) {
 		waitUtilElementVisible(element);
@@ -668,7 +685,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param by the locator you want to find the element
-	 * @throws RuntimeException
 	 */
 	protected void click(By by) {
 		waitUtilElementVisible(driver.findElement(by));
@@ -706,7 +722,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到对象可见之后双击指定的对象.
 	 * 
 	 * @param element the webelement you want to operate
-	 * @throws RuntimeException
 	 */
 	protected void doubleClick(WebElement element) {
 		waitUtilElementVisible(element);
@@ -720,7 +735,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到对象可见之后双击指定的对象.
 	 * 
 	 * @param by the locator you want to find the element
-	 * @throws RuntimeException
 	 */
 	protected void doubleClick(By by) {
 		waitUtilElementVisible(driver.findElement(by));
@@ -734,7 +748,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到对象可见之后鼠标右键点击指定的对象.
 	 * 
 	 * @param element the webelement you want to operate
-	 * @throws RuntimeException
 	 */
 	protected void rightClick(WebElement element) {
 		waitUtilElementVisible(element);
@@ -748,7 +761,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到对象可见之后鼠标右键点击指定的对象。
 	 * 
 	 * @param by the locator you want to find the element
-	 * @throws RuntimeException
 	 */
 	protected void rightClick(By by) {
 		waitUtilElementVisible(driver.findElement(by));
@@ -762,7 +774,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到指定对象可见之后在该对象上做确认/提交的操作。
 	 * 
 	 * @param element the webelement you want to operate
-	 * @throws RuntimeException
 	 */
 	protected void submit(WebElement element) {
 		waitUtilElementVisible(element);
@@ -775,7 +786,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到指定对象可见之后在该对象上做确认/提交的操作。
 	 * 
 	 * @param by the locator you want to find the element
-	 * @throws RuntimeException
 	 */
 	protected void submit(By by) {
 		waitUtilElementVisible(driver.findElement(by));
@@ -788,7 +798,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
 	 * 
 	 * @param element the webelement you want to operate
-	 * @throws RuntimeException
 	 */
 	protected void clear(WebElement element) {
 		waitUtilElementVisible(element);
@@ -801,7 +810,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
 	 * 
 	 * @param by the locator you want to find the element
-	 * @throws RuntimeException
 	 */
 	protected void clear(By by) {
 		WebElement element = driver.findElement(by);
@@ -816,7 +824,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param text the text you want to input to element
-	 * @throws RuntimeException
 	 */
 	protected void sendKeysAppend(WebElement element, String text) {
 		waitUtilElementVisible(element);
@@ -830,7 +837,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the text you want to input to element
-	 * @throws RuntimeException
 	 */
 	protected void sendKeysAppend(By by, String text) {
 		WebElement element = driver.findElement(by);
@@ -845,7 +851,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param text the text you want to input to element
-	 * @throws RuntimeException
 	 */
 	protected void sendKeys(WebElement element, String text) {
 		waitUtilElementVisible(element);
@@ -860,7 +865,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the text you want to input to element
-	 * @throws RuntimeException
 	 */
 	protected void sendKeys(By by, String text) {
 		WebElement element = driver.findElement(by);
@@ -902,8 +906,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param elementId the id of the element
 	 * @param text the text you want to input to element
-	 * @throws RuntimeException
-	 * @throws IllegalArgumentException
 	 */
 	protected void sendKeysById(String elementId, String text) {
 		sendKeysByDOM("Id", elementId, text, 0);
@@ -916,8 +918,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param elementName the name of the element
 	 * @param text the text you want to input to element
 	 * @param elementIndex the index of the elements shared the same name, begins with 0
-	 * @throws RuntimeException
-	 * @throws IllegalArgumentException
 	 */
 	protected void sendKeysByName(String elementName, String text, int elementIndex) {
 		sendKeysByDOM("Name", elementName, text, elementIndex);
@@ -930,8 +930,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param elementTagName the tag name of the element
 	 * @param text the text you want to input to element
 	 * @param elementIndex the index of the elements shared the same tag name, begins with 0
-	 * @throws RuntimeException
-	 * @throws IllegalArgumentException
 	 */
 	protected void sendKeysByTagName(String elementTagName, String text, int elementIndex) {
 		sendKeysByDOM("TagName", elementTagName, text, elementIndex);
@@ -943,7 +941,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param text the text you want to input to element
-	 * @throws RuntimeException
 	 */
 	protected void sendKeysByKeybord(WebElement element, String text) {
 		waitUtilElementVisible(element);
@@ -958,7 +955,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the text you want to input to element
-	 * @throws RuntimeException
 	 */
 	protected void sendKeysByKeybord(By by, String text) {
 		WebElement element = driver.findElement(by);
@@ -986,7 +982,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the picklist element
 	 * @param index the index of the item to be selected
-	 * @throws RuntimeException
 	 */
 	protected void selectByIndex(WebElement element, int index) {
 		waitUtilElementVisible(element);
@@ -1001,7 +996,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param index the index of the item to be selected
-	 * @throws RuntimeException
 	 */
 	protected void selectByIndex(By by, int index) {
 		WebElement element = driver.findElement(by);
@@ -1017,7 +1011,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the picklist element
 	 * @param itemValue the item value of the item to be selected
-	 * @throws RuntimeException
 	 */
 	protected void selectByValue(WebElement element, String itemValue) {
 		waitUtilElementVisible(element);
@@ -1032,7 +1025,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param itemValue the item value of the item to be selected
-	 * @throws RuntimeException
 	 */
 	protected void selectByValue(By by, String itemValue) {
 		WebElement element = driver.findElement(by);
@@ -1048,7 +1040,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the picklist element
 	 * @param text the item value of the item to be selected
-	 * @throws RuntimeException
 	 */
 	protected void selectByVisibleText(WebElement element, String text) {
 		waitUtilElementVisible(element);
@@ -1063,7 +1054,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the item value of the item to be selected
-	 * @throws RuntimeException
 	 */
 	protected void selectByVisibleText(By by, String text) {
 		WebElement element = driver.findElement(by);
@@ -1079,7 +1069,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the checkbox element
 	 * @param onOrOff on or off to set the checkbox
-	 * @throws RuntimeException
 	 */
 	protected void setCheckBox(WebElement element, String onOrOff) {
 		WebElement checkElement = element.findElement(By.tagName("input"));
@@ -1097,7 +1086,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param onOrOff on or off to set the checkbox
-	 * @throws RuntimeException
 	 */
 	protected void setCheckBox(By by, String onOrOff) {
 		WebElement checkBox = driver.findElement(by);
@@ -1116,7 +1104,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the way to locate webelements
 	 * @return displayed webelement list
-	 * @throws RuntimeException
 	 */
 	protected List<WebElement> findDisplayedElments(By by) {
 		List<WebElement> elementList = new ArrayList<WebElement>();
@@ -1127,12 +1114,12 @@ public class WebDriverWebPublic extends WebDriverController {
 			elementList.add(element);
 		}
 		int eleNum = elementList.size();
-		if (eleNum > 0){
+		if (eleNum > 0) {
 			pass("got" + eleNum + "displayed elements [ " + by.toString() + " ]");
-		}else{
+		} else {
 			warn("there is not displayed element found by [" + by.toString() + " ]");
 		}
-	return elementList;
+		return elementList;
 	}
 
 	/**
@@ -1141,7 +1128,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the way to locate webelement
 	 * @return the first displayed webelement
-	 * @throws RuntimeException
 	 */
 	protected WebElement findDisplayedElment(By by) {
 		List<WebElement> elements = findDisplayedElments(by);
@@ -1154,7 +1140,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator of the elements to be find
 	 * @return the webelements you want to find
-	 * @throws RuntimeException
 	 */
 	protected List<WebElement> findElements(By by) {
 		return driver.findElements(by);
@@ -1166,7 +1151,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator of the element to be find
 	 * @return the first element accord your locator
-	 * @throws RuntimeException
 	 */
 	protected WebElement findElement(By by) {
 		List<WebElement> elements = findElements(by);
@@ -1180,7 +1164,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param tabBy the element locator By
 	 */
-	private synchronized WebDriverTable tableCache(By tabBy) {
+	private WebDriverTable tableCache(By tabBy) {
 		waitUtilElementVisible(tabBy);
 		if (tabFinder == null) {
 			tabFinder = tabBy;
@@ -1199,7 +1183,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * refresh the webtable on the same locator, only if it changes</BR>
 	 * 如果同一定位方式的WebTable内容发生变化需要重新定位，则需要刷新WebTable。
 	 */
-	protected synchronized void tableRefresh(){
+	protected void tableRefresh(){
 		WebDriverWebPublic.tabFinder = null;
 		WebDriverWebPublic.webTable = null;		
 	}
@@ -1210,7 +1194,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
 	 * @return the row count of the webTable
-	 * @throws RuntimeException
 	 */
 	protected int tableRowCount(By tabBy) {
 		webTable = tableCache(tabBy);
@@ -1226,7 +1209,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param tabBy By, by which you can locate the webTable
 	 * @param rowNum row index of your webTable to count
 	 * @return the column count of the row in webTable
-	 * @throws RuntimeException
 	 */
 	protected int tableColCount(By tabBy, int rowNum) {
 		webTable = tableCache(tabBy);
@@ -1246,7 +1228,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param type the element type, such as "img"/"a"/"input" or "image/link/button/webedit"
 	 * @param index element index in the specified cell, begins with 1.
 	 * @return the webTable cell WebElement
-	 * @throws RuntimeException
 	 */
 	protected WebElement tableChildElement(By tabBy, int row, int col, String type, int index) {
 		return tableCache(tabBy).childItem(row, col, type, index);
@@ -1260,7 +1241,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param row row index of the webTable.
 	 * @param col column index of the webTable.
 	 * @return the cell text
-	 * @throws RuntimeException
 	 */
 	protected String tableCellText(By tabBy, int row, int col) {
 		webTable = tableCache(tabBy);
@@ -1275,19 +1255,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param browserTitle the title of the browser window.
 	 * @param seconds timeout in timeunit of seconds.
+	 * @return if the window exists.
 	 */
 	protected boolean waitForWindowPresent(String browserTitle, int seconds) {
-		long start = System.currentTimeMillis();
-		boolean winExists = false;
-		while (!winExists && (System.currentTimeMillis() - start) < seconds * 1000) {
-			pause(stepTimeUnit);
-			Object[] winArray = driver.getWindowHandles().toArray();
-			for (int i = 0; i < winArray.length && !winExists; i ++) {
-				driver.switchTo().window(winArray[i].toString());
-				winExists = driver.getTitle().contains(browserTitle);
-			}
-		}
-		ASSERT.assertTrue("window is not present after " + seconds + "seconds!", winExists);
+		ASSERT.assertTrue("window is not present after " + seconds + "seconds!", browserExists(browserTitle, seconds));
 		return true;
 	}
 
@@ -1304,9 +1275,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * wait for window appears in the time unit seconds</BR>
 	 * 在指定时间内等待新窗口出现，超时则报错，用以缓冲运行，增加健壮性。
 	 */
-	protected boolean waitForNewWindowOpened(Set<String> oldHandlers, int seconds) {
+	protected boolean waitForNewWindowOpened(Set<String> oldHandles, int seconds) {
 		ASSERT.assertTrue("new window did not opened in " + seconds + "seconds!",
-				isNewWindowExits(oldHandlers, seconds));
+				isNewWindowExits(oldHandles, seconds));
 		return true;
 	}
 
@@ -1316,13 +1287,17 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param locator the id or name of frames.
 	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
 	 */
 	protected boolean waitForAndSwitchToFrame(String locator, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		return wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(locator)) != null;
+		try {
+			setElementLocateTimeout(seconds);
+			WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
+			return wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(locator)) != null;
+		} finally {
+			setElementLocateTimeout(maxWaitfor);
+		}
 	}
-	
+
 	/**
 	 * use js to judge if the browser load completed.
 	 * 用js返回值判断页面是否加载完毕。
@@ -1363,8 +1338,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * wait for alert disappears in the time unit of seconds</BR>
 	 * 在指定时间内等待，对话框（Dialog）消失，用以缓冲运行，增加健壮性。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected boolean waitForAlertDisappear(int seconds) {
 		long start = System.currentTimeMillis();
@@ -1388,11 +1361,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
 	 */
 	protected boolean waitForElementVisible(By by, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		return wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null;
+		try {
+			setElementLocateTimeout(seconds);
+			WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
+			return wait.until(ExpectedConditions.visibilityOfElementLocated(by)) != null;
+		} finally {
+			setElementLocateTimeout(maxWaitfor);
+		}
 	}
 
 	/**
@@ -1401,11 +1378,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the element to be found.
 	 * @param seconds timeout in seconds.
-	 * @throws RuntimeException.
 	 */
 	protected boolean waitForElementVisible(WebElement element, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		return wait.until(ExpectedConditions.visibilityOf(element)) != null;
+		try {
+			setElementLocateTimeout(seconds);
+			WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
+			return wait.until(ExpectedConditions.visibilityOf(element)) != null;
+		} finally {
+			setElementLocateTimeout(maxWaitfor);
+		}
 	}
 
 	/**
@@ -1414,11 +1395,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the element locator.
 	 * @param seconds timeout in seconds.
-	 * @throws RuntimeException.
 	 */
 	protected boolean waitForElementNotVisible(By by, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		return wait.until(ExpectedConditions.invisibilityOfElementLocated(by)) != null;
+		try {
+			setElementLocateTimeout(seconds);
+			WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
+			return wait.until(ExpectedConditions.invisibilityOfElementLocated(by)) != null;
+		} finally {
+			setElementLocateTimeout(maxWaitfor);
+		}
 	}
 
 	/**
@@ -1427,11 +1412,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the element locator.
 	 * @param seconds timeout in seconds.
-	 * @throws RuntimeException.
 	 */
 	protected boolean waitForElementPresent(By by, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		return wait.until(ExpectedConditions.presenceOfElementLocated(by)) != null;
+		try {
+			setElementLocateTimeout(seconds);
+			WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
+			return wait.until(ExpectedConditions.presenceOfElementLocated(by)) != null;
+		} finally {
+			setElementLocateTimeout(maxWaitfor);
+		}
 	}
 
 	/**
@@ -1440,11 +1429,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
 	 */
 	protected boolean waitForElementClickable(By by, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		return wait.until(ExpectedConditions.elementToBeClickable(by)) != null;
+		try {
+			setElementLocateTimeout(seconds);
+			WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
+			return wait.until(ExpectedConditions.elementToBeClickable(by)) != null;
+		} finally {
+			setElementLocateTimeout(maxWaitfor);
+		}
 	}
 
 	/**
@@ -1454,11 +1447,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the element locator By
 	 * @param text the text to be found of element
 	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
 	 */
 	protected boolean waitForTextOnElement(By by, String text, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		return wait.until(ExpectedConditions.textToBePresentInElement(by, text)) != null;
+		try {
+			setElementLocateTimeout(seconds);
+			WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
+			return wait.until(ExpectedConditions.textToBePresentInElement(by, text)) != null;
+		} finally {
+			setElementLocateTimeout(maxWaitfor);
+		}
 	}
 
 	/**
@@ -1468,11 +1465,15 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the element locator By
 	 * @param text the text to be found in element attributes
 	 * @param seconds timeout in seconds
-	 * @throws RuntimeException
 	 */
 	protected boolean waitForTextOfElementAttr(By by, String text, int seconds) {
-		WebDriverWait wait = new WebDriverWait(driver, seconds, 1);
-		return wait.until(ExpectedConditions.textToBePresentInElementValue(by, text)) != null;
+		try {
+			setElementLocateTimeout(seconds);
+			WebDriverWait wait = new WebDriverWait(driver, seconds, stepTimeUnit);
+			return wait.until(ExpectedConditions.textToBePresentInElementValue(by, text)) != null;
+		} finally {
+			setElementLocateTimeout(maxWaitfor);
+		}
 	}
 
 	/**
@@ -1532,8 +1533,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	/**
 	 * choose OK/Cancel button's OK on alerts</BR>
 	 * 在弹出的对话框（Dialog）上点击确认/是等接受性按钮。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void chooseOKOnAlert() {
 		driver.switchTo().alert().accept();
@@ -1541,12 +1540,30 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
+	 * choose OK/Cancel button's OK on alerts within timeout setting.</BR>
+	 * 在弹出的对话框（Dialog）上点击确认/是等接受性按钮，预先判断是否存在，超时不存在则报错。
+	 */
+	protected void chooseOKOnAlert(int timeout) {
+		waitForAlertPresent(timeout);
+		driver.switchTo().alert().accept();
+		pass("click OK button on alert");
+	}
+
+	/**
 	 * choose Cancel on alerts</BR>
 	 * 在弹出的对话框（Dialog）上点击取消/否等拒绝性按钮。
-	 * 
-	 * @throws RuntimeException
 	 */
 	protected void chooseCancelOnAlert() {
+		driver.switchTo().alert().dismiss();
+		pass("click Cancel on alert dialog");
+	}
+
+	/**
+	 * choose Cancel on alerts within timeout setting.</BR>
+	 * 在弹出的对话框（Dialog）上点击取消/否等拒绝性按钮，预先判断是否存在，超时不存在则报错。
+	 */
+	protected void chooseCancelOnAlert(int timeout) {
+		waitForAlertPresent(timeout);
 		driver.switchTo().alert().dismiss();
 		pass("click Cancel on alert dialog");
 	}
@@ -1556,7 +1573,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 返回对话框（Dialog）上的提示信息文本内容。
 	 * 
 	 * @return alert text string
-	 * @throws RuntimeException
 	 */
 	protected String getTextOfAlert() {
 		String alerts = driver.switchTo().alert().getText();
@@ -1569,7 +1585,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 向对话框（InputBox）中输入文本。
 	 * 
 	 * @param text the text string you want to input on alerts
-	 * @throws RuntimeException
 	 */
 	protected void setTextOnAlert(String text) {
 		driver.switchTo().alert().sendKeys(text);
@@ -1603,7 +1618,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the title on your current session
-	 * @throws RuntimeException
 	 */
 	protected String getWindowTitle() {
 		String title = driver.getTitle();
@@ -1616,7 +1630,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the url on your current session
-	 * @throws RuntimeException
 	 */
 	protected String getCurrentUrl() {
 		String url = driver.getCurrentUrl();
@@ -1628,27 +1641,25 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * rewrite the getWindowHandles method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
-	 * @return the window handlers set
-	 * @throws RuntimeException
+	 * @return the window handles set
 	 */
 	protected Set<String> getWindowHandles() {
-		Set<String> handler = driver.getWindowHandles();
-		handler = driver.getWindowHandles();
-		pass("window handlers are: " + handler.toString());
-		return handler;
+		Set<String> handle = driver.getWindowHandles();
+		handle = driver.getWindowHandles();
+		pass("window handles are: " + handle.toString());
+		return handle;
 	}
 
 	/**
 	 * rewrite the getWindowHandle method, adding user defined log</BR>
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
-	 * @return the window handler string
-	 * @throws RuntimeException
+	 * @return the window handle string
 	 */
 	protected String getWindowHandle() {
-		String handler = driver.getWindowHandle();
-		pass("current window handler is:" + handler);
-		return handler;
+		String handle = driver.getWindowHandle();
+		pass("current window handle is:" + handle);
+		return handle;
 	}
 
 	/**
@@ -1656,7 +1667,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the page source string
-	 * @throws RuntimeException
 	 */
 	protected String getPageSource() {
 		String source = driver.getPageSource();
@@ -1669,7 +1679,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return current session id string
-	 * @throws RuntimeException
 	 */
 	protected String getSessionId() {
 		String sessionId = ((RemoteWebDriver)driver).getSessionId().toString();
@@ -1683,7 +1692,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the tagname string
-	 * @throws RuntimeException
 	 */
 	protected String getTagName(WebElement element) {
 		String tagName = element.getTagName();
@@ -1697,7 +1705,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the tagname string
-	 * @throws RuntimeException
 	 */
 	protected String getTagName(By by) {
 		String tagName = driver.findElement(by).getTagName();
@@ -1712,7 +1719,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the webelement you want to operate
 	 * @param attributeName the name of the attribute you want to get
 	 * @return the attribute value string
-	 * @throws RuntimeException
 	 */
 	protected String getAttribute(WebElement element, String attributeName) {
 		String value = element.getAttribute(attributeName);
@@ -1727,7 +1733,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the locator you want to find the element
 	 * @param attributeName the name of the attribute you want to get
 	 * @return the attribute value string
-	 * @throws RuntimeException
 	 */
 	protected String getAttribute(By by, String attributeName) {
 		String value = driver.findElement(by).getAttribute(attributeName);
@@ -1741,7 +1746,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the bool value of whether is the WebElement selected
-	 * @throws RuntimeException
 	 */
 	protected boolean isSelected(WebElement element) {
 		boolean isSelected = element.isSelected();
@@ -1755,7 +1759,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the bool value of whether is the WebElement selected
-	 * @throws RuntimeException
 	 */
 	protected boolean isSelected(By by) {
 		boolean isSelected = driver.findElement(by).isSelected();
@@ -1769,7 +1772,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the bool value of whether is the WebElement enabled
-	 * @throws RuntimeException
 	 */
 	protected boolean isEnabled(WebElement element) {
 		boolean isEnabled = element.isEnabled();
@@ -1783,7 +1785,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the bool value of whether is the WebElement enabled
-	 * @throws RuntimeException
 	 */
 	protected boolean isEnabled(By by) {
 		boolean isEnabled = driver.findElement(by).isEnabled();
@@ -1796,7 +1797,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
-	 * @throws RuntimeException
 	 */
 	protected String getText(WebElement element) {
 		String text = element.getText();
@@ -1810,7 +1810,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the text string
-	 * @throws RuntimeException
 	 */
 	protected String getText(By by) {
 		String text = driver.findElement(by).getText();
@@ -1824,7 +1823,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the bool value of whether is the WebElement displayed
-	 * @throws RuntimeException
 	 */
 	protected boolean isDisplayed(WebElement element) {
 		boolean isDisplayed = element.isDisplayed();
@@ -1838,7 +1836,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 
 	 * @param by the locator you want to find the element
 	 * @return the bool value of whether is the WebElement displayed
-	 * @throws RuntimeException
 	 */
 	protected boolean isDisplayed(By by) {
 		boolean isDisplayed = driver.findElement(by).isDisplayed();
@@ -1853,7 +1850,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the webelement you want to operate
 	 * @param propertyName the name of the property you want to get
 	 * @return the css property value string
-	 * @throws RuntimeException
 	 */
 	protected String getCssValue(WebElement element, String propertyName) {
 		String cssValue = element.getCssValue(propertyName);
@@ -1868,12 +1864,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the locator you want to find the element
 	 * @param propertyName the name of the property you want to get
 	 * @return the css property value string
-	 * @throws RuntimeException
 	 */
 	protected String getCssValue(By by, String propertyName) {
 		String cssValue = driver.findElement(by).getCssValue(propertyName);
-		pass("element [ " + by.toString() + " ]'s css[" 
-				+ propertyName + "] value is: " + cssValue);
+		pass("element [ " + by.toString() + " ]'s css[" + propertyName + "] value is: " + cssValue);
 		return cssValue;
 	}
 }

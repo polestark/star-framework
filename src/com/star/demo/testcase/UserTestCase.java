@@ -8,18 +8,16 @@ public class UserTestCase extends WebDriverBaseCase {
 
 	@Test
 	public void testCSV() {
-
 		String searchText = "砖家叫兽";
 
 		startWebDriver();
-		
-		maximizeWindow();
+		windowMaximize();
 
 		get("http://www.baidu.com/");
+		setElementLocateTimeout(3);
 		sendKeys(By.id("kw"), searchText);
 		click(By.id("su"));
-
-		waitForElementVisible(By.xpath("//a[contains(text(), '百度知道')]/font[text() = '" + searchText + "']"), 5);
+		click(By.linkText(searchText + "_百度百科"));
 
 		closeWebDriver();
 	}

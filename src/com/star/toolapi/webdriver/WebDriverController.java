@@ -1,15 +1,6 @@
 package com.star.toolapi.webdriver;
 
 /**
- * 框架说明：
- * 1、使用RemoteWebDriver代替WebDriver，可直接使用JavascriptExecutor、TakesScreenshot，使用
- * 	  RemoteControlConfiguration配置SeleniumServer，截取HttpClient日志，便于测试开发调试；
- * 2、WebDriver启动时可选择浏览器，支持ie/ff/chrome/opera/safari/htmlunit模式，默认为ie；
- * 3、SeleniumServer启动时创建logger，记录操作日志，停止时可选择是否转换为html格式日志，同时，
- * 	     服务器的文本格式日志可根据配置项选择是否打开（建议不打开），xml格式的日志也可选择是否保留；
- * 4、测试初始化和结束销毁是使用TestNG的BeforeTest(alwaysRun=true)形式来确保其始终执行的，建
- * 	  议不直接使用JUnit，更不要在测试代码中加入可能导致JVM crash的事务，否则日志可能记录不完整。
- * 
  * @author 测试仔刘毅
  */
 
@@ -40,8 +31,8 @@ import com.star.support.config.ParseProperties;
 import com.star.support.externs.BrowserGuiAuto;
 import com.star.support.externs.Win32GuiByAu3;
 import com.star.support.externs.Win32GuiByVbs;
-import com.star.logging.webdriver.HtmlFormatter4WD;
-import com.star.logging.webdriver.UserXMLFormatter;
+import com.star.logging.webdriver.HTMLLogTransfer;
+import com.star.logging.webdriver.XMLLogFormatter;
 import com.star.testdata.string.StringBufferUtils;
 import com.star.toolapi.webdriver.user.WebDriverListener;
 
@@ -64,8 +55,8 @@ public class WebDriverController {
 	protected static int stepTimeUnit = 500;//单次循环思考时间
 	protected final String ROOT_DIR = System.getProperty("user.dir");
 	protected final String LOG_NAME = new File(CONFIG.get("log")).getName();
-	protected final String LOG_REL = "./" + LOG_NAME + "/";
-	protected final String LOG_ABS = ROOT_DIR + "/" + LOG_NAME + "/";
+	protected final String LOG_REL = ".\\" + LOG_NAME + "\\";
+	protected final String LOG_ABS = ROOT_DIR + "\\" + LOG_NAME + "\\";
 	protected final String EXECUTOR = VBS.getEnvironment("USERNAME");
 	protected final String COMPUTER = VBS.getEnvironment("COMPUTERNAME");
 
@@ -79,11 +70,13 @@ public class WebDriverController {
 	private final Boolean USE_DRIVERSERVER = Boolean.parseBoolean(CONFIG.get("USE_DRIVERSERVER"));
 	private final String seperateMark = "~";
 	private static DesiredCapabilities capability;
-	private static HtmlFormatter4WD html;
+	private static HTMLLogTransfer html;
 	private static String fName;
 	private static long startTime;
 	private static long endTime;
 	private static String className;
+	private final int DRIVER_STATUS_TEST_TIMES = 2;
+	private final int DRIVER_START_TIMEOUT = 30000;
 
 	/**
 	 * Description: config timeout setting for page load, default is 90 seconds</BR>
@@ -169,14 +162,15 @@ public class WebDriverController {
 	 * Description: start webdirver</BR>
 	 * 内容描述：启动WebDriver实例。
 	 * 
-	 * @param browser the browser mode
-	 * @throws RuntimeException
+	 * @param browserMode the browser mode
 	 */
-	protected void startWebDriver(String browser) {
+	private void startWebDriver(String browserMode){
 		try {
-			setBuildEnvChoice(browser);
-			String url = driverObjectInitalize();//about:blank is useless on some machines.
-			driverStatusTest(driver, browser, url, 1);
+			setBuildEnvChoice(browserMode);
+			initalizeWebDriver(DRIVER_START_TIMEOUT);
+			
+			//the address "about:blank" is sometimes useless.
+			ensureWebDriverStatus(browserMode, getServerAddress(), DRIVER_STATUS_TEST_TIMES);
 			
 			setPageLoadTimeout(maxLoadTime);
 			setElementLocateTimeout(maxWaitfor);
@@ -249,7 +243,7 @@ public class WebDriverController {
 	 */
 	protected void testCunstruction(String className) {
 		fName = LOG_ABS + className + ".xml";
-		html = new HtmlFormatter4WD(fName, "date;millis;method;status;message;class");
+		html = new HTMLLogTransfer(fName, "date;millis;method;status;message;class");
 		startTime = System.currentTimeMillis();
 		try {
 			startServer(className);
@@ -384,7 +378,7 @@ public class WebDriverController {
 	 * @param logFile the log file File.
 	 * @throws Exception
 	 */
-	private void startService(boolean needLog, File logFile) throws Exception{
+	private void startService(boolean needLog, File logFile) throws Exception {
 		setExecutableIEDriverServer();
 		Builder builder = new InternetExplorerDriverService.Builder();
 		if (needLog) {
@@ -392,7 +386,13 @@ public class WebDriverController {
 		} else {
 			service = builder.usingAnyFreePort().withLogLevel(level).build();
 		}
-		service.start();	
+		service.start();
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				service.stop();
+			}
+		});
 	}
 
 	/**
@@ -461,13 +461,14 @@ public class WebDriverController {
 	 * Description: judge and set the env choice of local or remote. </BR>
 	 * 内容描述：根据配置选择是在本地运行还是远程代理环境。
 	 * 
+	 * @param browserMode the browser choice, such as ie/ff/chrome...
 	 * @throws Exception
 	 */
-	private void setBuildEnvChoice(String browser) throws Exception{
+	private void setBuildEnvChoice(String browserMode) throws Exception{
 		if (EXECUTOR.toLowerCase().contains("autotest")){
-			setBrowserRemotely(browser);
+			setBrowserRemotely(browserMode);
 		}else{
-			setBrowserLocally(browser);
+			setBrowserLocally(browserMode);
 		}		
 	}
 
@@ -477,15 +478,53 @@ public class WebDriverController {
 	 * 
 	 * @throws	Exception
 	 */
-	private String driverObjectInitalize() throws Exception{
-		WebDriverListener listener = new WebDriverListener(LOG_ABS, className, logger, seperateMark); 
-		
-		if (USE_DRIVERSERVER){//是否使用IEDirverServer
-			driver = new EventFiringWebDriver(new RemoteWebDriver(service.getUrl(),capability)).register(listener);
-			return service.getUrl().toString();
-		}else{
+	private void initalizeWebDriver() throws Exception {
+		WebDriverListener listener = new WebDriverListener(LOG_ABS, className, logger, seperateMark);
+		if (USE_DRIVERSERVER) {// 是否使用IEDirverServer
+			driver = new EventFiringWebDriver(new RemoteWebDriver(service.getUrl(), capability)).register(listener);
+		} else {
 			URL url = new URL("http://localhost:" + server.getPort() + "/wd/hub");
 			driver = new EventFiringWebDriver(new RemoteWebDriver(url, capability)).register(listener);
+		}
+	}
+	
+	/**
+	 * Description: start and see if webdirver start successfully.</BR>
+	 * 内容描述：创建并且判断WebDriver实例是否启动成功。
+	 * 
+	 * @param timeout timeout for start webdriver.
+	 * @throws	Exception
+	 */
+	private void initalizeWebDriver(long timeout) throws Exception {
+		Thread thread_start = new Thread(new Runnable() {
+			public void run() {//用一个独立的线程启动WebDriver
+				try {
+					initalizeWebDriver();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		thread_start.start();
+		try {
+			thread_start.join(timeout);//为启动WebDriver设定超时时间
+		} catch (InterruptedException ie) {
+		}
+		if (thread_start.isAlive()) {//如果最终没能启动成功则抛出错误
+			throw new RuntimeException("can not start webdriver, check your platform configurations!");
+		}
+	}
+	
+	/**
+	 * Description: get the url of the webdriver server/service.
+	 * 内容描述：获取WebDriver服务器的URL。
+	 *
+	 * @return the url of the webdriver server/service.
+	 */
+	private String getServerAddress() throws Exception{
+		if (USE_DRIVERSERVER){//是否使用IEDirverServer
+			return service.getUrl().toString();
+		}else{
 			return "http://localhost:" + server.getPort() + "/wd/hub";
 		}
 	}
@@ -494,42 +533,39 @@ public class WebDriverController {
 	 * Description: catch page load timeout Exception and restart a new session.</BR>
 	 * 内容描述：通过页面跳转是否超时来测试WebDriver启动时是否发生挂死异常。
 	 *
-	 * @param driver RemoteWebDriver object.
-	 * @param browser the browser mode.
+	 * @param browserMode the browser mode.
 	 * @param testUrl the url used to navigate by the driver.get method.
 	 * @throws Exception
 	 */
-	private boolean hasLoadPageSucceeded(WebDriver driver, String browser, String testUrl) throws Exception {
+	private boolean pageLoadStateHealth(String browserMode, String testUrl) throws Exception {
 		try {
 			driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
 			driver.get(testUrl);
 			return true;
 		} catch (TimeoutException te) {
-			LOG.error("******************本次启动WebDriver异常挂起******************");
-			setBuildEnvChoice(browser);
-			driverObjectInitalize();
+			setBuildEnvChoice(browserMode);
+			initalizeWebDriver(DRIVER_START_TIMEOUT);
 			return false;
-		}		
+		}
 	}
 
 	/**
 	 * Description: catch page load timeout Exception and restart a new session.</BR>
 	 * 内容描述：循环一定次数测试WebDriver启动是否挂死。
 	 *
-	 * @param driver RemoteWebDriver object.
-	 * @param browser the browser mode.
+	 * @param browserMode the browser mode.
 	 * @param testUrl the url used to navigate by the driver.get method.
-	 * @param repeatTimes retry times.
+	 * @param actionCount max time to test driver status.
 	 * @throws Exception
 	 */
-	private void driverStatusTest(WebDriver driver, String browser, String testUrl, int repeatTimes) throws Exception {
+	private void ensureWebDriverStatus(String browserMode, String testUrl, int actionCount) throws Exception {
 		int index = 0;
 		boolean suspended = true;
-		while (index < repeatTimes && suspended){
-			suspended = !hasLoadPageSucceeded(driver, browser, testUrl);
-			index ++;
+		while (index <= actionCount && suspended) {
+			suspended = !pageLoadStateHealth(browserMode, testUrl);
+			index++;
 		}
-		if (index == repeatTimes && suspended){
+		if (index > actionCount && suspended) {
 			throw new RuntimeException("can not start webdriver successfully, it's suspended!");
 		}
 	}
@@ -617,7 +653,7 @@ public class WebDriverController {
 	 */
 	private Logger getLogger(String clsName) throws Exception{
 		Logger logger = Logger.getLogger(this.getClass().getName());
-		UserXMLFormatter formatter = new UserXMLFormatter(seperateMark);
+		XMLLogFormatter formatter = new XMLLogFormatter(seperateMark);
 		handler = new FileHandler(LOG_ABS + clsName + ".xml", false);
 		handler.setLevel(Level.FINE);
 		handler.setFormatter(formatter);

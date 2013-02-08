@@ -2,6 +2,7 @@ package com.star.toolapi.webdriver.user;
 
 import java.util.logging.Logger;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
 import com.star.logging.frame.LoggingManager;
 import com.star.testdata.string.StringBufferUtils;
@@ -10,7 +11,7 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 
 	private String className = WebDriverListener.class.getName();
 	private String devidor = "~";
-	private String filePath = "./log/";
+	private String filePath = ".\\log\\";
 	private Logger logger = null;
 	private final StringBufferUtils STR = new StringBufferUtils();
 	private final RuntimeSupport SUPPORT = new RuntimeSupport();
@@ -27,19 +28,54 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 		this.devidor = seperateMark;
 	}
 
+	/**
+	 * Description: override the onException method of WebDriverEventListener.
+	 * 
+	 * @param exception runtime exceptions.
+	 * @param driver the webdriver instance.
+	 * @throws RuntimeException.
+	 */
 	@Override
-	public void onException(Throwable unexpected, WebDriver driver) {
-		String fileName = filePath + className + STR.formatedTime("_yyyyMMdd_HHmmssSSS") + ".png";
+	public void onException(Throwable exception, WebDriver driver) {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 		String methodName = trace[getTraceMethodLevel(trace)].getMethodName();
 		try {
+			onWebDriverException(exception, driver, methodName);
+		} catch (Throwable unexpected) {
+			LOG.error(unexpected);
+			throw new RuntimeException(unexpected);
+		}
+	}
+
+	/**
+	 * Description: see if exception is instanceof WebDriverException.
+	 * 
+	 * @param exception runtime exceptions.
+	 * @param driver the webdriver instance.
+	 * @param methodName the method name to be record.
+	 * @throws RuntimeException.
+	 */
+	private void onWebDriverException(Throwable exception, WebDriver driver, String methodName){
+		String fileName = filePath + className + STR.formatedTime("_yyyyMMdd_HHmmssSSS") + ".png";
+		if (exception instanceof WebDriverException){
 			SUPPORT.screenShot(driver, fileName);
 			recordError(methodName, fileName);
-			throw new RuntimeException(unexpected);
-		} catch (Exception e) {
-			LOG.error(e);
-			e.printStackTrace();
-			throw new RuntimeException(e);
+			String err = exception.getMessage().split("WARNING: The")[0];
+			System.out.println("==============error occurs, the message is:==============");
+			waitFor(100);
+			System.err.println("	" + err.substring(0, err.length() - 1));
+			waitFor(100);
+			System.out.println("==============the test run will abort soon!==============");
+		}else{
+			LOG.error(exception);
+			throw new RuntimeException(exception);
+		}
+	}
+	
+	private void waitFor(long timeout){
+		try {
+			Thread.currentThread().join(timeout);
+		} catch (InterruptedException e) {
 		}
 	}
 
@@ -54,9 +90,8 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 		int index = getTraceClassLevel(trace);
 
 		String traceClass = trace[index].getClassName() + " # " + trace[index].getLineNumber();
-		logger.info(traceClass + devidor + methodName + devidor + "failed" + devidor 
-				+ "method [" + methodName + "] failed, screenshot is: [" 
-				+ fileName + "]".replace(devidor, "-").replace("&", "&"));
+		logger.info(traceClass + devidor + methodName + devidor + "failed" + devidor + "method [" + methodName 
+					+ "] failed, screenshot is: [" + fileName + "]".replace(devidor, "-").replace("&", "&"));
 	}
 
 	/**

@@ -11,10 +11,10 @@ import com.star.logging.frame.LoggingManager;
 import com.star.support.externs.Win32GuiByAu3;
 
 public class RuntimeSupport{
-	
+
 	private WebDriver driver;
 	private final LoggingManager LOG = new LoggingManager(RuntimeSupport.class.getName());
-	
+
 	public RuntimeSupport(){
 	}
 
@@ -65,7 +65,7 @@ public class RuntimeSupport{
 	 * @param myDriver the WebDriver instance.
 	 * @throws Exception
 	 */
-	private void screenShot(String fileName, WebDriver myDriver) throws Exception{
+	private void screenShot(String fileName, WebDriver myDriver) throws Throwable{
 		RemoteWebDriver swd = (RemoteWebDriver) new Augmenter().augment(myDriver);
 		File file = ((TakesScreenshot) swd).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(file, new File(fileName));

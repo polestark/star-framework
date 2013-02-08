@@ -27,10 +27,10 @@ import com.star.support.config.ParseProperties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-public class HtmlFormatter4WD {
+public class HTMLLogTransfer {
 
 	private static final SimpleDateFormat DFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static final LoggingManager LOG = new LoggingManager(HtmlFormatter4WD.class.getName());
+	private static final LoggingManager LOG = new LoggingManager(HTMLLogTransfer.class.getName());
 	private static final ParseProperties property = new ParseProperties("config/config.properties");
 	private static final String LOG_MARK = new File(property.get("log")).getName();
 	private static final String CAM_LOG = "screenshot is:";
@@ -60,22 +60,22 @@ public class HtmlFormatter4WD {
 	 * @param nodesList the key names you want to record into html logs
 	 * @throws IllegalArgumentException
 	 **/
-	public HtmlFormatter4WD(String fileName, String nodesList) {
+	public HTMLLogTransfer(String fileName, String nodesList) {
 		if (nodesList == null) {
 			throw new IllegalArgumentException("parameter can not be null!");
 		} else {
-			HtmlFormatter4WD.nodesName = nodesList;
+			HTMLLogTransfer.nodesName = nodesList;
 			if (nodesName.contains(";")) {
-				HtmlFormatter4WD.nodeName = nodesName.split(";");
+				HTMLLogTransfer.nodeName = nodesName.split(";");
 			} else if (nodesName.contains(",")) {
-				HtmlFormatter4WD.nodeName = nodesName.split(",");
+				HTMLLogTransfer.nodeName = nodesName.split(",");
 			} else {
 				LOG.error("parameter must be separate by ',' or ';'!");
 				throw new IllegalArgumentException("parameter must be separate by ',' or ';'!");
 			}
 		}
-		HtmlFormatter4WD.xmlName = fileName;
-		HtmlFormatter4WD.htmlName = new File(fileName).getAbsolutePath().replace(".xml", ".html");
+		HTMLLogTransfer.xmlName = fileName;
+		HTMLLogTransfer.htmlName = new File(fileName).getAbsolutePath().replace(".xml", ".html");
 	}
 
 	/**
@@ -229,7 +229,12 @@ public class HtmlFormatter4WD {
 				}
 				for (int j = 0; j < arraySize; j++) {
 					params = content.get(arraySize * i + j).toString();
-					int hasFile = params.indexOf("/" + LOG_MARK + "/");
+					int hasFile = 0;
+					if (params.indexOf("\\" + LOG_MARK + "\\") > 0){
+						hasFile = params.indexOf("\\" + LOG_MARK + "\\");
+					}else if(params.indexOf("/" + LOG_MARK + "/") > 0){
+						hasFile = params.indexOf("/" + LOG_MARK + "/");						
+					}
 
 					String camera = (hasFile > 0) ? "<a href=\""
 							+ params.substring(hasFile + LOG_MARK.length() + 2).replace("]", "")

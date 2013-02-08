@@ -32,40 +32,14 @@ public class TestDebugForCase extends DemoBaseCase {
 	public void ettlePrintQuery(){
 		selectWindow("平安养老保险股份有限公司保险业务管理系统");
 		this.click(By.linkText("收付汇总岗"));
-		this.click(By.linkText("收付汇总打印"));
+		this.click(By.linkText("收付汇总打印1"));
 		this.selectFrame(By.id("content"));
 
 		sendKeys(By.name("settlementNettingSeq"), "1110000227150");
 		click(By.name("button"));
+		tableRefresh();
 		
 		waitForElementVisible(By.id("querySettlementNettingForLongTable_table"), 5);
 		click(tableChildElement(By.id("querySettlementNettingForLongTable_table"), 3, 3, "link", 1));
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

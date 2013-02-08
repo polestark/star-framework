@@ -7,11 +7,11 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import com.star.testdata.string.StringBufferUtils;
 
-public class UserXMLFormatter extends Formatter{
+public class XMLLogFormatter extends Formatter{
 	
 	private String seperateMark = "~";
 	
-	public UserXMLFormatter(String seperateMark){
+	public XMLLogFormatter(String seperateMark){
 		this.seperateMark = seperateMark;
 	}
 	
