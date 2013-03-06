@@ -2,10 +2,14 @@ package com.star.testdata.string;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class StringBufferUtils {
 	
@@ -216,5 +220,34 @@ public class StringBufferUtils {
 		list.remove(index);
 		list.add(index, newElement);
 		return list;
+	}
+
+	/**
+	 * merge to list and drop the same element.
+	 * @param list1 the first list.
+	 * @param list2 the second list.
+	 */
+	public List<String> listDistinctMerge(List<String> list1, List<String> list2){
+		Iterator<String> it = list2.iterator();
+		while(it.hasNext()){
+			list1.add(it.next());
+		}
+		
+		List<String> newList = new ArrayList<String>();
+		Set<String> distinct = new HashSet<String>();
+		
+		for (Iterator<String> iter = list1.iterator(); iter.hasNext();) {
+			String element = iter.next();
+			if (distinct.add(element)){
+				newList.add(element);
+			}else{
+				System.err.println("element: 【" + element + "】 has more than one of the same object!");
+				try{
+					Thread.currentThread().join(100);
+				}catch(InterruptedException ie){
+				}
+			}
+		}
+		return newList;		
 	}
 }

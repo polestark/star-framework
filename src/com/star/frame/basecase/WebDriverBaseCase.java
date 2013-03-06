@@ -2,9 +2,10 @@ package com.star.frame.basecase;
 
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
+
+import com.star.core.webdriver.WebDriverWebPublic;
 import com.star.support.externs.Win32GuiByVbs;
 import com.star.testdata.string.StringBufferUtils;
-import com.star.toolapi.webdriver.WebDriverWebPublic;
 
 public class WebDriverBaseCase extends WebDriverWebPublic {
 

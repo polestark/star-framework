@@ -1,7 +1,7 @@
 package com.star.logging.selenium;
 
 import com.thoughtworks.selenium.CommandProcessor;
-import com.star.toolapi.selenium.ExtendDefaultSelenium;
+import com.star.core.selenium.ExtendDefaultSelenium;
 
 public class LoggingDefaultSelenium extends ExtendDefaultSelenium implements LoggingSelenium {
 

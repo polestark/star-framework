@@ -1,6 +1,6 @@
 package com.star.logging.selenium;
 
-import com.star.toolapi.selenium.ExtendSelenium;
+import com.star.core.selenium.ExtendSelenium;
 
 public abstract interface LoggingSelenium extends ExtendSelenium {
 	public abstract void logComment(String paramString);

@@ -13,7 +13,17 @@
 	<tstamp>
 		<format property="now" pattern="yyyy-MM-dd_HH-mm-ss" locale="zh"/>
 	</tstamp>
-	<property name="runmark" value="${env.USERNAME}@${env.COMPUTERNAME}" />
+	
+	<taskdef resource="net/sf/antcontrib/antlib.xml" />
+	<if>
+		<contains string="${env.JOB_NAME}" substring="JOB_NAME" casesensitive="false" />
+		<then>
+			<property name="runmark" value="local_build@${env.USERNAME}@${env.COMPUTERNAME}" />
+		</then>
+		<else>
+			<property name="runmark" value="${env.JOB_NAME}@${env.USERNAME}@${env.COMPUTERNAME}" />
+		</else>
+	</if>
 	<property name="backdir" value="${history}\${runmark}@${now}" />
 
 	<!-- ==================================================================== -->
@@ -69,7 +79,10 @@
 				haltOnfailure="false"
 				useDefaultListeners="false"
 				timeOut = "3600000"
-				listeners="com.star.reportng.HTMLReporter,com.star.reportng.JUnitXMLReporter,org.testng.reporters.FailedReporter"
+				listeners="com.star.report.HTMLReporter,
+						   com.star.report.JUnitXMLReporter,
+						   org.testng.reporters.XMLReporter,
+			   			   org.testng.reporters.FailedReporter"
 				outputdir="${output}">
 			<xmlfileset dir="${task}" includes="${task.file}" />
 			<sysproperty key="ENV_CHOICE" value="${ENV_CHOICE}" />

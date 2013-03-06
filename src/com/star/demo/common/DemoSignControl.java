@@ -2,7 +2,8 @@ package com.star.demo.common;
 
 import static org.testng.AssertJUnit.assertTrue;
 import org.openqa.selenium.By;
-import com.star.toolapi.webdriver.WebDriverWebPublic;
+
+import com.star.core.webdriver.WebDriverWebPublic;
 
 public class DemoSignControl extends WebDriverWebPublic{
 

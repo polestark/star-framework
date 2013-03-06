@@ -2,7 +2,8 @@ package com.star.frame.assertion;
 
 import java.util.logging.Logger;
 import org.openqa.selenium.WebDriver;
-import com.star.toolapi.webdriver.user.RuntimeSupport;
+
+import com.star.core.webdriver.user.RuntimeSupport;
 
 /**
  * Description: use org.testng.AssertJUnit and add user defined operations</BR>

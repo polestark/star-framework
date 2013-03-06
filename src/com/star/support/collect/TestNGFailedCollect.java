@@ -13,8 +13,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import com.star.frame.tools.ReadXMLDocument;
 import com.star.logging.frame.LoggingManager;
 
 public class TestNGFailedCollect {
@@ -29,7 +28,7 @@ public class TestNGFailedCollect {
 		modiXMLDocument(args[0]);
 	}
 	
-	public static void modiXMLDocument(String taskName){
+	public static void modiXMLDocument(String taskName) throws Exception{
 		if (!taskName.contains("/") && !taskName.contains("\\")){
 			taskName = TASK + taskName;
 		}
@@ -42,10 +41,11 @@ public class TestNGFailedCollect {
 	 * @param taskName path and name of the testng task file to be parsed.
 	 * @param failName path and name of the testng-run-failed file to be parsed.
 	 * @param outName path and name of the new created xml file for rerun.
+	 * @throws Exception 
 	 * 
 	 * @throws RuntimeException
 	 **/
-	public static void modiXMLDocument(String taskName, String failName, String outName) {		
+	public static void modiXMLDocument(String taskName, String failName, String outName) throws Exception {		
 		if (! new File(taskName).exists()){
 			throw new RuntimeException("the TestNG task file 【 " + taskName + "】 does not exist!");
 		}
@@ -91,28 +91,6 @@ public class TestNGFailedCollect {
 	}
 
 	/**
-	 * load your xml files, parse and return document object.
-	 * 
-	 * @param fileName path and name of the file to be parsed.
-	 * @return the document of your xml file, loaded as domfactory
-	 * 
-	 * @throws RuntimeException
-	 **/
-	private static Document loadXMLDocument(String fileName) {
-		try {
-			DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-			domFactory.setValidating(false);
-			domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-			domFactory.setNamespaceAware(true);
-			DocumentBuilder builder = domFactory.newDocumentBuilder();
-			return builder.parse(fileName);
-		} catch (Exception e) {
-			LOG.error(e, "XML parse failed:");
-			throw new RuntimeException("XML parse failed:" + e.getMessage());
-		}
-	}
-
-	/**
 	 * read xml file content.
 	 * 
 	 * @param fileName path and name of the file to be parsed.
@@ -146,9 +124,10 @@ public class TestNGFailedCollect {
 	 * 
 	 * @param fileName path and name of the file to be read.
 	 * @return the failed tests' name List.
+	 * @throws Exception 
 	 **/
-	private static List<String> readTestNGFailed(String fileName){
-		Document document = loadXMLDocument(fileName);
+	private static List<String> readTestNGFailed(String fileName) throws Exception{
+		Document document = new ReadXMLDocument().loadXMLDocument(fileName);
 		NodeList nodeList = document.getElementsByTagName("test");
 		String nodeValue = null;
 		List<String> resList = new ArrayList<String>();

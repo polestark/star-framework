@@ -1,7 +1,15 @@
-<suite name="webdriver autotest suite" verbose="2"> 
-	<test name="test baidu example">
+<suite name="webdriver autotest suite" verbose="0"> 
+	<test name="DemoTestCase_01">
 		<classes>
-			<class name="com.star.externs.UserTestCase" />
+			<class name="com.star.demo.testcase.DemoTestCase_01" />
+		</classes>
+	</test>
+	
+	<test name="DemoTestCase_02">
+		<parameter name="userName" value="LIUYI027"/>
+		<parameter name="passWord" value="aaaaa888"/>
+		<classes>
+			<class name="com.star.demo.testcase.DemoTestCase_02" />
 		</classes>
 	</test>
 </suite>
