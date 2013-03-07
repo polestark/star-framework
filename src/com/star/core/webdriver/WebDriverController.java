@@ -28,6 +28,7 @@ import org.openqa.selenium.support.events.EventFiringWebDriver;
 
 import com.star.core.webdriver.user.WebDriverListener;
 import com.star.frame.assertion.StarNewAssertion;
+import com.star.frame.tools.StackTraceUtils;
 import com.star.logging.frame.LoggingManager;
 import com.star.support.config.ParseProperties;
 import com.star.support.externs.BrowserGuiAuto;
@@ -69,9 +70,10 @@ public class WebDriverController {
 	private final Boolean SERVER_OUTPUT_ON = Boolean.parseBoolean(CONFIG.get("SERVER_OUTPUT_ON"));
 	//是否使用selenium2.22.0版本以上的IEDriverServer模式的配置项
 	private final Boolean USE_DRIVERSERVER = Boolean.parseBoolean(CONFIG.get("USE_DRIVERSERVER"));
-	private final String seperateMark = "~";
+	private final String devidor = "~";
 	private static DesiredCapabilities capabilities;
 	private static HTMLLogTransfer html;
+	private static StackTraceUtils stack;
 	private static String fName;
 	private static long startTime;
 	private static long endTime;
@@ -149,6 +151,7 @@ public class WebDriverController {
 	protected void startServer(String clsName) throws Exception{
 		WebDriverController.className = clsName;
 		logger = getLogger(className);
+		stack = new StackTraceUtils(logger, devidor);
 		File log = new File(LOG_ABS + className + "_" + STRUTIL.getMilSecNow() + ".log");
 
 		if (USE_DRIVERSERVER) {
@@ -178,7 +181,7 @@ public class WebDriverController {
 			setScriptingTimeout(maxWaitfor);
 			
 			actionDriver = new Actions(driver);
-			ASSERT = new StarNewAssertion(driver, LOG_ABS, className, logger, seperateMark);
+			ASSERT = new StarNewAssertion(driver, LOG_ABS, className, logger, devidor);
 			pass("webdriver new instance created");	
 		} catch (Exception e) {
 			LOG.error(e);
@@ -314,7 +317,8 @@ public class WebDriverController {
 	 * @param message the message to be recroded to logs
 	 */
 	protected void pass(String message) {
-		report("passed", message);
+		message = message.replace(devidor, "-").replace("&", "-");
+		stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
 	}
 
 	/**
@@ -324,7 +328,8 @@ public class WebDriverController {
 	 * @param message the message to be recroded to logs
 	 */
 	protected void fail(String message) {
-		report("failed", message);
+		message = message.replace(devidor, "-").replace("&", "-");
+		stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message);
 	}
 
 	/**
@@ -334,7 +339,8 @@ public class WebDriverController {
 	 * @param message the message to be recroded to logs
 	 */
 	protected void failAndExit(String message) {
-		report("failed", message);
+		message = message.replace(devidor, "-").replace("&", "-");
+		stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message);
 		throw new RuntimeException(message);
 	}
 
@@ -345,7 +351,24 @@ public class WebDriverController {
 	 * @param message the message to be recroded to logs
 	 */
 	protected void warn(String message) {
-		report("warned", message);
+		message = message.replace(devidor, "-").replace("&", "-");
+		stack.traceRecord(Thread.currentThread().getStackTrace(), "warned", message);
+	}
+	
+	/**
+	 * system console output messages.
+	 * @param message the message info.
+	 */
+	protected void consolePrint(String message){
+		System.out.println(message);
+	}
+
+	/**
+	 * system error output messages.
+	 * @param message the message info.
+	 */
+	protected void consoleError(String message){
+		System.err.println(message);
 	}
 
 	/**
@@ -502,7 +525,7 @@ public class WebDriverController {
 	 * 内容描述：在做好配置之后创建WebDriver实例。
 	 */
 	private void initalizeWebDriver() {
-		WebDriverListener listener = new WebDriverListener(LOG_ABS, className, logger, seperateMark);
+		WebDriverListener listener = new WebDriverListener(LOG_ABS, className, logger, devidor);
 		if (USE_DRIVERSERVER) {// 是否使用IEDirverServer
 			driver = new EventFiringWebDriver(new RemoteWebDriver(service.getUrl(), capabilities)).register(listener);
 		} else {
@@ -695,50 +718,11 @@ public class WebDriverController {
 	 */
 	private Logger getLogger(String clsName) throws Exception{
 		Logger logger = Logger.getLogger(this.getClass().getName());
-		XMLLogFormatter formatter = new XMLLogFormatter(seperateMark);
+		XMLLogFormatter formatter = new XMLLogFormatter(devidor);
 		handler = new FileHandler(LOG_ABS + clsName + ".xml", false);
 		handler.setLevel(Level.FINE);
 		handler.setFormatter(formatter);
 		logger.addHandler(handler);
 		return logger;
-	}
-	
-	/**
-	 * system console output messages.
-	 * @param message the message info.
-	 */
-	protected void consolePrint(String message){
-		System.out.println(message);
-	}
-
-	/**
-	 * system error output messages.
-	 * @param message the message info.
-	 */
-	protected void consoleError(String message){
-		System.err.println(message);
-	}
-
-	/**
-	 * Description: record to logs with fail info messages.</BR>
-	 * 内容描述：报告操作信息，根据不同的状态记录对应日志。
-	 * 
-	 * @param status the result status to be logged
-	 * @param message the message to be recroded to logs
-	 */
-	private void report(String status, String message) {
-		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		int first = 3, last = 3;
-		String methodName = trace[first].getMethodName();
-
-		for (int i = first; i < trace.length; i++) {
-			if (trace[i].getClassName().contains(".reflect.")) {
-				last = ((i - 1) <= first) ? first : (i - 1);
-				break;
-			}
-		}
-		String traceClass = trace[last].getClassName() + " # " + trace[last].getLineNumber();
-		logger.info(traceClass + seperateMark + methodName + seperateMark + status 
-				+ seperateMark + message.replace(seperateMark, "-").replace("&", "&"));
 	}
 }

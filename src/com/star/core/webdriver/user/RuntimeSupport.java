@@ -2,9 +2,11 @@ package com.star.core.webdriver.user;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import com.star.logging.frame.LoggingManager;
@@ -56,6 +58,18 @@ public class RuntimeSupport{
 			new Win32GuiByAu3().screenCapture(fileName);
 		}
 	}
+	
+	/**
+	 * Description: get the xpath string of webelements.
+	 *
+	 * @param driver webdriver instance.
+	 * @param element the webelement.
+	 * @return the xpath string.
+	 */
+	public String getElementXpath(WebDriver driver, WebElement element){
+		String js = JScriptCollection.GET_ELEMENT_XPATH.getValue();
+		return (String) ((JavascriptExecutor) driver).executeScript(js, element);
+	}
 
 	/**
 	 * take a screen shot and save the file.</BR>
@@ -69,5 +83,29 @@ public class RuntimeSupport{
 		RemoteWebDriver swd = (RemoteWebDriver) new Augmenter().augment(myDriver);
 		File file = ((TakesScreenshot) swd).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(file, new File(fileName));
+	}
+	
+	public void checkAfterClick(){
+		
+	}
+	
+	public void checkAfterValueChange(){
+		
+	}
+	
+	public void checkAfterBlur(){
+		
+	}
+	
+	public void checkAfterAlterAccept(){
+		
+	}
+	
+	public void checkAfterAlterDismiss(){
+		
+	}
+	
+	public void checkAfterNavigate(){
+		
 	}
 }

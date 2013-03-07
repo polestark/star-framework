@@ -17,7 +17,7 @@ public class DemoTestCase_02 extends DemoBaseCase {
 		this.sendKeys(By.name("startApplyDate"), "20120101");
 		this.sendKeys(By.name("endApplyDate"), "20121201");
 		this.selectByValue(By.name("symbol"), "<");
-		this.sendKeys(By.name("overdueDate"), "100");
+		this.sendKeys(By.name("overdueDate"), "1000");
 		
 		this.click(By.xpath("//img[contains(@onclick,'submit_pagequery_per()')]"));		
 		this.waitForElementVisible(By.id("id_getQuestionnaireNoProcessInfo_query"), 5);
@@ -30,6 +30,9 @@ public class DemoTestCase_02 extends DemoBaseCase {
 	
 	@Test(dependsOnMethods={"getQuestionnaireNoProcessInfo"}, alwaysRun = true)
 	public void ettlePrintQuery(){
+		
+		this.browserRefresh();
+		
 		selectWindow("平安养老保险股份有限公司保险业务管理系统");
 		this.click(By.linkText("收付汇总岗"));
 		this.click(By.linkText("收付汇总打印"));
@@ -37,7 +40,6 @@ public class DemoTestCase_02 extends DemoBaseCase {
 
 		sendKeys(By.name("settlementNettingSeq"), "1110000227150");
 		click(By.name("button"));
-		tableRefresh();
 		
 		waitForElementVisible(By.id("querySettlementNettingForLongTable_table"), 5);
 		click(tableChildElement(By.id("querySettlementNettingForLongTable_table"), 3, 3, "link", 1));

@@ -1,21 +1,24 @@
 package com.star.core.webdriver.user;
 
 import java.util.logging.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
+import org.openqa.selenium.support.events.WebDriverEventListener;
+import com.star.frame.tools.StackTraceUtils;
 import com.star.logging.frame.LoggingManager;
 import com.star.testdata.string.StringBufferUtils;
 
-public class WebDriverListener extends AbstractWebDriverEventListener {
+public class WebDriverListener implements WebDriverEventListener {
 
 	private String className = WebDriverListener.class.getName();
 	private String devidor = "~";
 	private String filePath = ".\\log\\";
-	private Logger logger = null;
 	private final StringBufferUtils STR = new StringBufferUtils();
 	private final RuntimeSupport SUPPORT = new RuntimeSupport();
 	private final LoggingManager LOG = new LoggingManager(WebDriverListener.class.getName());
+	private StackTraceUtils stack;
 
 	public WebDriverListener() {
 		throw new IllegalArgumentException("you must config the parameter correctly!");
@@ -24,27 +27,8 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 	public WebDriverListener(String location, String runClassName,Logger logger, String seperateMark) {
 		this.className = runClassName;
 		this.filePath = location.endsWith("/") || location.endsWith("\\") ? location : location + "/";
-		this.logger = logger;
 		this.devidor = seperateMark;
-	}
-
-	/**
-	 * Description: override the onException method of WebDriverEventListener.
-	 * 
-	 * @param exception runtime exceptions.
-	 * @param driver the webdriver instance.
-	 * @throws RuntimeException.
-	 */
-	@Override
-	public void onException(Throwable exception, WebDriver driver) {
-		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		String methodName = trace[getTraceMethodLevel(trace)].getMethodName();
-		try {
-			onWebDriverException(exception, driver, methodName);
-		} catch (Throwable unexpected) {
-			LOG.error(unexpected);
-			throw new RuntimeException(unexpected);
-		}
+		this.stack = new StackTraceUtils(logger, devidor);
 	}
 
 	/**
@@ -52,14 +36,14 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 	 * 
 	 * @param exception runtime exceptions.
 	 * @param driver the webdriver instance.
-	 * @param methodName the method name to be record.
 	 * @throws RuntimeException.
 	 */
-	private void onWebDriverException(Throwable exception, WebDriver driver, String methodName){
+	private void onWebDriverException(Throwable exception, WebDriver driver){
 		String fileName = filePath + className + STR.formatedTime("_yyyyMMdd_HHmmssSSS") + ".png";
 		if (exception instanceof WebDriverException){
 			SUPPORT.screenShot(driver, fileName);
-			recordError(methodName, fileName);
+			String message = "run failed, screenshot is: [" + fileName + "]";
+			stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message);
 			String err = exception.getMessage().split("WARNING: The")[0];
 			System.out.println("==============error occurs, the message is:==============");
 			waitFor(100);
@@ -71,56 +55,113 @@ public class WebDriverListener extends AbstractWebDriverEventListener {
 			throw new RuntimeException(exception);
 		}
 	}
-	
-	private void waitFor(long timeout){
+
+	/**
+	 * Description: wait milliseconds.
+	 * 
+	 * @param millis time to wait, in millisecond
+	 */
+	private void waitFor(long millis){
 		try {
-			Thread.currentThread().join(timeout);
+			Thread.currentThread().join(millis);
 		} catch (InterruptedException e) {
 		}
 	}
 
-	/**
-	 * Description: record to logs with fail info messages.
-	 * 
-	 * @param methodName the method name to be record.
-	 * @param fileName the file name of the screenshot.
-	 */
-	private void recordError(String methodName, String fileName) {
-		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		int index = getTraceClassLevel(trace);
+	@Override
+	public void beforeNavigateTo(String url, WebDriver driver) {
+	}
 
-		String traceClass = trace[index].getClassName() + " # " + trace[index].getLineNumber();
-		logger.info(traceClass + devidor + methodName + devidor + "failed" + devidor + "method [" + methodName 
-					+ "] failed, screenshot is: [" + fileName + "]".replace(devidor, "-").replace("&", "&"));
+	@Override
+	public void afterNavigateTo(String url, WebDriver driver) {
+		//String message = "navigate to [ " + url + " ] completed.";
+		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+	}
+
+	@Override
+	public void beforeNavigateBack(WebDriver driver) {
+	}
+
+	@Override
+	public void afterNavigateBack(WebDriver driver) {
+		//String message = "navigate back completed.";
+		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+	}
+
+	@Override
+	public void beforeNavigateForward(WebDriver driver) {
+	}
+
+	@Override
+	public void afterNavigateForward(WebDriver driver) {
+		//String message = "navigate forward completed.";
+		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+	}
+
+	@Override
+	public void beforeFindBy(By by, WebElement element, WebDriver driver) {
+	}
+
+	@Override
+	public void afterFindBy(By by, WebElement element, WebDriver driver) {
+		//String message = "find element by [ " + by.toString() + " ] completed.";
+		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+	}
+
+	@Override
+	public void beforeClickOn(WebElement element, WebDriver driver) {
+	}
+
+	@Override
+	public void afterClickOn(WebElement element, WebDriver driver) {
+		//String message = "click on element [ " + SUPPORT.getElementXpath(driver, element) + " ] completed.";
+		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+	}
+	
+	public void afterClickOn(By by, WebDriver driver) {
+		//String message = "click on element [ " + by.toString() + " ] completed.";
+		//traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+	}
+
+	@Override
+	public void beforeChangeValueOf(WebElement element, WebDriver driver) {
+	}
+
+	@Override
+	public void afterChangeValueOf(WebElement element, WebDriver driver) {
+		//String message = "element [ " + SUPPORT.getElementXpath(driver, element) + " ] value change completed.";
+		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+	}
+	
+	public void afterChangeValueOf(By by, WebDriver driver) {
+		//String message = "element [ " + by.toString() + " ] value change completed.";
+		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+	}
+
+	@Override
+	public void beforeScript(String script, WebDriver driver) {
+	}
+
+	@Override
+	public void afterScript(String script, WebDriver driver) {
+		//String message = "javascript [ " + script + " ] execute completed.";
+		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
 	}
 
 	/**
-	 * get the trace level index of the running test class. 
+	 * Description: override the onException method of WebDriverEventListener.
 	 * 
-	 * @param trace the StackTraceElement array.
-	 * @return the index of the trace deepth of class.
+	 * @param exception runtime exceptions.
+	 * @param driver the webdriver instance.
+	 * @throws RuntimeException.
 	 */
-	private int getTraceClassLevel(StackTraceElement[] trace){
-		for(int i = trace.length - 1; i > 0 ; i --){
-			if (trace[i].getClassName().equals("sun.reflect.NativeMethodAccessorImpl")){
-				return i - 2;
-			}
+	@Override
+	public void onException(Throwable exception, WebDriver driver) {
+		try {
+			onWebDriverException(exception, driver);
+		} catch (Throwable unexpected) {
+			LOG.error(unexpected);
+			throw new RuntimeException(unexpected);
 		}
-		return 0;
-	}
-
-	/**
-	 * get the trace level index of the running test method. 
-	 * 
-	 * @param trace the StackTraceElement array.
-	 * @return the index of the trace deepth of method.
-	 */
-	private int getTraceMethodLevel(StackTraceElement[] trace){
-		for(int i = trace.length - 1; i > 0 ; i --){
-			if (trace[i].getMethodName().equals("invoke0")){
-				return i - 2;
-			}
-		}
-		return 0;
 	}
 }
