@@ -68,7 +68,7 @@ public class AutoDevelopmentSchedule {
 		cell.setCellValue("system_name");
 		cell.setCellStyle(cellStyle);
 		cell = row.createCell(1);
-		cell.setCellValue("total-class");
+		cell.setCellValue("natual-class");
 		cell.setCellStyle(cellStyle);
 		cell = row.createCell(2);
 		cell.setCellValue("test-class");
@@ -94,16 +94,17 @@ public class AutoDevelopmentSchedule {
 			row = sheet.createRow(index);
 			String sourceFolder = workRoot + projectName + "\\src";
 			tws.fileListReset();
-			List<String> testClass = tws.testClassFiles(sourceFolder);
-			tws.fileListReset();
-			int classCount = tws.countTestClass(sourceFolder);
+			List<String> natualClasses = tws.testClassFiles(sourceFolder);
+			List<String> testClasses = tws.testClass(sourceFolder);
+			//tws.fileListReset();
+			int classCount = testClasses.size();
 
 			int methodCount = 0;
-			for (int j = 0; j < testClass.size(); j++) {
-				methodCount += tws.countTestMethod(testClass.get(j));
+			for (int j = 0; j < natualClasses.size(); j++) {
+				methodCount += tws.countTestMethod(natualClasses.get(j));
 			}
 
-			List<String> temp = new ArrayList<String>();
+			List<String> taskClasses = new ArrayList<String>();
 			List<String> classes = null;
 			int taskTestCount = 0;
 			int taskMethodCount = 0;
@@ -113,15 +114,15 @@ public class AutoDevelopmentSchedule {
 					ctt = new CountTestNGTest(workRoot, projectName, lineContent[i]);
 					classes = ctt.testNGClasses();
 					if (null != lineContent[i] && !lineContent[i].isEmpty() && null != classes){
-						temp = str.listDistinctMerge(temp, classes);
+						taskClasses = str.listDistinctMerge(taskClasses, classes);
 					}
 				}
-				taskTestCount = temp.size();
+				taskTestCount = taskClasses.size();
 				if (ctt != null){
 					ctt.clearCount();
 				}
 				for (int n = 0; n < taskTestCount; n ++){
-					String testName = temp.get(n);
+					String testName = taskClasses.get(n);
 					if (testName.contains("webtestunit")){
 						taskMethodCount += ctt.testNGMethods(testName, sheetList);					
 					}
@@ -131,34 +132,44 @@ public class AutoDevelopmentSchedule {
 					cjt = new CountJUnitTest(workRoot, projectName, lineContent[i]);
 					classes = cjt.junitClasses();
 					if (null != lineContent[i] && !lineContent[i].isEmpty() && null != classes){
-						temp = str.listDistinctMerge(temp, classes);
+						taskClasses = str.listDistinctMerge(taskClasses, classes);
 					}
 				}
-				taskTestCount = temp.size();
+				taskTestCount = taskClasses.size();
 				if (cjt != null){
 					cjt.clearCount();
 				}
 				for (int n = 0; n < taskTestCount; n ++){
-					String testName = temp.get(n);
+					String testName = taskClasses.get(n);
 					if (testName.contains("webtestunit")){
 						taskMethodCount += cjt.junitMethods(testName, sheetList);					
 					}
 				}
 			}
 
-			countNatualClass += testClass.size();
+			countNatualClass += natualClasses.size();
 			countTestClass += classCount;
 			countTaskClass += taskTestCount;
 			countTestMethod += methodCount;
 			countTaskMethod += taskMethodCount;
 
 			System.out.println(projectName + ":");
-			System.out.println("	total-class: " + testClass.size());
+			System.out.println("	natual-class: " + natualClasses.size());
 			System.out.println("	test-class: " + classCount);
 			System.out.println("	run-class: " + taskTestCount);
 			System.out.println("	test-method: " + methodCount);
 			System.out.println("	run-method: " + taskMethodCount);
+			System.out.println(projectName + "未提交运行的Test:");
 			Thread.currentThread().join(100);
+			
+			List<String> notRunned = str.listMinus(testClasses, taskClasses);
+			if (null != notRunned && !notRunned.isEmpty()){
+				for (int x = 0; x < notRunned.size(); x ++){
+					System.out.println("	" + notRunned.get(x));
+				}			
+			}else{
+				System.out.println("	****************无****************");				
+			}
 
 			cell = row.createCell(0);
 			cell.setCellType(1);
@@ -167,7 +178,7 @@ public class AutoDevelopmentSchedule {
 
 			cell = row.createCell(1);
 			cell.setCellType(0);
-			cell.setCellValue(testClass.size());
+			cell.setCellValue(natualClasses.size());
 			cell.setCellStyle(cellStyle);
 
 			cell = row.createCell(2);
@@ -195,7 +206,7 @@ public class AutoDevelopmentSchedule {
 		reader.close();
 
 		System.out.println("total:");
-		System.out.println("	total-class: " + countNatualClass);
+		System.out.println("	natual-class: " + countNatualClass);
 		System.out.println("	test-class: " + countTestClass);
 		System.out.println("	run-class: " + countTaskClass);
 		System.out.println("	test-method: " + countTestMethod);

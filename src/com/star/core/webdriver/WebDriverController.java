@@ -9,10 +9,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.Handler;
-import java.util.logging.FileHandler;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.TimeoutException;
@@ -34,8 +32,7 @@ import com.star.support.config.ParseProperties;
 import com.star.support.externs.BrowserGuiAuto;
 import com.star.support.externs.Win32GuiByAu3;
 import com.star.support.externs.Win32GuiByVbs;
-import com.star.logging.webdriver.HTMLLogTransfer;
-import com.star.logging.webdriver.XMLLogFormatter;
+import com.star.logging.webdriver.LoggingModeHelper;
 import com.star.testdata.string.StringBufferUtils;
 
 public class WebDriverController {
@@ -62,6 +59,7 @@ public class WebDriverController {
 	protected final String EXECUTOR = VBS.getEnvironment("USERNAME");
 	protected final String COMPUTER = VBS.getEnvironment("COMPUTERNAME");
 
+	private final StackTraceUtils stack = new StackTraceUtils();
 	private final InternetExplorerDriverLogLevel level = InternetExplorerDriverLogLevel.
 														valueOf(CONFIG.get("SERVER_LOG_LEVEL"));
 	private final LoggingManager LOG = new LoggingManager(WebDriverController.class.getName());
@@ -72,9 +70,7 @@ public class WebDriverController {
 	private final Boolean USE_DRIVERSERVER = Boolean.parseBoolean(CONFIG.get("USE_DRIVERSERVER"));
 	private final String devidor = "~";
 	private static DesiredCapabilities capabilities;
-	private static HTMLLogTransfer html;
-	private static StackTraceUtils stack;
-	private static String fName;
+	private static LoggingModeHelper logHelper;
 	private static long startTime;
 	private static long endTime;
 	private static String className;
@@ -150,8 +146,8 @@ public class WebDriverController {
 	 */
 	protected void startServer(String clsName) throws Exception{
 		WebDriverController.className = clsName;
-		logger = getLogger(className);
-		stack = new StackTraceUtils(logger, devidor);
+		logHelper = new LoggingModeHelper(className,LOG_ABS,"GBK");
+		logHelper.LogInit(startTime);
 		File log = new File(LOG_ABS + className + "_" + STRUTIL.getMilSecNow() + ".log");
 
 		if (USE_DRIVERSERVER) {
@@ -233,9 +229,6 @@ public class WebDriverController {
 		} else {
 			terminateServer();
 		}
-		if (handler != null){
-			handler.close();
-		}
 	}
 
 	/**
@@ -246,8 +239,6 @@ public class WebDriverController {
 	 * @throws RuntimeException
 	 */
 	protected void testCunstruction(String className) {
-		fName = LOG_ABS + className + ".xml";
-		html = new HTMLLogTransfer(fName, "date;millis;method;status;message;class");
 		startTime = System.currentTimeMillis();
 		try {
 			startServer(className);
@@ -269,7 +260,7 @@ public class WebDriverController {
 			throw new RuntimeException(e);
 		}finally{
 			endTime = System.currentTimeMillis();
-			html.xmlTansToHtml(startTime, endTime);			
+			logHelper.LogDestory(endTime);
 		}
 	}
 
@@ -318,7 +309,7 @@ public class WebDriverController {
 	 */
 	protected void pass(String message) {
 		message = message.replace(devidor, "-").replace("&", "-");
-		stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+		logHelper.LogWrite(stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message));
 	}
 
 	/**
@@ -329,7 +320,7 @@ public class WebDriverController {
 	 */
 	protected void fail(String message) {
 		message = message.replace(devidor, "-").replace("&", "-");
-		stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message);
+		logHelper.LogWrite(stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message));
 	}
 
 	/**
@@ -340,7 +331,7 @@ public class WebDriverController {
 	 */
 	protected void failAndExit(String message) {
 		message = message.replace(devidor, "-").replace("&", "-");
-		stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message);
+		logHelper.LogWrite(stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message));
 		throw new RuntimeException(message);
 	}
 
@@ -352,7 +343,7 @@ public class WebDriverController {
 	 */
 	protected void warn(String message) {
 		message = message.replace(devidor, "-").replace("&", "-");
-		stack.traceRecord(Thread.currentThread().getStackTrace(), "warned", message);
+		logHelper.LogWrite(stack.traceRecord(Thread.currentThread().getStackTrace(), "warned", message));
 	}
 	
 	/**
@@ -525,7 +516,7 @@ public class WebDriverController {
 	 * 内容描述：在做好配置之后创建WebDriver实例。
 	 */
 	private void initalizeWebDriver() {
-		WebDriverListener listener = new WebDriverListener(LOG_ABS, className, logger, devidor);
+		WebDriverListener listener = new WebDriverListener(LOG_ABS, className, logger);
 		if (USE_DRIVERSERVER) {// 是否使用IEDirverServer
 			driver = new EventFiringWebDriver(new RemoteWebDriver(service.getUrl(), capabilities)).register(listener);
 		} else {
@@ -706,23 +697,5 @@ public class WebDriverController {
 		if (service != null){
 			service.stop();
 		}
-	}
-
-	/**
-	 * Description: user defined log to append standard server log.</BR>
-	 * 内容描述：创建日志对象。
-	 * 
-	 * @param clsName extra log filename to append
-	 * @return Logger
-	 * @throws Exception
-	 */
-	private Logger getLogger(String clsName) throws Exception{
-		Logger logger = Logger.getLogger(this.getClass().getName());
-		XMLLogFormatter formatter = new XMLLogFormatter(devidor);
-		handler = new FileHandler(LOG_ABS + clsName + ".xml", false);
-		handler.setLevel(Level.FINE);
-		handler.setFormatter(formatter);
-		logger.addHandler(handler);
-		return logger;
 	}
 }

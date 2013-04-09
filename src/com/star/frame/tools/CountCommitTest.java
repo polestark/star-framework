@@ -63,25 +63,34 @@ public class CountCommitTest{
 	 * @throws Exception
 	 */
 	public int countTestClass(String workFolder) throws Exception{
-		int classCount = 0;
+		return testClass(workFolder).size();
+	}
+	
+	public List<String> testClass(String workFolder) throws Exception{
 		String eachLine = null;
+		fileListReset();
+		String className = null;
 		List<String> files = testClassFiles(workFolder);
+		List<String> tests = new ArrayList<String>();
+		int beginIndex = workFolder.length() + 1;
 		for (int i = 0; i < files.size(); i++) {
-			FileInputStream fis = new FileInputStream(new File(files.get(i)));
+			File file = new File(files.get(i));
+			FileInputStream fis = new FileInputStream(file);
 			InputStreamReader isr = new InputStreamReader(fis, getReadCharSet());
 			BufferedReader reader = new BufferedReader(isr);
 			boolean added = false;
 			while ((eachLine = reader.readLine()) != null && !added) {
+				className = file.getAbsolutePath().replace(".java", "").substring(beginIndex).replace("\\", ".");
 				if (eachLine.trim().indexOf("@Test") == 0) {
-					classCount++;
 					added = true;
+					tests.add(className);
 				}
 			}
 			reader.close();
 			isr.close();
 			fis.close();
 		}
-		return classCount;
+		return tests;
 	}
 
 	/**

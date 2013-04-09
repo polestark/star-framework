@@ -140,8 +140,11 @@ public class CertificateCode{
 	 **/
 	public String rndCodeWithSex(String sexCode) {
 		String rndString = "";
-		int rndNum = (int) Math.rint(Math.random() * (998 - 1) + 1);
-		if (sexCode == "男" || sexCode == "M") {
+		int rndNum = (int) Math.rint((Math.random() * (998 - 1) + 1));
+		if (rndNum % 2 == 1) {
+			rndNum++;
+		}
+		if (("男").equals(sexCode) || ("M").equals(sexCode)) {
 			rndString = strLeftExpand(String.valueOf(rndNum + 1), 3, '0');
 		} else {
 			rndString = strLeftExpand(String.valueOf(rndNum), 3, '0');

@@ -13,6 +13,8 @@ package com.star.core.webdriver.user;
 
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.InvalidElementStateException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -21,6 +23,7 @@ public class WebDriverTable{
 	private By tabBy = null;
 	private WebElement table = null;
 	private List<WebElement> tabRows = null;
+	private List<WebElement> tables = null;
 	
 	/**
 	 * construct with parameters initialize.
@@ -31,8 +34,15 @@ public class WebDriverTable{
 	 */
 	public WebDriverTable(WebDriver driver, By tabFinder, String bodyOrHead){
 		this.tabBy = tabFinder;
-		this.table = driver.findElement(tabBy);
+		this.tables = driver.findElements(tabBy);
+		if (null == tables || tables.size() == 0){
+			throw new NoSuchElementException("the table " + tabFinder.toString() + "was not found!");
+		}
+		this.table = tables.get(0);
 		this.tabRows = table.findElements(By.tagName(bodyOrHead)).get(0).findElements(By.tagName("tr"));
+		if (null == tabRows || tabRows.size() == 0){
+			throw new InvalidElementStateException("the table " + tabFinder.toString() + "is empty!");
+		}
 	}
 	
 	/**
@@ -43,8 +53,15 @@ public class WebDriverTable{
 	 */
 	public WebDriverTable(WebDriver driver, By tabFinder){
 		this.tabBy = tabFinder;
-		this.table = driver.findElement(tabBy);
+		this.tables = driver.findElements(tabBy);
+		if (null == tables || tables.size() == 0){
+			throw new NoSuchElementException("the table " + tabFinder.toString() + "was not found!");
+		}
+		this.table = tables.get(0);
 		this.tabRows = table.findElements(By.xpath("*/tr"));
+		if (null == tabRows || tabRows.size() == 0){
+			throw new InvalidElementStateException("the table " + tabFinder.toString() + "is empty!");
+		}
 	}
 
 	/**

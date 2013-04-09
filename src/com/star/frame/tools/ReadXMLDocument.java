@@ -48,7 +48,7 @@ public class ReadXMLDocument{
 			len = iStream.read(bytes);
 		}
 		iStream.close();
-		return new String(buff.toByteArray(), "UTF-8");
+		return new String(buff.toByteArray(), charSet);
 	}
 
 	/**

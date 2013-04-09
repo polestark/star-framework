@@ -1,34 +1,39 @@
 package com.star.core.webdriver.user;
 
+import java.util.Map;
 import java.util.logging.Logger;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.events.WebDriverEventListener;
+
 import com.star.frame.tools.StackTraceUtils;
 import com.star.logging.frame.LoggingManager;
+import com.star.logging.webdriver.LoggingModeHelper;
 import com.star.testdata.string.StringBufferUtils;
 
 public class WebDriverListener implements WebDriverEventListener {
 
 	private String className = WebDriverListener.class.getName();
-	private String devidor = "~";
 	private String filePath = ".\\log\\";
 	private final StringBufferUtils STR = new StringBufferUtils();
 	private final RuntimeSupport SUPPORT = new RuntimeSupport();
 	private final LoggingManager LOG = new LoggingManager(WebDriverListener.class.getName());
 	private StackTraceUtils stack;
+	private Map<String,String> map;
+	private LoggingModeHelper logHelper;
 
 	public WebDriverListener() {
 		throw new IllegalArgumentException("you must config the parameter correctly!");
 	}
 
-	public WebDriverListener(String location, String runClassName,Logger logger, String seperateMark) {
+	public WebDriverListener(String location, String runClassName,Logger logger) {
 		this.className = runClassName;
 		this.filePath = location.endsWith("/") || location.endsWith("\\") ? location : location + "/";
-		this.devidor = seperateMark;
-		this.stack = new StackTraceUtils(logger, devidor);
+		this.stack = new StackTraceUtils();
+		this.logHelper = new LoggingModeHelper(runClassName,location,"GBK");
 	}
 
 	/**
@@ -43,27 +48,21 @@ public class WebDriverListener implements WebDriverEventListener {
 		if (exception instanceof WebDriverException){
 			SUPPORT.screenShot(driver, fileName);
 			String message = "run failed, screenshot is: [" + fileName + "]";
-			stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message);
-			String err = exception.getMessage().split("WARNING: The")[0];
-			System.out.println("==============error occurs, the message is:==============");
-			waitFor(100);
-			System.err.println("	" + err.substring(0, err.length() - 1));
-			waitFor(100);
-			System.out.println("==============the test run will abort soon!==============");
-		}else{
-			LOG.error(exception);
-			throw new RuntimeException(exception);
+			map = stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message);
+			logHelper.LogWrite(map);
+			exception.printStackTrace();
 		}
+		throw new RuntimeException(exception);
 	}
 
 	/**
 	 * Description: wait milliseconds.
 	 * 
-	 * @param millis time to wait, in millisecond
+	 * @param timeout time to wait, in millisecond
 	 */
-	private void waitFor(long millis){
+	public void waitFor(long timeout){
 		try {
-			Thread.currentThread().join(millis);
+			Thread.currentThread().join(timeout);
 		} catch (InterruptedException e) {
 		}
 	}
@@ -75,7 +74,8 @@ public class WebDriverListener implements WebDriverEventListener {
 	@Override
 	public void afterNavigateTo(String url, WebDriver driver) {
 		//String message = "navigate to [ " + url + " ] completed.";
-		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+		//map = stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
+		//logwritter.write(map);
 	}
 
 	@Override
@@ -105,7 +105,8 @@ public class WebDriverListener implements WebDriverEventListener {
 	@Override
 	public void afterFindBy(By by, WebElement element, WebDriver driver) {
 		//String message = "find element by [ " + by.toString() + " ] completed.";
-		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+		//map=stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
+		//logwritter.write(map);
 	}
 
 	@Override
@@ -115,12 +116,14 @@ public class WebDriverListener implements WebDriverEventListener {
 	@Override
 	public void afterClickOn(WebElement element, WebDriver driver) {
 		//String message = "click on element [ " + SUPPORT.getElementXpath(driver, element) + " ] completed.";
-		//stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+		//map = stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
+		//logwritter.write(map);
 	}
 	
 	public void afterClickOn(By by, WebDriver driver) {
 		//String message = "click on element [ " + by.toString() + " ] completed.";
-		//traceRecord(Thread.currentThread().getStackTrace(), "passed", message);
+		//map = stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
+		//logwritter.write(map);
 	}
 
 	@Override

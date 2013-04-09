@@ -1,14 +1,12 @@
 package com.star.frame.tools;
 
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StackTraceUtils{
-	private String devidor = "~";
-	private Logger logger;
-	
-	public StackTraceUtils(Logger logger, String devidor){
-		this.logger = logger;
-		this.devidor = devidor;
+
+	public StackTraceUtils(){
+		
 	}
 
 	/**
@@ -48,7 +46,8 @@ public class StackTraceUtils{
 	 * @param traces the StackTraceElement.
 	 * @param message the user defined message info.
 	 */
-	public void traceRecord(StackTraceElement[] traces, String status, String message){
+	public Map<String,String> traceRecord(StackTraceElement[] traces, String status, String message){
+		Map<String,String> map=new HashMap<String,String>();
 		String methodName = null;
 		for (int i = 0 ; i < traces.length; i ++){
 			if (traces[i].getMethodName().equals("getStackTrace")){
@@ -57,7 +56,28 @@ public class StackTraceUtils{
 			}
 		}
 		StackTraceElement classTrace = traces[getTraceClassLevel(traces)];
-		logger.info(getClassTrace(classTrace) + devidor + methodName + devidor + status + devidor + message);
+		map.put("method", methodName);
+		map.put("status", status);
+		map.put("message", message);
+		map.put("classname", getClassTrace(classTrace));
+		return map;
+	}
+	
+	public Map<String,String> traceRecord(StackTraceElement[] traces, String status, String message,Integer level){
+		Map<String,String> map=new HashMap<String,String>();
+		String methodName = null;
+		for (int i = 0 ; i < traces.length; i ++){
+			if (traces[i].getMethodName().equals("getStackTrace")){
+				methodName = traces[i + level].getMethodName();
+				break;
+			}
+		}
+		StackTraceElement classTrace = traces[getTraceClassLevel(traces)];
+		map.put("method", methodName);
+		map.put("status", status);
+		map.put("message", message);
+		map.put("classname", getClassTrace(classTrace));
+		return map;
 	}
 	
 	/**

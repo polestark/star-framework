@@ -134,7 +134,7 @@ public class XMLLogFormatter extends Formatter{
 		sb.append(encoding);
 		sb.append("\"");
 		sb.append(" standalone=\"no\"?>\n");
-		sb.append("<!DOCTYPE log SYSTEM \"logger.dtd\">\n");
+		//sb.append("<!DOCTYPE log SYSTEM \"logger.dtd\">\n");
 		sb.append("<log>\n");
 		return sb.toString();
 	}

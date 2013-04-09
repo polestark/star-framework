@@ -226,6 +226,8 @@ public class StringBufferUtils {
 	 * merge to list and drop the same element.
 	 * @param list1 the first list.
 	 * @param list2 the second list.
+	 * 
+	 * @return the merged and distincted list. 
 	 */
 	public List<String> listDistinctMerge(List<String> list1, List<String> list2){
 		Iterator<String> it = list2.iterator();
@@ -249,5 +251,30 @@ public class StringBufferUtils {
 			}
 		}
 		return newList;		
+	}
+
+	/**
+	 * merge to list and return element which not equals in two lists.
+	 * @param list1 the first list.
+	 * @param list2 the second list.
+	 * 
+	 * @return the un-same emlent list.
+	 */
+	public List<String> listMinus(List<String> list1, List<String> list2){
+		List<String> bigger;
+		List<String> smaller;
+		if(list1.size() >= list2.size()){
+			bigger = list1;
+			smaller = list2;
+		}else{
+			bigger = list2;
+			smaller = list1;			
+		}
+		
+		Iterator<String> it = smaller.iterator();
+		while(it.hasNext()){
+			bigger.remove(it.next());
+		}
+		return bigger;		
 	}
 }
