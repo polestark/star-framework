@@ -20,18 +20,17 @@ import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import com.star.core.webdriver.user.JScriptCollection;
-import com.star.core.webdriver.user.RuntimeSupport;
-import com.star.core.webdriver.user.WebDriverTable;
+import com.star.core.webdriver.helper.JScriptCollection;
+import com.star.core.webdriver.helper.RuntimeSupport;
+import com.star.core.webdriver.helper.FilteredException;
+import com.star.core.webdriver.helper.WebDriverTable;
 import com.star.logging.frame.LoggingManager;
 
 public class WebDriverWebPublic extends WebDriverController {
 
 	private static final LoggingManager LOG = new LoggingManager(WebDriverWebPublic.class.getName());
-	protected static final String FORMATTER = "_yyyyMMdd_HHmmssSSS";
 	protected static By tabFinder = null;
 	protected static WebDriverTable webTable = null;
-	protected final RuntimeSupport supprt = new RuntimeSupport(driver);
 
 	/**
 	 * wait util the element visible in max wait time setting</BR>
@@ -139,7 +138,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param fileName the file path&name of the screenshot to be saved
 	 */
 	protected void takeScreenShot(String fileName) {
-		supprt.screenShot(fileName);
+		new RuntimeSupport(driver).screenShot(fileName);
 	}
 
 	/**
@@ -222,7 +221,7 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			String defaultHandle = driver.getWindowHandle();
 			Set<String> windowHandles = driver.getWindowHandles();
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i <= 20; i++) {
 				pause(500);
 				if (driver.getWindowHandles().equals(windowHandles)) {
 					break;
@@ -397,6 +396,20 @@ public class WebDriverWebPublic extends WebDriverController {
 		driver.switchTo().window(parentHandle);
 		waitForAlertDisappear(5);
 	}
+	
+	/**
+	 * Description: switch to a window handle that exists now.</BR>
+	 * 切换到一个存在句柄（或者说当前还存在的）的窗口。
+	 */
+	protected void selectExistWindow(){
+		Set<String> windowHandles = driver.getWindowHandles();
+		windowHandles = driver.getWindowHandles();
+		windowHandles = clearHandleCache(windowHandles);
+		String exist_0 = windowHandles.toArray()[0].toString();
+		ASSERT.assertNotNull(exist_0);
+		driver.switchTo().window(exist_0);
+		pass("switched to default window [ " + exist_0 + " ].");
+	}
 
 	/**
 	 * close window by window title and its index if has the same title, by string full pattern</BR>
@@ -406,19 +419,20 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param index the index of the window which shared the same title, begins with 1.
 	 */
 	protected void closeWindow(String windowTitle, int index) {
-		Object[] winArray = null;
 		List<String> winList = new ArrayList<String>();
-		winArray = driver.getWindowHandles().toArray();
-		winArray = driver.getWindowHandles().toArray();
-		for (int i = 0; i < winArray.length - 1; i++) {
-			driver.switchTo().window(winArray[i].toString());
+		Set<String> windowHandles = driver.getWindowHandles();
+		windowHandles = driver.getWindowHandles();
+		windowHandles = clearHandleCache(windowHandles);
+		for (String handle : windowHandles) {
+			driver.switchTo().window(handle);
 			if (windowTitle.equals(driver.getTitle())) {
-				winList.add(winArray[i].toString());
+				winList.add(handle);
 			}
 		}
 		driver.switchTo().window(winList.get(index - 1));
 		driver.switchTo().defaultContent();
 		driver.close();
+		selectExistWindow();
 		pass("window [ " + windowTitle + " ] closed by index [" + index + "]");
 	}
 
@@ -429,16 +443,18 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param windowTitle the title of the window to be closed.
 	 */
 	protected void closeWindow(String windowTitle) {
-		Object[] winArray = driver.getWindowHandles().toArray();
-		winArray = driver.getWindowHandles().toArray();
-		for (int i = winArray.length - 1; i > 0; i--) {
-			driver.switchTo().window(winArray[i].toString());
+		Set<String> windowHandles = driver.getWindowHandles();
+		windowHandles = driver.getWindowHandles();
+		windowHandles = clearHandleCache(windowHandles);
+		for (String handle : windowHandles) {
+			driver.switchTo().window(handle);
 			if (windowTitle.equals(driver.getTitle())) {
 				driver.switchTo().defaultContent();
 				driver.close();
 				break;
 			}
 		}
+		selectExistWindow();
 		pass("window [ " + windowTitle + " ] closed ");
 	}
 
@@ -451,6 +467,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected void closeWindowExcept(String windowTitle) {
 		Set<String> windowHandles = driver.getWindowHandles();
 		windowHandles = driver.getWindowHandles();
+		windowHandles = clearHandleCache(windowHandles);
 		for (String handle : windowHandles) {
 			driver.switchTo().window(handle);
 			String title = driver.getTitle();
@@ -459,7 +476,51 @@ public class WebDriverWebPublic extends WebDriverController {
 				driver.close();
 			}
 		}
+		selectExistWindow();
 		pass("all windows closed except [ " + windowTitle + " ]");
+	}
+
+	/**
+	 * close windows except specified window hanlde, by string full pattern</BR>
+	 * 关闭除了指定句柄之外的所有窗口。
+	 * 
+	 * @param windowHandle the hanlde of the window not to be closed.
+	 */
+	protected void closeWindowExceptHandle(String windowHandle) {
+		Set<String> windowHandles = driver.getWindowHandles();
+		windowHandles = driver.getWindowHandles();
+		windowHandles = clearHandleCache(windowHandles);
+		for (String handle : windowHandles) {
+			if (!windowHandle.equals(handle)) {
+				driver.switchTo().defaultContent();
+				driver.close();
+			}
+		}
+		driver.switchTo().window(windowHandle);
+		pass("all windows closed except handle [ " + windowHandle + " ]");
+	}
+	
+	/**
+	 * Description: clear error handles does not actruely.</BR>
+	 * 清理掉实际上并不存在的窗口句柄缓存。
+	 *
+	 * @param windowHandles the window handles Set.
+	 */
+	private Set<String> clearHandleCache(Set<String> windowHandles){
+		List<String> errors = new ArrayList<String>();
+		for (String handle : windowHandles) {
+			try {
+				driver.switchTo().window(handle);
+				driver.getTitle();
+			} catch (Exception e) {
+				errors.add(handle);
+				throw new FilteredException("window handle " + handle + " does not exist acturely!");
+			}
+		}
+		for (int i = 0; i < errors.size(); i ++){
+			windowHandles.remove(errors.get(i));
+		}
+		return windowHandles;
 	}
 
 	/**
@@ -484,12 +545,12 @@ public class WebDriverWebPublic extends WebDriverController {
 		Object[] winArray = driver.getWindowHandles().toArray();
 		winArray = driver.getWindowHandles().toArray();
 		for (int i = 0; i < winArray.length; i++) {
-			driver.switchTo().window(winArray[i].toString());
 			if (i + 1 != index) {
 				driver.switchTo().defaultContent();
 				driver.close();
 			}
 		}
+		selectExistWindow();
 		pass("keep only window [ " + windowTitle + " ] by title index [ " + index + " ]");
 	}
 

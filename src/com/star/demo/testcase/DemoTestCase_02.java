@@ -29,7 +29,7 @@ public class DemoTestCase_02 extends DemoBaseCase {
 	}
 	
 	@Test(dependsOnMethods={"getQuestionnaireNoProcessInfo"}, alwaysRun = true)
-	public void ettlePrintQuery(){
+	public void settlePrintQuery(){
 		
 		this.browserRefresh();
 		
@@ -37,11 +37,13 @@ public class DemoTestCase_02 extends DemoBaseCase {
 		this.click(By.linkText("收付汇总岗"));
 		this.click(By.linkText("收付汇总打印"));
 		this.selectFrame(By.id("content"));
-
-		sendKeys(By.name("settlementNettingSeq"), "1110000227150");
-		click(By.name("button"));
 		
-		waitForElementVisible(By.id("querySettlementNettingForLongTable_table"), 5);
-		click(tableChildElement(By.id("querySettlementNettingForLongTable_table"), 3, 3, "link", 1));
+		failAndExit("我觉得此处可失败！");
+
+		//sendKeys(By.name("settlementNettingSeq"), "1110000227150");
+		//click(By.name("button"));
+		
+		//waitForElementVisible(By.id("querySettlementNettingForLongTable_table"), 5);
+		//click(tableChildElement(By.id("querySettlementNettingForLongTable_table"), 3, 3, "link", 1));
 	}
 }

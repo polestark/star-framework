@@ -8,24 +8,30 @@ import java.io.OutputStreamWriter;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Map;
-import java.util.Properties;
+import com.star.logging.frame.LoggingManager;
+import com.star.tools.ReadConfiguration;
 
 public class HTMLLogWritter {
-	
-	private Properties property = new Properties();
+	private final LoggingManager LOG = new LoggingManager(HTMLLogWritter.class.getName());
+	private final ReadConfiguration config = new ReadConfiguration(
+			"/com/star/logging/webdriver/style.properties");
+	private final ReadConfiguration config_tool = new ReadConfiguration(
+			"/com/star/core/webdriver/webdirver_config.properties");
 
 	private static File file;
 	private OutputStreamWriter outwriter;
-	private static final SimpleDateFormat DFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private String HTML_HEADER;
-	private String HTML_FOOTER;
-	private String HTML_START_WARN;
-	private String HTML_START_FAIL;
-	private String HTML_START_PASS;
-	private String HTML_MID;
-	private String HTML_END;
-	private String MESSAGE_HEAD;
-	private String ERROR_MARK = "\">【点击查看场景截图】</a>";
+	private final SimpleDateFormat DFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final String CAPTURE_FORMAT = config_tool.get("CAPTURE_FORMAT");
+	private final String CAPTURE_MESSAGE = config_tool.get("CAPTURE_MESSAGE");
+	private final String HTML_HEADER = config.get("HTML_HEADER");
+	private final String HTML_FOOTER = config.get("HTML_FOOTER");
+	private final String HTML_START_WARN = config.get("HTML_START_WARN");
+	private final String HTML_START_FAIL = config.get("HTML_START_FAIL");
+	private final String HTML_START_PASS = config.get("HTML_START_PASS");
+	private final String HTML_MID = config.get("HTML_MID");
+	private final String HTML_END = config.get("HTML_END");
+	private final String MESSAGE_HEAD = config.get("MESSAGE_HEAD");   
+	private final String ERROR_MARK = "\">【点击查看场景截图】</a>";
 	private long startTime;
 	private String startedTime;
 	private String finishedTime;
@@ -36,27 +42,14 @@ public class HTMLLogWritter {
 	 * 
 	 * @param fileName the log file name. 
 	 */
-	public HTMLLogWritter(String fileName) {
-		try {
-			property.load(this.getClass().getResourceAsStream("/com/star/logging/html/style.properties"));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		HTML_HEADER = (String) property.get("HTML_HEADER");           
-		HTML_FOOTER = (String) property.get("HTML_FOOTER");           
-		HTML_START_WARN = (String) property.get("HTML_START_WARN");   
-		HTML_START_FAIL = (String) property.get("HTML_START_FAIL");   
-		HTML_START_PASS = (String) property.get("HTML_START_PASS");   
-		HTML_MID = (String) property.get("HTML_MID");                 
-		HTML_END = (String) property.get("HTML_END");                 
-		MESSAGE_HEAD = (String) property.get("MESSAGE_HEAD");                 
+	public HTMLLogWritter(String fileName) {              
 		file = new File(fileName);
 		try {
 			if (!file.exists()) {
 				file.createNewFile();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -79,7 +72,7 @@ public class HTMLLogWritter {
 	public void init(String className, long startTime) {
 		this.startTime = startTime;
 		startedTime = DFORMAT.format(startTime);
-		String html = (String) property.get("HTML_BODY");
+		String html = config.get("HTML_BODY");
 		String htmlBody = MessageFormat.format(html, new Object[] { className, startedTime, "finishedTime",
 				"totalExpensed" });
 		fileWrite(HTML_HEADER + htmlBody, false);
@@ -88,31 +81,34 @@ public class HTMLLogWritter {
 	/**
 	 * Description: write html log info line by line.
 	 *
-	 * @param map the log info map.
+	 * @param logMap the log info logMap.
 	 */
-	public void write(Map<String, String> map) {
+	public void write(Map<String, String> logMap) {
 		try {
 			String time = DFORMAT.format(System.currentTimeMillis());
-			String method = map.get("method");
-			String status = map.get("status");
-			String message = map.get("message");
-			String classname = map.get("classname");
+			String method = logMap.get("method");
+			String status = logMap.get("status");
+			String message = logMap.get("message");
+			String className = logMap.get("classname");
 			String html;
-			String htmlstatus = HTML_START_PASS;
-			if (status.equals("warn")) {
-				htmlstatus = HTML_START_WARN;
-			} else if (status.equals("failed")) {
-				htmlstatus = HTML_START_FAIL;
-				String messagehead = map.get("message").split(": ", 2)[0] + ": ";
-				String messagebody = map.get("message").split("run failed, screenshot is:", 2)[1];
-				int length = messagebody.length();
-				message = messagehead + MESSAGE_HEAD + messagebody.substring(2, length - 1) + ERROR_MARK;
+			String htmlStatus = HTML_START_PASS;
+			if (status.contains("warn")) {
+				htmlStatus = HTML_START_WARN;
+			} else if (status.contains("fail")) {
+				htmlStatus = HTML_START_FAIL;
+				if (logMap.get("message").contains("." + CAPTURE_FORMAT)) {
+					String []files = logMap.get("message").split(CAPTURE_MESSAGE, 2);
+					String fileName = files[1].trim().replace("[", "").replace("]", "");
+					fileName = new File(fileName).getName();
+					message = files[0] + CAPTURE_MESSAGE + MESSAGE_HEAD + fileName + ERROR_MARK;
+				}
 			}
-			html = htmlstatus + time + HTML_MID + method + HTML_MID + status + HTML_MID + message + HTML_MID
-					+ classname + HTML_END;
+			html = htmlStatus + time + HTML_MID + method + HTML_MID + status + HTML_MID + message + HTML_MID
+					+ className + HTML_END;
 			fileWrite(html, true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -142,7 +138,8 @@ public class HTMLLogWritter {
 			s = s.replace("totalExpensed", totalExpensed);
 			fileWrite(s, false);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -167,7 +164,8 @@ public class HTMLLogWritter {
 			outwriter.flush();
 			outwriter.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error(e);
+			throw new RuntimeException(e);
 		}
 	}
 }

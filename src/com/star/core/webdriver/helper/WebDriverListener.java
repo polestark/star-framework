@@ -1,39 +1,49 @@
-package com.star.core.webdriver.user;
+package com.star.core.webdriver.helper;
 
 import java.util.Map;
-import java.util.logging.Logger;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.events.WebDriverEventListener;
-
-import com.star.frame.tools.StackTraceUtils;
 import com.star.logging.frame.LoggingManager;
-import com.star.logging.webdriver.LoggingModeHelper;
+import com.star.logging.webdriver.LoggerModeChoice;
 import com.star.testdata.string.StringBufferUtils;
+import com.star.tools.ReadConfiguration;
+import com.star.tools.StackTraceUtils;
 
 public class WebDriverListener implements WebDriverEventListener {
+	private final ReadConfiguration config = new ReadConfiguration(
+			"/com/star/core/webdriver/webdirver_config.properties");
+	
+	private final String CAPTURE_MESSAGE = config.get("CAPTURE_MESSAGE");
 
 	private String className = WebDriverListener.class.getName();
 	private String filePath = ".\\log\\";
 	private final StringBufferUtils STR = new StringBufferUtils();
 	private final RuntimeSupport SUPPORT = new RuntimeSupport();
 	private final LoggingManager LOG = new LoggingManager(WebDriverListener.class.getName());
-	private StackTraceUtils stack;
-	private Map<String,String> map;
-	private LoggingModeHelper logHelper;
+	private StackTraceUtils stack = new StackTraceUtils();
+	private Map<String,String> infoMap;
+	private LoggerModeChoice logHelper;
+	private StackTraceElement[] traces;
+	private StackTraceElement trace;
 
 	public WebDriverListener() {
 		throw new IllegalArgumentException("you must config the parameter correctly!");
 	}
 
-	public WebDriverListener(String location, String runClassName,Logger logger) {
+	public WebDriverListener(String location, String runClassName) {
 		this.className = runClassName;
 		this.filePath = location.endsWith("/") || location.endsWith("\\") ? location : location + "/";
-		this.stack = new StackTraceUtils();
-		this.logHelper = new LoggingModeHelper(runClassName,location,"GBK");
+		this.logHelper = new LoggerModeChoice(runClassName,location,"GBK");
+	}
+	
+	private void exceptionFilter(Throwable exception, WebDriver driver){
+		if (exception instanceof FilteredException){
+		}else{
+			onWebDriverException(exception, driver);
+		}		
 	}
 
 	/**
@@ -47,12 +57,25 @@ public class WebDriverListener implements WebDriverEventListener {
 		String fileName = filePath + className + STR.formatedTime("_yyyyMMdd_HHmmssSSS") + ".png";
 		if (exception instanceof WebDriverException){
 			SUPPORT.screenShot(driver, fileName);
-			String message = "run failed, screenshot is: [" + fileName + "]";
-			map = stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message);
-			logHelper.LogWrite(map);
-			exception.printStackTrace();
+			String message = "run " + CAPTURE_MESSAGE + " [" + fileName + "]";
+			infoMap = stack.traceRecord(Thread.currentThread().getStackTrace(), "failed", message);
+			logHelper.LogWrite(infoMap);
 		}
-		throw new RuntimeException(exception);
+		traces = exception.getStackTrace();
+		trace = traces[stack.getTraceClassLevel(traces)];
+		String info = trace.getClassName() + ", method: " + trace.getMethodName() + ", line: " + trace.getLineNumber();
+		System.err.println("Exception Occured: \n" + getError(exception) + "\n" + info);			
+	}
+	
+	/**
+	 * Description: the user defined error message.
+	 *
+	 * @param exception Throwables.
+	 * @return the user defined message string.
+	 */
+	private String getError(Throwable exception){
+		String err = exception.getMessage().split("WARNING: The")[0];
+		return err.substring(0, err.length() - 1);
 	}
 
 	/**
@@ -74,8 +97,8 @@ public class WebDriverListener implements WebDriverEventListener {
 	@Override
 	public void afterNavigateTo(String url, WebDriver driver) {
 		//String message = "navigate to [ " + url + " ] completed.";
-		//map = stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
-		//logwritter.write(map);
+		//infoMap = stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
+		//logwritter.write(infoMap);
 	}
 
 	@Override
@@ -105,8 +128,8 @@ public class WebDriverListener implements WebDriverEventListener {
 	@Override
 	public void afterFindBy(By by, WebElement element, WebDriver driver) {
 		//String message = "find element by [ " + by.toString() + " ] completed.";
-		//map=stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
-		//logwritter.write(map);
+		//infoMap=stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
+		//logwritter.write(infoMap);
 	}
 
 	@Override
@@ -116,14 +139,14 @@ public class WebDriverListener implements WebDriverEventListener {
 	@Override
 	public void afterClickOn(WebElement element, WebDriver driver) {
 		//String message = "click on element [ " + SUPPORT.getElementXpath(driver, element) + " ] completed.";
-		//map = stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
-		//logwritter.write(map);
+		//infoMap = stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
+		//logwritter.write(infoMap);
 	}
 	
 	public void afterClickOn(By by, WebDriver driver) {
 		//String message = "click on element [ " + by.toString() + " ] completed.";
-		//map = stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
-		//logwritter.write(map);
+		//infoMap = stack.traceRecord(Thread.currentThread().getStackTrace(), "passed", message,1);
+		//logwritter.write(infoMap);
 	}
 
 	@Override
@@ -161,7 +184,7 @@ public class WebDriverListener implements WebDriverEventListener {
 	@Override
 	public void onException(Throwable exception, WebDriver driver) {
 		try {
-			onWebDriverException(exception, driver);
+			exceptionFilter(exception, driver);
 		} catch (Throwable unexpected) {
 			LOG.error(unexpected);
 			throw new RuntimeException(unexpected);

@@ -13,7 +13,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import com.star.frame.tools.ReadXMLDocument;
+import com.star.tools.ReadXMLDocument;
 import com.star.logging.frame.LoggingManager;
 
 public class TestNGFailedCollect {

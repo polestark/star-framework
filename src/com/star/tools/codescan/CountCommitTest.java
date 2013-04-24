@@ -1,4 +1,4 @@
-package com.star.frame.tools;
+package com.star.tools.codescan;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import com.star.tools.ReadXMLDocument;
 
 public class CountCommitTest{
 	

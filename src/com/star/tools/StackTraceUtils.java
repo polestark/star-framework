@@ -1,4 +1,4 @@
-package com.star.frame.tools;
+package com.star.tools;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +31,9 @@ public class StackTraceUtils{
 	 * @param trace the StackTraceElement array.
 	 * @return the index of the trace deepth of method.
 	 */
-	public int getTraceMethodLevel(StackTraceElement[] trace){
-		for(int i = trace.length - 1; i > 0 ; i --){
-			if (trace[i].getMethodName().equals("invoke0")){
+	public int getTraceMethodLevel(StackTraceElement[] trace) {
+		for (int i = trace.length - 1; i > 0; i--) {
+			if (trace[i].getMethodName().equals("invoke0")) {
 				return i - 2;
 			}
 		}
@@ -46,38 +46,38 @@ public class StackTraceUtils{
 	 * @param traces the StackTraceElement.
 	 * @param message the user defined message info.
 	 */
-	public Map<String,String> traceRecord(StackTraceElement[] traces, String status, String message){
-		Map<String,String> map=new HashMap<String,String>();
+	public Map<String, String> traceRecord(StackTraceElement[] traces, String status, String message) {
+		Map<String, String> logMap = new HashMap<String, String>();
 		String methodName = null;
-		for (int i = 0 ; i < traces.length; i ++){
-			if (traces[i].getMethodName().equals("getStackTrace")){
+		for (int i = 0; i < traces.length; i++) {
+			if (traces[i].getMethodName().equals("getStackTrace")) {
 				methodName = traces[i + 2].getMethodName();
 				break;
 			}
 		}
 		StackTraceElement classTrace = traces[getTraceClassLevel(traces)];
-		map.put("method", methodName);
-		map.put("status", status);
-		map.put("message", message);
-		map.put("classname", getClassTrace(classTrace));
-		return map;
+		logMap.put("method", methodName);
+		logMap.put("status", status);
+		logMap.put("message", message);
+		logMap.put("classname", getClassTrace(classTrace));
+		return logMap;
 	}
 	
-	public Map<String,String> traceRecord(StackTraceElement[] traces, String status, String message,Integer level){
-		Map<String,String> map=new HashMap<String,String>();
+	public Map<String, String> traceRecord(StackTraceElement[] traces, String status, String message, Integer level) {
+		Map<String, String> logMap = new HashMap<String, String>();
 		String methodName = null;
-		for (int i = 0 ; i < traces.length; i ++){
-			if (traces[i].getMethodName().equals("getStackTrace")){
+		for (int i = 0; i < traces.length; i++) {
+			if (traces[i].getMethodName().equals("getStackTrace")) {
 				methodName = traces[i + level].getMethodName();
 				break;
 			}
 		}
 		StackTraceElement classTrace = traces[getTraceClassLevel(traces)];
-		map.put("method", methodName);
-		map.put("status", status);
-		map.put("message", message);
-		map.put("classname", getClassTrace(classTrace));
-		return map;
+		logMap.put("method", methodName);
+		logMap.put("status", status);
+		logMap.put("message", message);
+		logMap.put("classname", getClassTrace(classTrace));
+		return logMap;
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class StackTraceUtils{
 	 * @param trace the StackTraceElement.
 	 * @return class name and running line number.
 	 */
-	public String getClassTrace(StackTraceElement trace){
+	public String getClassTrace(StackTraceElement trace) {
 		return trace.getClassName() + " # " + trace.getLineNumber();
 	}
 }

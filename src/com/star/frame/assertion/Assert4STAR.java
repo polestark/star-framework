@@ -1,46 +1,43 @@
 package com.star.frame.assertion;
 
-import java.util.logging.Logger;
+import java.util.Map;
+import java.util.HashMap;
 import org.openqa.selenium.WebDriver;
-
-import com.star.core.webdriver.user.RuntimeSupport;
+import com.star.tools.ReadConfiguration;
+import com.star.tools.StackTraceUtils;
+import com.star.support.externs.Win32GuiByAu3;
+import com.star.logging.webdriver.LoggerModeChoice;
 
 /**
- * Description: use org.testng.AssertJUnit and add user defined operations</BR>
- * 				such as record user defined messages to log and take screen shots then create link</BR></BR>
- * 作用描述：使用TestNG的所有断言方法，增加用户自定义的日志记录和截图等方法</BR>
- * 			 仅支持WebDriver + TestNG框架，可自行配置断言失败之后是否继续运行。
- *
  * @author 测试仔刘毅
  */
-public class StarNewAssertion {
-	
-	private RuntimeSupport supprt;
-	private WebDriver driver = null;
+public class Assert4STAR {
+	private final ReadConfiguration config = new ReadConfiguration(
+			"/com/star/core/webdriver/webdirver_config.properties");
+
+	private final String CAPTURE_MESSAGE = config.get("CAPTURE_MESSAGE");
 	private String captureTo = null;
 	private String className = null;
-	private String sMark = null;
-	private Logger logger = null;
+	private LoggerModeChoice loggerHelper = null;
 	private boolean exitRun = true;
 	private boolean needLog = false;
+	
+	private StackTraceUtils stack = new StackTraceUtils();
+	private StackTraceElement[] traces;
+	private StackTraceElement trace;
 	
 	/**
 	 * Description: cunstruction with parameter initialize.
 	 * 
-	 * @param driver the webdriver object.
+	 * @param mdriver the webdriver object.
 	 * @param captureToPath the log path to put the screen shot files. 
 	 * @param className class name which calling this method.
-	 * @param logger the Logger object that used this class.
-	 * @param sMark the character that separate the log content. 
+	 * @param loggerHelper the LoggerModeChoice object that used this class.
 	 */
-	public StarNewAssertion(WebDriver driver, String captureToPath, String className, Logger logger,
-			String sMark) {
-		this.driver = driver;
-		this.supprt = new RuntimeSupport(this.driver);
-		this.logger = logger;
+	public Assert4STAR(WebDriver mdriver, String captureToPath, String className, LoggerModeChoice loggerHelper) {
+		this.loggerHelper = loggerHelper;
 		this.captureTo = captureToPath;
 		this.className = className;
-		this.sMark = sMark;
 	}
 
 	/**
@@ -49,10 +46,9 @@ public class StarNewAssertion {
 	 * @param driver the webdriver object.
 	 * @param captureToPath the log path to put the screen shot files. 
 	 * @param className class name which calling this method.
-	 * @param sMark the character that separate the log content. 
 	 */
-	public StarNewAssertion(WebDriver driver, String captureToPath, String className, String sMark) {
-		this(driver, captureToPath, className, null, sMark);
+	public Assert4STAR(WebDriver driver, String captureToPath, String className) {
+		this(driver, captureToPath, className, null);
 	}
 	
 	/**
@@ -88,14 +84,19 @@ public class StarNewAssertion {
 			}
 		}
 		String cName = trace[last].getClassName() + " # " + trace[last].getLineNumber();
-		logger.info(cName + sMark + mtdName + sMark + status + sMark + message);
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("method", mtdName);
+		map.put("status", status);
+		map.put("message", message);
+		map.put("classname", cName);
+		loggerHelper.LogWrite(map);
 	}
 	
 	/**
 	 * Description:record log when assert passed.
 	 */
 	private void recordSuccessAfterAssertion(){
-		if (needLog && null != logger){
+		if (needLog && null != loggerHelper){
 			recordMessageAfterAssertion("passed", "assert passed!");
 		}
 	}
@@ -127,12 +128,42 @@ public class StarNewAssertion {
 	 *
 	 * @throws Exception
 	 */
-	private void screenShotOnAssertionError(){
+	private void screenShotOnAssertionError(Throwable e){
 		String time = String.valueOf(System.currentTimeMillis());
 		String fileName = captureTo + className + "_assertion_" + time + ".png";
-		supprt.screenShot(fileName);
-		if (null != logger){
-			recordMessageAfterAssertion("failed", "assert failed, screenshot is: [" + fileName + "]");
+		//未为RemoteWebDriver重新实现TakeScreenShot，故无法使用默认的截图
+		new Win32GuiByAu3().screenCapture(fileName);
+		if (null != loggerHelper){
+			recordMessageAfterAssertion("failed", "assert " + CAPTURE_MESSAGE + " [" + fileName + "]");
+		}
+	}
+	
+	/**
+	 * Description: print error message on console.
+	 *
+	 * @param exception the Throwables.
+	 */
+	private void consolePrintOnError(Throwable exception) {
+		traces = exception.getStackTrace();
+		trace = traces[stack.getTraceClassLevel(traces)];
+		String info = trace.getClassName() + ", method: " + trace.getMethodName() + ", line: " + trace.getLineNumber();
+		System.err.println("Assert failed: \n" + info);
+	}
+	
+	/**
+	 * Description: to do something when assert failed.
+	 *
+	 * @param ae the AssertionError.
+	 * @param message user defined messages.
+	 */
+	private void handleOnAssertError(AssertionError ae, String message){
+		screenShotOnAssertionError(ae);
+		consolePrintOnError(ae);
+		if (null == message) {
+			exitOnAssertionError(ae);
+		} else {
+			System.err.println("Assert failed: " + message);
+			exitOnAssertionError(message);
 		}
 	}
 
@@ -147,14 +178,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertTrue(message, condition);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			screenShotOnAssertionError();
-			if (null == message) {
-				ae.printStackTrace();
-				exitOnAssertionError(ae);
-			} else {
-				System.err.println(message);
-				exitOnAssertionError(message);
-			}
+			handleOnAssertError(ae, message);
 		}
 	}
 
@@ -236,14 +260,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertSame(message, expected, actual);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			screenShotOnAssertionError();
-			if (null == message) {
-				ae.printStackTrace();
-				exitOnAssertionError(ae);
-			} else {
-				System.err.println(message);
-				exitOnAssertionError(message);
-			}
+			handleOnAssertError(ae, message);
 		}
 	}
 
@@ -269,14 +286,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertNotSame(message, expected, actual);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			screenShotOnAssertionError();
-			if (null == message) {
-				ae.printStackTrace();
-				exitOnAssertionError(ae);
-			} else {
-				System.err.println(message);
-				exitOnAssertionError(message);
-			}
+			handleOnAssertError(ae, message);
 		}
 	}
 
@@ -302,14 +312,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			screenShotOnAssertionError();
-			if (null == message) {
-				ae.printStackTrace();
-				exitOnAssertionError(ae);
-			} else {
-				System.err.println(message);
-				exitOnAssertionError(message);
-			}
+			handleOnAssertError(ae, message);
 		}
 	}
 
@@ -335,14 +338,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			screenShotOnAssertionError();
-			if (null == message) {
-				ae.printStackTrace();
-				exitOnAssertionError(ae);
-			} else {
-				System.err.println(message);
-				exitOnAssertionError(message);
-			}
+			handleOnAssertError(ae, message);
 		}
 	}
 
@@ -369,14 +365,7 @@ public class StarNewAssertion {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual, delta);
 			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			screenShotOnAssertionError();
-			if (null == message) {
-				ae.printStackTrace();
-				exitOnAssertionError(ae);
-			} else {
-				System.err.println(message);
-				exitOnAssertionError(message);
-			}
+			handleOnAssertError(ae, message);
 		}
 	}
 
@@ -402,16 +391,9 @@ public class StarNewAssertion {
 	public void assertEquals(String message, float expected, float actual, float delta) {
 		try {
 			org.testng.AssertJUnit.assertEquals(message, expected, actual, delta);
-			logger.info(className + sMark + "Test-Assertion" + sMark  + "passed" + sMark + "assert passed!");
+			recordSuccessAfterAssertion();
 		} catch (AssertionError ae) {
-			screenShotOnAssertionError();
-			if (null == message) {
-				ae.printStackTrace();
-				exitOnAssertionError(ae);
-			} else {
-				System.err.println(message);
-				exitOnAssertionError(message);
-			}
+			handleOnAssertError(ae, message);
 		}
 	}
 

@@ -5,17 +5,17 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.star.tools.ReadConfiguration;
 
-import com.star.support.config.ParseProperties;
-
-public class LoggingModeHelper {
-	protected static final ParseProperties CONFIG = new ParseProperties("config/config.properties");
+public class LoggerModeChoice {
+	private final ReadConfiguration config = new ReadConfiguration(
+			"/com/star/core/webdriver/webdirver_config.properties");
 	protected static Handler handler;
 	private final String devidor = "~";
 	private final String className;
 	private final String LOG_ABS;
 	private final String charSet;
-	private String logMode = CONFIG.get("LOG_MODE").toUpperCase();
+	private String logMode = config.get("LOG_MODE").toUpperCase();
 	private static HTMLLogWritter htmlWritter;
 	private static XMLLogWritter xmlWritter;
 	private static Logger logger;
@@ -25,7 +25,7 @@ public class LoggingModeHelper {
 	 * @param path the path where the log file to be located. 
 	 * @param charSet the file charSet of log files.
 	 */
-	public LoggingModeHelper(String clsName, String path, String charSet) {
+	public LoggerModeChoice(String clsName, String path, String charSet) {
 		this.className = clsName;
 		this.LOG_ABS = path;
 		this.charSet = charSet;

@@ -1,4 +1,4 @@
-package com.star.frame.tools;
+package com.star.tools.codescan;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import com.star.tools.ReadXMLDocument;
 
 public class CountTestNGTest{
 	private final ReadXMLDocument xml = new ReadXMLDocument();

@@ -50,7 +50,7 @@ public class ThreadExecutor{
 	 * @throws	RuntimeException
 	 * @throws	TimeoutException
 	 */
-	public int executeCommands(String command) {
+	public void executeCommands(String command) {
 		try {
 			Process process = Runtime.getRuntime().exec(command);
 			ProcessListener listener = new ProcessListener(process);
@@ -58,14 +58,8 @@ public class ThreadExecutor{
 			
 	        try {
 	        	listener.join(threadTimeOut);
-	            if (listener.exit != null){
-	                return listener.exit;
-	            } else{
-	                throw new TimeoutException();
-	            }
 	        } catch (InterruptedException ex) {
 	        	listener.interrupt();
-	            Thread.currentThread().interrupt();
 				throw new RuntimeException(ex);
 	        } finally {
 	            process.destroy();
@@ -82,7 +76,7 @@ public class ThreadExecutor{
 	 * @throws	RuntimeException
 	 * @throws	TimeoutException
 	 */
-	public int executeCommands(String[] command) {
+	public void executeCommands(String[] command) {
 		try {
 			Process process = Runtime.getRuntime().exec(command);
 			ProcessListener listener = new ProcessListener(process);
@@ -90,14 +84,8 @@ public class ThreadExecutor{
 			
 	        try {
 	        	listener.join(threadTimeOut);
-	            if (listener.exit != null){
-	                return listener.exit;
-	            } else{
-	                throw new TimeoutException();
-	            }
 	        } catch (InterruptedException ex) {
 	        	listener.interrupt();
-	            Thread.currentThread().interrupt();
 				throw new RuntimeException(ex);
 	        } finally {
 	            process.destroy();
@@ -109,7 +97,6 @@ public class ThreadExecutor{
 	
 	private class ProcessListener extends Thread {
 		private Process process = null;
-		public Integer exit = null;
 
 		/**
 		 * construct with parameter sets. 
@@ -128,7 +115,7 @@ public class ThreadExecutor{
 				StreamReader reader = new StreamReader(process.getInputStream());
 				reader.start();
 				reader.join(readTimeOut);
-				exit = process.waitFor();
+				process.waitFor();
 			} catch (InterruptedException ignore) {
 				return;
 			} catch (Exception e) {

@@ -1,4 +1,4 @@
-package com.star.core.webdriver.user;
+package com.star.core.webdriver.helper;
 
 public enum JScriptCollection{
 	MAXIMIZE_WINDOW("if(document.all) { self.moveTo(0, 0); "

@@ -18,6 +18,7 @@ public class LoggingManager {
 	private String className;
 	private Properties property = new Properties();
 	private Logger logger = null;
+	private final String configSource = "/com/star/logging/frame/log4j.properties";
 
 	/**
 	 * construct with set class name parameter.
@@ -38,7 +39,7 @@ public class LoggingManager {
 	 **/
 	public void error(Throwable t, String userText) {
 		try {
-			property.load(this.getClass().getResourceAsStream("/log4j.properties"));
+			property.load(this.getClass().getResourceAsStream(configSource));
 			PropertyConfigurator.configure(property);
 			logger = Logger.getLogger("message");
 			logger.info("#################################################################");
@@ -66,7 +67,7 @@ public class LoggingManager {
 	 **/
 	public void error(String text) {
 		try {
-			property.load(this.getClass().getResourceAsStream("/log4j.properties"));
+			property.load(this.getClass().getResourceAsStream(configSource));
 			PropertyConfigurator.configure(property);
 			logger = Logger.getLogger("message");
 			logger.info("#################################################################");
@@ -86,7 +87,7 @@ public class LoggingManager {
 	 **/
 	public void info(String text) {
 		try {
-			property.load(this.getClass().getResourceAsStream("/log4j.properties"));
+			property.load(this.getClass().getResourceAsStream(configSource));
 			PropertyConfigurator.configure(property);
 			logger = Logger.getLogger("message");
 			logger.info(className + ": " + text + "\n");

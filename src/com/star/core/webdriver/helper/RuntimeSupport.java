@@ -1,4 +1,4 @@
-package com.star.core.webdriver.user;
+package com.star.core.webdriver.helper;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
@@ -28,12 +28,12 @@ public class RuntimeSupport{
 	 * take a screen shot and save the file by path and name</BR>
 	 * 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
-	 * @param object the WebDriver instance.
+	 * @param webDriver the WebDriver instance.
 	 * @param fileName the file path&name of the screenshot to be saved.
 	 */
-	public void screenShot(WebDriver object, String fileName) {
+	public void screenShot(WebDriver webDriver, String fileName) {
 		try {
-			screenShot(fileName, object);
+			screenShot(fileName, webDriver);
 		} catch (Throwable t) {
 			LOG.error("RemoteWebDriver截图异常，下面使用Autoit重新截屏！");
 			new Win32GuiByAu3().screenCapture(fileName);
@@ -58,6 +58,20 @@ public class RuntimeSupport{
 			new Win32GuiByAu3().screenCapture(fileName);
 		}
 	}
+
+	/**
+	 * take a screen shot and save the file.</BR>
+	 * 网页截图操作，按照指定的文件名称保存快照文件。
+	 * 
+	 * @param fileName the file path&name of the screenshot to be saved
+	 * @param webDriver the WebDriver instance.
+	 * @throws Exception
+	 */
+	public void screenShot(String fileName, WebDriver webDriver) throws Throwable{
+		RemoteWebDriver swd = (RemoteWebDriver) new Augmenter().augment(webDriver);
+		File file = ((TakesScreenshot) swd).getScreenshotAs(OutputType.FILE);
+		FileUtils.copyFile(file, new File(fileName));
+	}
 	
 	/**
 	 * Description: get the xpath string of webelements.
@@ -69,20 +83,6 @@ public class RuntimeSupport{
 	public String getElementXpath(WebDriver driver, WebElement element){
 		String js = JScriptCollection.GET_ELEMENT_XPATH.getValue();
 		return (String) ((JavascriptExecutor) driver).executeScript(js, element);
-	}
-
-	/**
-	 * take a screen shot and save the file.</BR>
-	 * 网页截图操作，按照指定的文件名称保存快照文件。
-	 * 
-	 * @param fileName the file path&name of the screenshot to be saved
-	 * @param myDriver the WebDriver instance.
-	 * @throws Exception
-	 */
-	private void screenShot(String fileName, WebDriver myDriver) throws Throwable{
-		RemoteWebDriver swd = (RemoteWebDriver) new Augmenter().augment(myDriver);
-		File file = ((TakesScreenshot) swd).getScreenshotAs(OutputType.FILE);
-		FileUtils.copyFile(file, new File(fileName));
 	}
 	
 	public void checkAfterClick(){
