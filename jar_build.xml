@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="STAR" basedir="." default="package">
+
+    <property name="src" value="src" />
+    <property name="dest" value="bin" />
+    <property name="lib" value="lib" />
+    <property name="run.jar" value="star-framework-1.3.jar" />
+    <property name="doc" value="doc" />
+    <property name="doc.jar" value="star-framework-1.3-doc.jar" />
+
+    <path id="compile.cp">
+        <fileset dir="${lib}">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+
+    <target name="clear" description="清理">
+        <delete includeemptydirs="true">
+            <fileset dir="${dest}" />
+            <include name="**/*" />
+            <exclude name=".svn" />
+        </delete>
+        <mkdir dir="${dest}" />
+    </target>
+
+    <target name="compile" description="编译">
+        <javac debug="false"
+            source="1.5"
+            encoding="UTF-8"
+            classpathref="compile.cp"
+            srcdir="${src}"
+            destdir="${dest}"
+            includeantruntime="on"/>
+    </target>
+
+    <target name="packs" description="打包">
+        <jar destfile="${lib}/${run.jar}" >
+	        <fileset dir="${dest}" includes="**/*.class" />
+	        <fileset dir="${src}" includes="**/*.*"/>
+        </jar>
+        <jar destfile="${lib}/${doc.jar}" >
+	        <fileset dir="${doc}" includes="**/*.*" />
+        </jar>
+    </target>
+
+    <target name="copy" description="发布">
+        <copy todir="D:/03_test_develop/chs_core_annuity/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/egis_abbs/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/egis_channel/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/egis_cspi/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/egis_finance/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/egis_iprs/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/egis_nbu/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/egis_pas/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/egis_pos/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/egis_query/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/ehis_claim/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/ehis_hcs/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/ehis_nbs/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/ehis_uws/lib" file="${lib}/${run.jar}" overwrite="true" />
+        <copy todir="D:/03_test_develop/pss_ann/lib" file="${lib}/${run.jar}" overwrite="true" />
+    </target>
+
+    <target name="package" description="运行">
+        <sequential>
+            <antcall target="clear"/>
+            <antcall target="compile"/>
+            <antcall target="packs"/>
+            <!--antcall target="copy"/-->
+        </sequential>
+    </target>
+	
+</project>
