@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -22,7 +23,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.star.core.webdriver.helper.JScriptCollection;
 import com.star.core.webdriver.helper.RuntimeSupport;
-import com.star.core.webdriver.helper.FilteredException;
 import com.star.core.webdriver.helper.WebDriverTable;
 import com.star.logging.frame.LoggingManager;
 
@@ -190,7 +190,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the element locator By
 	 */
 	protected boolean elementExists(By by) {
-		return (driver.findElements(by).size() > 0) ? true : false;
+		try {
+			return (driver.findElements(by).size() > 0) ? true : false;
+		} catch(NoSuchElementException ne){
+			return false;
+		}
 	}
 
 	/**
@@ -221,8 +225,9 @@ public class WebDriverWebPublic extends WebDriverController {
 		try {
 			String defaultHandle = driver.getWindowHandle();
 			Set<String> windowHandles = driver.getWindowHandles();
+			windowHandles = clearHandleCache(windowHandles);
 			for (int i = 0; i <= 20; i++) {
-				pause(500);
+				waitFor(500);
 				if (driver.getWindowHandles().equals(windowHandles)) {
 					break;
 				}
@@ -331,7 +336,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void selectNewWindow(Set<String> originalHandles) {
 		Set<String> newHandles = driver.getWindowHandles();
-		newHandles = driver.getWindowHandles();
 		Iterator<String> olds = originalHandles.iterator();
 		while(olds.hasNext()){
 			newHandles.remove(olds.next());			
@@ -351,9 +355,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param windowTitle the title of the window to be switched to
 	 */
 	protected void selectWindow(String windowTitle) {
-		Set<String> windowHandles = null;
-		windowHandles = driver.getWindowHandles();
-		windowHandles = driver.getWindowHandles();
+		Set<String> windowHandles = driver.getWindowHandles();
+		windowHandles = clearHandleCache(windowHandles);
 		for (String handle : windowHandles) {
 			driver.switchTo().window(handle);
 			String title = driver.getTitle();
@@ -403,7 +406,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void selectExistWindow(){
 		Set<String> windowHandles = driver.getWindowHandles();
-		windowHandles = driver.getWindowHandles();
 		windowHandles = clearHandleCache(windowHandles);
 		String exist_0 = windowHandles.toArray()[0].toString();
 		ASSERT.assertNotNull(exist_0);
@@ -421,7 +423,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected void closeWindow(String windowTitle, int index) {
 		List<String> winList = new ArrayList<String>();
 		Set<String> windowHandles = driver.getWindowHandles();
-		windowHandles = driver.getWindowHandles();
 		windowHandles = clearHandleCache(windowHandles);
 		for (String handle : windowHandles) {
 			driver.switchTo().window(handle);
@@ -444,7 +445,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void closeWindow(String windowTitle) {
 		Set<String> windowHandles = driver.getWindowHandles();
-		windowHandles = driver.getWindowHandles();
 		windowHandles = clearHandleCache(windowHandles);
 		for (String handle : windowHandles) {
 			driver.switchTo().window(handle);
@@ -466,7 +466,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void closeWindowExcept(String windowTitle) {
 		Set<String> windowHandles = driver.getWindowHandles();
-		windowHandles = driver.getWindowHandles();
 		windowHandles = clearHandleCache(windowHandles);
 		for (String handle : windowHandles) {
 			driver.switchTo().window(handle);
@@ -488,10 +487,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void closeWindowExceptHandle(String windowHandle) {
 		Set<String> windowHandles = driver.getWindowHandles();
-		windowHandles = driver.getWindowHandles();
 		windowHandles = clearHandleCache(windowHandles);
 		for (String handle : windowHandles) {
 			if (!windowHandle.equals(handle)) {
+				driver.switchTo().window(handle);
 				driver.switchTo().defaultContent();
 				driver.close();
 			}
@@ -514,7 +513,7 @@ public class WebDriverWebPublic extends WebDriverController {
 				driver.getTitle();
 			} catch (Exception e) {
 				errors.add(handle);
-				throw new FilteredException("window handle " + handle + " does not exist acturely!");
+				consoleError("window handle " + handle + " does not exist acturely!");
 			}
 		}
 		for (int i = 0; i < errors.size(); i ++){
@@ -532,7 +531,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void closeWindowExcept(String windowTitle, int index) {
 		Set<String> windowHandles = driver.getWindowHandles();
-		windowHandles = driver.getWindowHandles();
+		windowHandles = clearHandleCache(windowHandles);
 		for (String handle : windowHandles) {
 			driver.switchTo().window(handle);
 			String title = driver.getTitle();
@@ -1254,8 +1253,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 如果同一定位方式的WebTable内容发生变化需要重新定位，则需要刷新WebTable。
 	 */
 	protected void tableRefresh(){
-		WebDriverWebPublic.tabFinder = null;
-		WebDriverWebPublic.webTable = null;		
+		WebDriverWebPublic.tabFinder = By.id("骚年，醒悟吧");
+		WebDriverWebPublic.webTable = null;	
 	}
 
 	/**
@@ -1268,7 +1267,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected int tableRowCount(By tabBy) {
 		webTable = tableCache(tabBy);
 		int rowCount = webTable.rowCount();
-		pass("the webTable " + tabBy.toString() + "has row count: [ " + rowCount + " ]");
+		pass("the webTable " + tabBy.toString() + " has row count: [ " + rowCount + " ]");
 		return rowCount;
 	}
 
@@ -1422,6 +1421,21 @@ public class WebDriverWebPublic extends WebDriverController {
 		}
 		ASSERT.assertFalse("alert does not disappear in " + seconds + " seconds!", exists);
 		return exists;
+	}
+	
+	/**
+	 * Description: wait until window.
+	 *
+	 * @param count init window count.
+	 * @param timeout for waiting.
+	 */
+	protected void waitForPageSyncronize(int count, int timeout){
+		long begins = System.currentTimeMillis();
+		int windowCount = driver.getWindowHandles().size();
+		windowCount = driver.getWindowHandles().size();
+		while (windowCount != count && System.currentTimeMillis() - begins < timeout * 1000){
+			windowCount = driver.getWindowHandles().size();
+		}
 	}
 
 

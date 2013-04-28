@@ -38,13 +38,6 @@ public class WebDriverListener implements WebDriverEventListener {
 		this.filePath = location.endsWith("/") || location.endsWith("\\") ? location : location + "/";
 		this.logHelper = new LoggerModeChoice(runClassName,location,"GBK");
 	}
-	
-	private void exceptionFilter(Throwable exception, WebDriver driver){
-		if (exception instanceof FilteredException){
-		}else{
-			onWebDriverException(exception, driver);
-		}		
-	}
 
 	/**
 	 * Description: see if exception is instanceof WebDriverException.
@@ -184,7 +177,7 @@ public class WebDriverListener implements WebDriverEventListener {
 	@Override
 	public void onException(Throwable exception, WebDriver driver) {
 		try {
-			exceptionFilter(exception, driver);
+			onWebDriverException(exception, driver);
 		} catch (Throwable unexpected) {
 			LOG.error(unexpected);
 			throw new RuntimeException(unexpected);

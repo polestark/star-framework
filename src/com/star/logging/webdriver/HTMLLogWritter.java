@@ -92,9 +92,9 @@ public class HTMLLogWritter {
 			String className = logMap.get("classname");
 			String html;
 			String htmlStatus = HTML_START_PASS;
-			if (status.contains("warn")) {
+			if (status.equals("warn")) {
 				htmlStatus = HTML_START_WARN;
-			} else if (status.contains("fail")) {
+			} else if (status.equals("failed")) {
 				htmlStatus = HTML_START_FAIL;
 				if (logMap.get("message").contains("." + CAPTURE_FORMAT)) {
 					String []files = logMap.get("message").split(CAPTURE_MESSAGE, 2);
