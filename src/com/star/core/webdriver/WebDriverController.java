@@ -31,7 +31,7 @@ import com.star.support.config.ParseProperties;
 import com.star.support.externs.BrowserGuiAuto;
 import com.star.support.externs.Win32GuiByAu3;
 import com.star.support.externs.Win32GuiByVbs;
-import com.star.logging.webdriver.LoggerModeChoice;
+import com.star.logging.webdriver.LoggingSetting;
 import com.star.testdata.string.StringBufferUtils;
 import com.star.tools.ReadConfiguration;
 import com.star.tools.StackTraceUtils;
@@ -76,7 +76,7 @@ public class WebDriverController {
 	
 	private RemoteControlConfiguration remote;
 	private static DesiredCapabilities capabilities;
-	private static LoggerModeChoice logHelper;
+	private static LoggingSetting logHelper;
 	private static long startTime;
 	private static long endTime;
 	private static String className;
@@ -152,7 +152,7 @@ public class WebDriverController {
 	 */
 	protected void startServer(String clsName) throws Exception{
 		WebDriverController.className = clsName;
-		logHelper = new LoggerModeChoice(className,LOG_ABS,"GBK");
+		logHelper = new LoggingSetting(className,LOG_ABS,"GBK");
 		logHelper.LogInit(startTime);
 		File log = new File(LOG_ABS + className + "_" + STRUTIL.getMilSecNow() + ".log");
 

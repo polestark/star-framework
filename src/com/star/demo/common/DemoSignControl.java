@@ -1,8 +1,6 @@
 package com.star.demo.common;
 
-import static org.testng.AssertJUnit.assertTrue;
 import org.openqa.selenium.By;
-
 import com.star.core.webdriver.WebDriverWebPublic;
 
 public class DemoSignControl extends WebDriverWebPublic{
@@ -24,7 +22,7 @@ public class DemoSignControl extends WebDriverWebPublic{
 		if (driver.getPageSource().contains("此网站的安全证书有问题")){
 			click(By.xpath("//a[@id='overridelink']"));			
 		}
-		assertTrue(elementExists(By.linkText("综合查询"), 10));
+		ASSERT.assertTrue(elementExists(By.linkText("综合查询"), 10));
 	}
 
 	/*egis-pos 用户退出登录*/

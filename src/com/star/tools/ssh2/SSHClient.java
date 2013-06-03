@@ -1,11 +1,10 @@
-package com.star.tools.ssh;
+package com.star.tools.ssh2;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.Session;
-import com.trilead.ssh2.StreamGobbler;
 import com.star.logging.frame.LoggingManager;
 
 public class SSHClient{
@@ -16,7 +15,7 @@ public class SSHClient{
 
 	private Session _session;
 	private Connection _connection;
-	private final LoggingManager LOG = new LoggingManager(SSHClient.class.getName()); 
+	private final LoggingManager LOG = new LoggingManager(SSHClient.class.getName());
 	
 	public SSHClient(String hostName, int port, String userName, String passWord){
 		this._hostName = hostName;
@@ -38,40 +37,43 @@ public class SSHClient{
 	
 	public void createSession() throws IOException{
 		_session = _connection.openSession();
+		_session.requestPTY("vt100", 80, 24, 640, 480, null); 
 	}
 	
-	public void setbashTimeout(int timeout){
-		//this._timeout = timeout;
-	}
-	
-	public String executeBash(String command) {
-		final StringBuilder sbuilder = new StringBuilder(1024);
+	public String executeBash(String command, String[] params) {
+		String result = null;
 		try {
-			_session.requestPTY("vt100", 80, 24, 640, 480, null); 
-			Thread.currentThread().join(5000);
-			
 			_session.execCommand(command);
+			
+			byte[] buffer = new byte[10240];
+			int length = 0;
+			InputStream output = _session.getStdout();
+			OutputStream input = _session.getStdin();
 
-			@SuppressWarnings("resource")
-			InputStream stdOut = new StreamGobbler(_session.getStdout());
-			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-			byte[] bytes = new byte[1024];
-			
-			int count;
-			while ((count = stdOut.read(bytes)) != -1) {
-				buffer.write(bytes, 0, count);
-				if (count == 1024) {
-					sbuilder.append(new String(bytes));
-				} else {
-					byte[] chars = new byte[count];
-					for (int i = 0; i < count; i++) {
-						chars[i] = bytes[i];
-					}
-					sbuilder.append(new String(chars));
+            Thread.currentThread().join(500);
+			length = output.read(buffer);
+            if (length > 0) {  
+                String out = new String(buffer, 0, length);  
+                System.out.println(out);
+            }
+
+            Thread.currentThread().join(500);
+			for (int i = 0; i < params.length; i ++){
+				String param = params[i];
+				input.write((param + "\n").getBytes());
+				
+				if (param.contains("monitor")){
+		            Thread.currentThread().join(60000);
+				}else{
+		            Thread.currentThread().join(500);
 				}
-			}
-			
-			return sbuilder.toString();
+				
+				length = output.read(buffer);
+	            if (length > 0) {  
+	            	result = new String(buffer, 0, length, "gbk");
+	            }
+			}			
+			return result;
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);

@@ -16,7 +16,7 @@ public class ReadConfiguration {
 	/**
 	 * construct with parameter intialize
 	 * 
-	 * @param	filePath whole path and name of config file
+	 * @param	fileName whole path and name of config file
 	 * @throws	RuntimeException, IllegalArgumentException
 	 */
 	public ReadConfiguration(String fileName) {		

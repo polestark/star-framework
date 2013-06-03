@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import com.star.tools.ReadConfiguration;
 import com.star.tools.StackTraceUtils;
 import com.star.support.externs.Win32GuiByAu3;
-import com.star.logging.webdriver.LoggerModeChoice;
+import com.star.logging.webdriver.LoggingSetting;
 
 /**
  * @author 测试仔刘毅
@@ -18,7 +18,7 @@ public class Assert4STAR {
 	private final String CAPTURE_MESSAGE = config.get("CAPTURE_MESSAGE");
 	private String captureTo = null;
 	private String className = null;
-	private LoggerModeChoice loggerHelper = null;
+	private LoggingSetting loggerHelper = null;
 	private boolean exitRun = true;
 	private boolean needLog = false;
 	
@@ -29,13 +29,12 @@ public class Assert4STAR {
 	/**
 	 * Description: cunstruction with parameter initialize.
 	 * 
-	 * @param driver the webdriver object.
+	 * @param mdriver the webdriver object.
 	 * @param captureToPath the log path to put the screen shot files. 
 	 * @param className class name which calling this method.
-	 * @param logger the Logger object that used this class.
-	 * @param sMark the character that separate the log content. 
+	 * @param loggerHelper the LoggerModeChoice object that used this class.
 	 */
-	public Assert4STAR(WebDriver mdriver, String captureToPath, String className, LoggerModeChoice loggerHelper) {
+	public Assert4STAR(WebDriver mdriver, String captureToPath, String className, LoggingSetting loggerHelper) {
 		this.loggerHelper = loggerHelper;
 		this.captureTo = captureToPath;
 		this.className = className;
@@ -47,7 +46,6 @@ public class Assert4STAR {
 	 * @param driver the webdriver object.
 	 * @param captureToPath the log path to put the screen shot files. 
 	 * @param className class name which calling this method.
-	 * @param sMark the character that separate the log content. 
 	 */
 	public Assert4STAR(WebDriver driver, String captureToPath, String className) {
 		this(driver, captureToPath, className, null);

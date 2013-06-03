@@ -7,7 +7,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.events.WebDriverEventListener;
 import com.star.logging.frame.LoggingManager;
-import com.star.logging.webdriver.LoggerModeChoice;
+import com.star.logging.webdriver.LoggingSetting;
 import com.star.testdata.string.StringBufferUtils;
 import com.star.tools.ReadConfiguration;
 import com.star.tools.StackTraceUtils;
@@ -25,7 +25,7 @@ public class WebDriverListener implements WebDriverEventListener {
 	private final LoggingManager LOG = new LoggingManager(WebDriverListener.class.getName());
 	private StackTraceUtils stack = new StackTraceUtils();
 	private Map<String,String> infoMap;
-	private LoggerModeChoice logHelper;
+	private LoggingSetting logHelper;
 	private StackTraceElement[] traces;
 	private StackTraceElement trace;
 
@@ -36,7 +36,7 @@ public class WebDriverListener implements WebDriverEventListener {
 	public WebDriverListener(String location, String runClassName) {
 		this.className = runClassName;
 		this.filePath = location.endsWith("/") || location.endsWith("\\") ? location : location + "/";
-		this.logHelper = new LoggerModeChoice(runClassName,location,"GBK");
+		this.logHelper = new LoggingSetting(runClassName,location,"GBK");
 	}
 
 	/**

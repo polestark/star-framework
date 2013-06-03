@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.star.tools.ReadConfiguration;
 
-public class LoggerModeChoice {
+public class LoggingSetting {
 	private final ReadConfiguration config = new ReadConfiguration(
 			"/com/star/core/webdriver/webdirver_config.properties");
 	protected static Handler handler;
@@ -25,7 +25,7 @@ public class LoggerModeChoice {
 	 * @param path the path where the log file to be located. 
 	 * @param charSet the file charSet of log files.
 	 */
-	public LoggerModeChoice(String clsName, String path, String charSet) {
+	public LoggingSetting(String clsName, String path, String charSet) {
 		this.className = clsName;
 		this.LOG_ABS = path;
 		this.charSet = charSet;

@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -17,10 +16,8 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
 import com.star.core.webdriver.helper.JScriptCollection;
 import com.star.core.webdriver.helper.RuntimeSupport;
 import com.star.core.webdriver.helper.WebDriverTable;
@@ -31,70 +28,6 @@ public class WebDriverWebPublic extends WebDriverController {
 	private static final LoggingManager LOG = new LoggingManager(WebDriverWebPublic.class.getName());
 	protected static By tabFinder = null;
 	protected static WebDriverTable webTable = null;
-
-	/**
-	 * wait util the element visible in max wait time setting</BR>
-	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
-	 * 在指定时间内循环等待，直到对象可见，超时之后直接抛出对象不可见异常信息。
-	 * 
-	 * @param element the WebElement to be judged
-	 * @param timeout timeout setting in seconds
-	 * @throws ElementNotVisibleException
-	 */
-	protected void waitUtilElementVisible(WebElement element, int timeout) {
-		long start = System.currentTimeMillis();
-		boolean isDisplayed = false;
-		while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
-			isDisplayed = (element == null)? false : element.isDisplayed();
-		}
-		if (!isDisplayed){
-			throw new ElementNotVisibleException("the element is not visible in " + timeout + "seconds!");
-		}
-	}
-
-	/**
-	 * wait util the element visible in max wait time setting</BR>
-	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
-	 * 在指定时间内循环等待，直到对象可见，使用用户指定的默认超时设置。
-	 * 
-	 * @param element the WebElement to be judged
-	 * @throws ElementNotVisibleException
-	 */
-	protected void waitUtilElementVisible(WebElement element) {
-		waitUtilElementVisible(element, maxWaitfor);
-	}
-
-	/**
-	 * wait util the element visible in max wait time setting</BR>
-	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
-	 * 在指定时间内循环等待，直到对象可见，使用用户指定的默认超时设置。
-	 * 
-	 * @param by the WebElement locator
-	 * @param timeout timeout setting in seconds
-	 */
-	protected void waitUtilElementVisible(By by, int timeout) {
-		long start = System.currentTimeMillis();
-		boolean isDisplayed = false;
-		setElementLocateTimeout(1);
-		while (!isDisplayed && ((System.currentTimeMillis() - start) < timeout * 1000)) {
-			WebElement element = findElement(by);
-			isDisplayed = (element == null) ? false : element.isDisplayed();
-		}
-		ASSERT.setExitOnAssertFailure(true);
-		ASSERT.assertTrue("element " + by.toString() + " not visible in " + timeout + " seconds!", isDisplayed);
-		setElementLocateTimeout(maxWaitfor);
-	}
-
-	/**
-	 * wait util the element visible in max wait time setting</BR>
-	 * if not visible at last, throw ElementNotVisibleException to the operations</BR>
-	 * 在指定时间内循环等待，直到对象可见，使用用户指定的默认超时设置。
-	 * 
-	 * @param by the WebElement locator
-	 */
-	protected void waitUtilElementVisible(By by) {
-		waitUtilElementVisible(by, maxWaitfor);
-	}
 
 	/**
 	 * execute js functions to do something</BR>
@@ -191,7 +124,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected boolean elementExists(By by) {
 		try {
-			return (driver.findElements(by).size() > 0) ? true : false;
+			return (findElements(by).size() > 0) ? true : false;
 		} catch(NoSuchElementException ne){
 			return false;
 		}
@@ -204,12 +137,12 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
 	 */
-	protected boolean elementExists(final By by, int seconds) {
+	protected boolean elementExists(By by, int seconds) {
 		long start = System.currentTimeMillis();
 		boolean exists = false;
 		setElementLocateTimeout(1);
 		while (!exists && ((System.currentTimeMillis() - start) < seconds * 1000)) {
-			exists = driver.findElements(by).size() > 0;
+			exists = findElements(by).size() > 0;
 		}
 		setElementLocateTimeout(maxWaitfor);
 		return exists;
@@ -631,7 +564,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the frame element locator
 	 */
 	protected void selectFrame(By by) {
-		driver.switchTo().frame(driver.findElement(by));
+		driver.switchTo().frame(findElement(by));
 		pass("select frame by frame locator [ " + by.toString() + " ]");
 	}
 
@@ -656,7 +589,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void selectFrameWithTimeout(By by, int timeout) {
 		waitForElementPresent(by, timeout);
-		driver.switchTo().frame(driver.findElement(by));
+		driver.switchTo().frame(findElement(by));
 		pass("select frame by frame locator [ " + by.toString() + " ]");
 	}
 
@@ -668,7 +601,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text string to be input
 	 */
 	protected void editFrameText(By by, String text) {
-		driver.switchTo().frame(driver.findElement(by));
+		driver.switchTo().frame(findElement(by));
 		driver.switchTo().activeElement().sendKeys(text);
 		pass("input text [ " + text + " ] to frame [ " + by.toString() + " ]");
 	}
@@ -741,10 +674,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * rewrite the click method, adding user defined log</BR>
 	 * 在等到对象可见之后点击指定的对象。
 	 * 
-	 * @param element the webelement you want to operate
+	 * @param element the WebElement you want to click.
 	 */
 	protected void click(WebElement element) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		element.click();
 		pass("click on WebElement");
 	}
@@ -753,11 +686,11 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * rewrite the click method, click on the element to be find by By</BR>
 	 * 在等到对象可见之后点击指定的对象。
 	 * 
-	 * @param by the locator you want to find the element
+	 * @param by the locator you want to find the element.
 	 */
 	protected void click(By by) {
-		waitUtilElementVisible(driver.findElement(by));
-		driver.findElement(by).click();
+		waitForElementVisible(by, maxWaitfor);
+		findElement(by).click();
 		pass("click on element [ " + by.toString() + " ] ");
 	}
 
@@ -769,7 +702,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the webelement you want to operate
 	 */
 	protected void clickByJavaScript(WebElement element) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		jsExecutor(JScriptCollection.CLICK_BY_JAVASCRIPT.getValue(), "click on element", element);
 	}
 
@@ -781,9 +714,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the locator you want to find the element
 	 */
 	protected void clickByJavaScript(By by) {
-		waitUtilElementVisible(driver.findElement(by));
+		waitForElementVisible(by, maxWaitfor);
 		jsExecutor(JScriptCollection.CLICK_BY_JAVASCRIPT.getValue(), 
-				"click on element [ " + by.toString() + " ] ", driver.findElement(by));
+				"click on element [ " + by.toString() + " ] ", findElement(by));
 	}
 
 	/**
@@ -793,7 +726,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the webelement you want to operate
 	 */
 	protected void doubleClick(WebElement element) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		actionDriver.doubleClick(element);
 		actionDriver.perform();
 		pass("doubleClick on element ");
@@ -806,7 +739,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the locator you want to find the element
 	 */
 	protected void doubleClick(By by) {
-		waitUtilElementVisible(driver.findElement(by));
+		waitForElementVisible(by, maxWaitfor);
 		actionDriver.doubleClick(findElement(by));
 		actionDriver.perform();
 		pass("doubleClick on element [ " + by.toString() + " ] ");
@@ -819,7 +752,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the webelement you want to operate
 	 */
 	protected void rightClick(WebElement element) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		actionDriver.contextClick(element);
 		actionDriver.perform();
 		pass("rightClick on element ");
@@ -832,7 +765,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the locator you want to find the element
 	 */
 	protected void rightClick(By by) {
-		waitUtilElementVisible(driver.findElement(by));
+		waitForElementVisible(by, maxWaitfor);
 		actionDriver.contextClick(findElement(by));
 		actionDriver.perform();
 		pass("rightClick on element [ " + by.toString() + " ] ");
@@ -845,7 +778,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the webelement you want to operate
 	 */
 	protected void submit(WebElement element) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		element.submit();
 		pass("submit on element");
 	}
@@ -857,8 +790,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the locator you want to find the element
 	 */
 	protected void submit(By by) {
-		waitUtilElementVisible(driver.findElement(by));
-		driver.findElement(by).submit();
+		waitForElementVisible(by, maxWaitfor);
+		findElement(by).submit();
 		pass("submit on element [ " + by.toString() + " ]");
 	}
 
@@ -869,7 +802,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param element the webelement you want to operate
 	 */
 	protected void clear(WebElement element) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		element.clear();
 		pass("element cleared");
 	}
@@ -881,9 +814,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param by the locator you want to find the element
 	 */
 	protected void clear(By by) {
-		WebElement element = driver.findElement(by);
-		waitUtilElementVisible(element);
-		element.clear();
+		waitForElementVisible(by, maxWaitfor);
+		findElement(by).clear();
 		pass("element [ " + by.toString() + " ] cleared");
 	}
 
@@ -895,7 +827,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text you want to input to element
 	 */
 	protected void sendKeysAppend(WebElement element, String text) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		element.sendKeys(text);
 		pass("send text [ " + text + " ] to element");
 	}
@@ -908,9 +840,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text you want to input to element
 	 */
 	protected void sendKeysAppend(By by, String text) {
-		WebElement element = driver.findElement(by);
-		waitUtilElementVisible(element);
-		element.sendKeys(text);
+		waitForElementVisible(by, maxWaitfor);
+		findElement(by).sendKeys(text);
 		pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
 	}
 
@@ -922,7 +853,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text you want to input to element
 	 */
 	protected void sendKeys(WebElement element, String text) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		element.clear();
 		element.sendKeys(text);
 		pass("send text [ " + text + " ] to WebEdit");
@@ -936,8 +867,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text you want to input to element
 	 */
 	protected void sendKeys(By by, String text) {
-		WebElement element = driver.findElement(by);
-		waitUtilElementVisible(element);
+		waitForElementVisible(by, maxWaitfor);
+		WebElement element = findElement(by);
 		element.clear();
 		element.sendKeys(text);
 		pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
@@ -1012,7 +943,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text you want to input to element
 	 */
 	protected void sendKeysByKeybord(WebElement element, String text) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		actionDriver.sendKeys(element, text);
 		actionDriver.perform();
 		pass("send text [ " + text + " ] to WebEdit");
@@ -1026,9 +957,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the text you want to input to element
 	 */
 	protected void sendKeysByKeybord(By by, String text) {
-		WebElement element = driver.findElement(by);
-		waitUtilElementVisible(element);
-		actionDriver.sendKeys(element, text);
+		waitForElementVisible(by, maxWaitfor);
+		actionDriver.sendKeys(findElement(by), text);
 		actionDriver.perform();
 		pass("input text [ " + text + " ] to element [ " + by.toString() + " ]");
 	}
@@ -1053,7 +983,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param index the index of the item to be selected
 	 */
 	protected void selectByIndex(WebElement element, int index) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		Select select = new Select(element);
 		select.selectByIndex(index);
 		pass("item selected by index [ " + index + " ]");
@@ -1067,9 +997,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param index the index of the item to be selected
 	 */
 	protected void selectByIndex(By by, int index) {
-		WebElement element = driver.findElement(by);
-		waitUtilElementVisible(element);
-		Select select = new Select(element);
+		waitForElementVisible(by, maxWaitfor);
+		Select select = new Select(findElement(by));
 		select.selectByIndex(index);
 		pass("item selected by index [ " + index + " ] on [ " + by.toString() + " ]");
 	}
@@ -1082,7 +1011,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param itemValue the item value of the item to be selected
 	 */
 	protected void selectByValue(WebElement element, String itemValue) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		Select select = new Select(element);
 		select.selectByValue(itemValue);
 		pass("item selected by item value [ " + itemValue + " ]");
@@ -1096,9 +1025,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param itemValue the item value of the item to be selected
 	 */
 	protected void selectByValue(By by, String itemValue) {
-		WebElement element = driver.findElement(by);
-		waitUtilElementVisible(element);
-		Select select = new Select(element);
+		waitForElementVisible(by, maxWaitfor);
+		Select select = new Select(findElement(by));
 		select.selectByValue(itemValue);
 		pass("item selected by item value [ " + itemValue + " ] on [ " + by.toString() + " ]");
 	}
@@ -1111,7 +1039,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the item value of the item to be selected
 	 */
 	protected void selectByVisibleText(WebElement element, String text) {
-		waitUtilElementVisible(element);
+		waitForElementVisible(element, maxWaitfor);
 		Select select = new Select(element);
 		select.selectByVisibleText(text);
 		pass("item selected by visible text [ " + text + " ]");
@@ -1125,9 +1053,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param text the item value of the item to be selected
 	 */
 	protected void selectByVisibleText(By by, String text) {
-		WebElement element = driver.findElement(by);
-		waitUtilElementVisible(element);
-		Select select = new Select(element);
+		waitForElementVisible(by, maxWaitfor);
+		Select select = new Select(findElement(by));
 		select.selectByVisibleText(text);
 		pass("item selected by visible text [ " + text + " ] on [ " + by.toString() + " ]");
 	}
@@ -1140,10 +1067,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param onOrOff on or off to set the checkbox
 	 */
 	protected void setCheckBox(WebElement element, String onOrOff) {
-		WebElement checkElement = element.findElement(By.tagName("input"));
-		waitUtilElementVisible(checkElement);
-		if ((onOrOff.toLowerCase().contains("on") && !checkElement.isSelected())
-				|| (onOrOff.toLowerCase().contains("off") && checkElement.isSelected())) {
+		waitForElementVisible(element, maxWaitfor);
+		if ((onOrOff.toLowerCase().contains("on") && !element.isSelected())
+				|| (onOrOff.toLowerCase().contains("off") && element.isSelected())) {
 			element.click();
 		}
 		pass("the checkbox is set to [ " + onOrOff.toUpperCase() + " ]");
@@ -1157,11 +1083,10 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param onOrOff on or off to set the checkbox
 	 */
 	protected void setCheckBox(By by, String onOrOff) {
-		WebElement checkBox = driver.findElement(by);
-		waitUtilElementVisible(checkBox);
-		WebElement checkElement = checkBox.findElement(By.tagName("input"));
-		if ((onOrOff.toLowerCase().contains("on") && !checkElement.isSelected())
-				|| (onOrOff.toLowerCase().contains("off") && checkElement.isSelected())) {
+		waitForElementVisible(by, maxWaitfor);
+		WebElement checkBox = findElement(by);
+		if ((onOrOff.toLowerCase().contains("on") && !checkBox.isSelected())
+				|| (onOrOff.toLowerCase().contains("off") && checkBox.isSelected())) {
 			checkBox.click();
 		}
 		pass("the checkbox [ " + by.toString() + " ] is set to [ " + onOrOff.toUpperCase() + " ]");
@@ -1234,7 +1159,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @param tabBy the element locator By
 	 */
 	private WebDriverTable tableCache(By tabBy) {
-		waitUtilElementVisible(tabBy);
+		waitForElementVisible(tabBy, maxWaitfor);
 		if (tabFinder == null) {
 			tabFinder = tabBy;
 			return new WebDriverTable(driver, tabBy);
@@ -1694,7 +1619,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected void makeElementUnHidden(By by) {
 		jsExecutor(JScriptCollection.MAKE_ELEMENT_UNHIDDEN.getValue(), 
-				"rewrite js to make elements to be visible", driver.findElement(by));
+				"rewrite js to make elements to be visible", findElement(by));
 	}
 
 	/**
@@ -1791,7 +1716,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return the tagname string
 	 */
 	protected String getTagName(By by) {
-		String tagName = driver.findElement(by).getTagName();
+		String tagName = findElement(by).getTagName();
 		pass("element [ " + by.toString() + " ]'s TagName is: " + tagName);
 		return tagName;
 	}
@@ -1819,7 +1744,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return the attribute value string
 	 */
 	protected String getAttribute(By by, String attributeName) {
-		String value = driver.findElement(by).getAttribute(attributeName);
+		String value = findElement(by).getAttribute(attributeName);
 		pass("element [ " + by.toString() + " ]'s " + attributeName + "is: " + value);
 		return value;
 	}
@@ -1845,7 +1770,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return the bool value of whether is the WebElement selected
 	 */
 	protected boolean isSelected(By by) {
-		boolean isSelected = driver.findElement(by).isSelected();
+		boolean isSelected = findElement(by).isSelected();
 		pass("element [ " + by.toString() + " ] selected? "	+ String.valueOf(isSelected));
 		return isSelected;
 	}
@@ -1871,7 +1796,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return the bool value of whether is the WebElement enabled
 	 */
 	protected boolean isEnabled(By by) {
-		boolean isEnabled = driver.findElement(by).isEnabled();
+		boolean isEnabled = findElement(by).isEnabled();
 		pass("element [ " + by.toString() + " ] enabled? " + String.valueOf(isEnabled));
 		return isEnabled;
 	}
@@ -1896,7 +1821,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return the text string
 	 */
 	protected String getText(By by) {
-		String text = driver.findElement(by).getText();
+		String text = findElement(by).getText();
 		pass("element [ " + by.toString() + " ]'s text is: " + text);
 		return text;
 	}
@@ -1922,7 +1847,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return the bool value of whether is the WebElement displayed
 	 */
 	protected boolean isDisplayed(By by) {
-		boolean isDisplayed = driver.findElement(by).isDisplayed();
+		boolean isDisplayed = findElement(by).isDisplayed();
 		pass("element [ " + by.toString() + " ] displayed? " + String.valueOf(isDisplayed));
 		return isDisplayed;
 	}
@@ -1950,7 +1875,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return the css property value string
 	 */
 	protected String getCssValue(By by, String propertyName) {
-		String cssValue = driver.findElement(by).getCssValue(propertyName);
+		String cssValue = findElement(by).getCssValue(propertyName);
 		pass("element [ " + by.toString() + " ]'s css[" + propertyName + "] value is: " + cssValue);
 		return cssValue;
 	}

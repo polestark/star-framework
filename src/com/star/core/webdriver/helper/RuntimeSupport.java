@@ -28,7 +28,7 @@ public class RuntimeSupport{
 	 * take a screen shot and save the file by path and name</BR>
 	 * 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
-	 * @param object the WebDriver instance.
+	 * @param webDriver the WebDriver instance.
 	 * @param fileName the file path&name of the screenshot to be saved.
 	 */
 	public void screenShot(WebDriver webDriver, String fileName) {
@@ -64,10 +64,10 @@ public class RuntimeSupport{
 	 * 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
 	 * @param fileName the file path&name of the screenshot to be saved
-	 * @param myDriver the WebDriver instance.
+	 * @param webDriver the WebDriver instance.
 	 * @throws Exception
 	 */
-	public void screenShot(String fileName, WebDriver webDriver) throws Throwable{
+	public void screenShot(String fileName, WebDriver webDriver) throws Exception{
 		RemoteWebDriver swd = (RemoteWebDriver) new Augmenter().augment(webDriver);
 		File file = ((TakesScreenshot) swd).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(file, new File(fileName));
