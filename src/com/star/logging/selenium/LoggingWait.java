@@ -14,8 +14,8 @@ public abstract class LoggingWait extends Wait {
 			super.wait(message, timeoutInMilliseconds, intervalInMilliseconds);
 		} catch (Wait.WaitTimedOutException e) {
 			if (null != this.logging) {
-				this.logging.logAssertion("WaitTimedOutException", e.getMessage(), "Timeout after [msec]: "
-						+ Long.valueOf(timeoutInMilliseconds).toString());
+				this.logging.logAssertion("WaitTimedOutException", e.getMessage(),
+						"Timeout after [msec]: " + Long.valueOf(timeoutInMilliseconds).toString());
 			}
 
 			throw e;

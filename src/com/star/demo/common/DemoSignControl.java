@@ -3,29 +3,29 @@ package com.star.demo.common;
 import org.openqa.selenium.By;
 import com.star.core.webdriver.WebDriverWebPublic;
 
-public class DemoSignControl extends WebDriverWebPublic{
+public class DemoSignControl extends WebDriverWebPublic {
 
 	private static String setUpAddr = CONFIG.get("setUpAddr");
 	private static String openUrl = CONFIG.get("openUrl");
 
-	/*egis-pos 用户登录*/
-	public void userLogin(String userName, String passWord){
-        
-        startWebDriver(); 
-        driver.get(setUpAddr + openUrl);
+	/* egis-pos 用户登录 */
+	public void userLogin(String userName, String passWord) {
+
+		startWebDriver();
+		driver.get(setUpAddr + openUrl);
 		windowMaximize();
-		
+
 		sendKeys(By.xpath("//input[@id='j_username']"), userName);
 		sendKeys(By.xpath("//input[@id='j_password']"), passWord);
 		click(By.xpath("//input[contains(@onclick,'loginformSubmit')]"));
-		
-		if (driver.getPageSource().contains("此网站的安全证书有问题")){
-			click(By.xpath("//a[@id='overridelink']"));			
+
+		if (driver.getPageSource().contains("此网站的安全证书有问题")) {
+			click(By.xpath("//a[@id='overridelink']"));
 		}
 		ASSERT.assertTrue(elementExists(By.linkText("综合查询"), 10));
 	}
 
-	/*egis-pos 用户退出登录*/
+	/* egis-pos 用户退出登录 */
 	public void userLogout() {
 		selectDefaultWindowFrame();
 		selectFrame(By.xpath("//iframe[@name='top' and contains(@src,'top')]"));

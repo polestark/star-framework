@@ -14,10 +14,10 @@ import org.w3c.dom.NodeList;
 import com.star.tools.ReadXMLDocument;
 import com.star.testdata.string.StringBufferUtils;
 
-public class CountJUnitTest{
+public class CountJUnitTest {
 	private final ReadXMLDocument xml = new ReadXMLDocument();
 	private final StringBufferUtils str = new StringBufferUtils();
-	
+
 	private String workRoot;
 	private String systemName;
 	private String buildName;
@@ -29,22 +29,23 @@ public class CountJUnitTest{
 	 * @param systemName the project name.
 	 * @param buildName the task file name.
 	 */
-	public CountJUnitTest(String workRoot, String systemName, String buildName){
+	public CountJUnitTest(String workRoot, String systemName, String buildName) {
 		this.workRoot = workRoot;
 		this.systemName = systemName;
 		this.buildName = buildName;
 		this.sourceFolder = workRoot + systemName + "\\src\\";
 	}
-	
-	public void clearCount(){
+
+	public void clearCount() {
 		CountJUnitTest.count = 0;
 	}
-	
+
 	/**
 	 * set the java file reading encoding.
+	 * 
 	 * @param encode the charset of the java files.
 	 */
-	public void setReadCharSet(String encode){
+	public void setReadCharSet(String encode) {
 		xml.setReadCharSet("UTF-8");
 	}
 
@@ -53,24 +54,24 @@ public class CountJUnitTest{
 	 * 
 	 * @return the charset of the java files.
 	 */
-	public String getReadCharSet(){
+	public String getReadCharSet() {
 		return xml.getReadCharSet();
 	}
 
 	/**
-	 * read xml file, find test and put to list. 
+	 * read xml file, find test and put to list.
 	 * 
 	 * @return the JUnit tests list.
 	 * @throws Exception
 	 **/
-	private List<String> junitTest() throws Exception{
+	private List<String> junitTest() throws Exception {
 		Document document = xml.loadXMLDocument(workRoot + systemName + "\\" + buildName + ".xml");
-		if (null == document){
+		if (null == document) {
 			return null;
 		}
 		List<String> classList = new ArrayList<String>();
 		NodeList nodeList = document.getElementsByTagName("test");
-		for (int i = 0; i < nodeList.getLength(); i ++){
+		for (int i = 0; i < nodeList.getLength(); i++) {
 			String fileName = nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue();
 			classList.add(fileName.replace("/", "."));
 		}
@@ -78,7 +79,7 @@ public class CountJUnitTest{
 	}
 
 	/**
-	 * read xml file, find test and put to list. 
+	 * read xml file, find test and put to list.
 	 * 
 	 * @return the JUnit tests list.
 	 * @throws Exception
@@ -114,7 +115,8 @@ public class CountJUnitTest{
 					for (int n = 0; n < files.length; n++) {
 						String filePath = files[n].getAbsolutePath();
 						if (filePath.indexOf(".svn") < 0 && filePath.contains(".java")) {
-							filePath = filePath.replace(sourceFolder, "").replace(".java", "").replace("\\", ".");
+							filePath = filePath.replace(sourceFolder, "").replace(".java", "")
+									.replace("\\", ".");
 							String fileName = files[n].getName().replace(".java", "");
 							if (null == fileMark || fileName.indexOf(fileMark) >= 0) {
 								classList.add(filePath);
@@ -122,21 +124,22 @@ public class CountJUnitTest{
 						}
 					}
 				} else {
-					classList.add(oldName.replace("/", ".").replace("\\", ".").replace(".java", ""));
+					classList
+							.add(oldName.replace("/", ".").replace("\\", ".").replace(".java", ""));
 				}
 			}
 		}
 		return classList;
 	}
-	
+
 	/**
-	 * Description: find count batchtest and test files 
-	 *
+	 * Description: find count batchtest and test files
+	 * 
 	 * @return all the files under the system
 	 * @throws Exception
 	 */
 	public List<String> junitClasses() throws Exception {
-		return str.listDistinctMerge(junitBatchTest(),junitTest());
+		return str.listDistinctMerge(junitBatchTest(), junitTest());
 	}
 
 	/**
@@ -174,11 +177,11 @@ public class CountJUnitTest{
 						testName = testClass + "." + eachLine;
 					}
 				}
-				if (testName != null){
+				if (testName != null) {
 					Row row = sheetList.createRow(count);
 					Cell cell = row.createCell(0);
 					cell.setCellValue(testName);
-					count ++;					
+					count++;
 				}
 			}
 		}

@@ -23,8 +23,8 @@ public class LoggingManager {
 	/**
 	 * construct with set class name parameter.
 	 * 
-	 * @param	clsName	the name of your runtime class to be logged
-	 * @throws	RuntimeException
+	 * @param clsName the name of your runtime class to be logged
+	 * @throws RuntimeException
 	 **/
 	public LoggingManager(String clsName) {
 		this.className = clsName;
@@ -33,9 +33,9 @@ public class LoggingManager {
 	/**
 	 * record error info.
 	 * 
-	 * @param	t Throwable:Exceptions and Errors
-	 * @param	userText user defined message to record
-	 * @throws	RuntimeException
+	 * @param t Throwable:Exceptions and Errors
+	 * @param userText user defined message to record
+	 * @throws RuntimeException
 	 **/
 	public void error(Throwable t, String userText) {
 		try {
@@ -53,7 +53,7 @@ public class LoggingManager {
 	/**
 	 * orverride the error method with default user text null.
 	 * 
-	 * @param	t Throwable:Exceptions and Errors
+	 * @param t Throwable:Exceptions and Errors
 	 **/
 	public void error(Throwable t) {
 		error(t, null);
@@ -62,8 +62,8 @@ public class LoggingManager {
 	/**
 	 * orverride the error method.
 	 * 
-	 * @param	text user defined message to record
-	 * @throws	RuntimeException
+	 * @param text user defined message to record
+	 * @throws RuntimeException
 	 **/
 	public void error(String text) {
 		try {
@@ -82,8 +82,8 @@ public class LoggingManager {
 	/**
 	 * record user defined info message.
 	 * 
-	 * @param	text user defined message to record
-	 * @throws	RuntimeException
+	 * @param text user defined message to record
+	 * @throws RuntimeException
 	 **/
 	public void info(String text) {
 		try {

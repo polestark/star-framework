@@ -42,7 +42,7 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * get the whole procedure timeout.
 	 * 
-	 * @return 	timeout setting for commit options
+	 * @return timeout setting for commit options
 	 */
 	protected long getCommitTimeout() {
 		return this.commitTimeout;
@@ -51,7 +51,7 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * set step timeout.
 	 * 
-	 * @param 	stepTimeout timeout setting for single steps
+	 * @param stepTimeout timeout setting for single steps
 	 */
 	protected void setStepTimeout(long stepTimeout) {
 		this.stepTimeout = stepTimeout;
@@ -60,7 +60,7 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * get step time out.
 	 * 
-	 * @return 	timeout setting for single steps
+	 * @return timeout setting for single steps
 	 */
 	protected long getStepTimeout() {
 		return this.stepTimeout;
@@ -69,8 +69,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * public method for handle assertions and screenshot.
 	 * 
-	 * @param 	isSucceed if your operation success
-	 * @throws	RuntimeException
+	 * @param isSucceed if your operation success
+	 * @throws RuntimeException
 	 */
 	protected void operationCheck(boolean isSucceed) {
 		String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
@@ -87,7 +87,7 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * a new method for waitForPageToLoad.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	protected void syncBrowser() {
 		boolean isSucceed = false;
@@ -103,14 +103,14 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * syncronize browser used Ajax, judge using jQuery.active.
 	 * 
-	 * @param 	timeout timeout setting
-	 * @throws	RuntimeException
+	 * @param timeout timeout setting
+	 * @throws RuntimeException
 	 */
 	protected void syncAjaxByJQuery(String timeout) {
 		boolean isSucceed = false;
 		try {
-			selenium.waitForCondition(
-					"selenium.browserbot.getCurrentWindow().jQuery.active == 0", timeout);
+			selenium.waitForCondition("selenium.browserbot.getCurrentWindow().jQuery.active == 0",
+					timeout);
 			isSucceed = true;
 		} catch (SeleniumException se) {
 			LOG.error(se);
@@ -123,7 +123,7 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * syncronize browser used Ajax, judge using jQuery.active.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	protected void syncAjaxByJQuery() {
 		syncAjaxByJQuery(String.valueOf(getStepTimeout()));
@@ -132,15 +132,14 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * syncronize browser used Ajax, judge using Ajax.activeRequestCount.
 	 * 
-	 * @param 	timeout timeout setting
-	 * @throws	RuntimeException
+	 * @param timeout timeout setting
+	 * @throws RuntimeException
 	 */
 	protected void syncAjaxByPrototype(String timeout) {
 		boolean isSucceed = false;
 		try {
 			selenium.waitForCondition(
-					"selenium.browserbot.getCurrentWindow().Ajax.activeRequestCount == 0",
-					timeout);
+					"selenium.browserbot.getCurrentWindow().Ajax.activeRequestCount == 0", timeout);
 			isSucceed = true;
 		} catch (SeleniumException se) {
 			LOG.error(se);
@@ -153,7 +152,7 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * syncronize browser used Ajax, judge using Ajax.activeRequestCount.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	protected void syncAjaxByPrototype() {
 		syncAjaxByPrototype(String.valueOf(getStepTimeout()));
@@ -162,8 +161,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * syncronize browser used Ajax, judge using dojo.io.XMLHTTPTransport.inFlight.length.
 	 * 
-	 * @param 	timeout timeout setting
-	 * @throws	RuntimeException
+	 * @param timeout timeout setting
+	 * @throws RuntimeException
 	 */
 	protected void syncAjaxByDojo(String timeout) {
 		boolean isSucceed = false;
@@ -183,7 +182,7 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * syncronize browser used Ajax, judge using dojo.io.XMLHTTPTransport.inFlight.length.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	protected void syncAjaxByDojo() {
 		syncAjaxByDojo(String.valueOf(getStepTimeout()));
@@ -192,8 +191,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * a new method for waitForFrameToLoad.
 	 * 
-	 * @param 	locator the locator of the frame
-	 * @throws	RuntimeException
+	 * @param locator the locator of the frame
+	 * @throws RuntimeException
 	 */
 	protected void syncFrame(String locator) {
 		boolean isSucceed = false;
@@ -209,8 +208,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * rewrite selectwindow method, wait for window syncronize, using timeout setting.
 	 * 
-	 * @param 	locator the name/title of the window
-	 * @throws	RuntimeException
+	 * @param locator the name/title of the window
+	 * @throws RuntimeException
 	 */
 	public void selectWindow(String locator) {
 		boolean isSucceed = false;
@@ -238,8 +237,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * rewrite selectframe method, add timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @throws RuntimeException
 	 */
 	protected void selectFrame(String locator) {
 		boolean isSucceed = false;
@@ -261,9 +260,9 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * get row count of a webtable
 	 * 
-	 * @param	tabLocator the webtable locator
-	 * @return 	the row count of the table
-	 * @throws	RuntimeException
+	 * @param tabLocator the webtable locator
+	 * @return the row count of the table
+	 * @throws RuntimeException
 	 */
 	protected int tabRowCount(String tabLocator) {
 		String locator = tabLocator.replace("@", "").replace("'", "");
@@ -280,10 +279,10 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * get column count of a specified webtable row.
 	 * 
-	 * @param	tabLocator : the webtable locator
-	 * @param	rowNum : row index of your table to count
-	 * @return 	the column count of the row in table
-	 * @throws	RuntimeException
+	 * @param tabLocator : the webtable locator
+	 * @param rowNum : row index of your table to count
+	 * @return the column count of the row in table
+	 * @throws RuntimeException
 	 */
 	protected int tabColCount(String tabLocator, int rowNum) {
 		String locator = tabLocator.replace("@", "").replace("'", "");
@@ -300,9 +299,9 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * get row count of a webtable(using xpath loop count)
 	 * 
-	 * @param 	tabLocator the webtable locator
-	 * @return 	the row count of the table
-	 * @throws	RuntimeException
+	 * @param tabLocator the webtable locator
+	 * @return the row count of the table
+	 * @throws RuntimeException
 	 */
 	protected int countTabRows(String tabLocator) {
 		String locator = null;
@@ -320,10 +319,10 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * get column count of a specified webtable row(using xpath loop count).
 	 * 
-	 * @param 	tabLocator the webtable locator
-	 * @param 	rowNum row index of your table to count
-	 * @return 	the column count of the row in table
-	 * @throws	RuntimeException
+	 * @param tabLocator the webtable locator
+	 * @param rowNum row index of your table to count
+	 * @return the column count of the row in table
+	 * @throws RuntimeException
 	 */
 	protected int countTabCols(String tabLocator, int rowNum) {
 		String locator = null;
@@ -342,11 +341,11 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * judge if the webtable cell has any child element.
 	 * 
-	 * @param 	tabLocator the webtable locator
-	 * @param 	row row number of your cell
-	 * @param 	col column number of your cell
-	 * @return 	boolean
-	 * @throws	RuntimeException
+	 * @param tabLocator the webtable locator
+	 * @param row row number of your cell
+	 * @param col column number of your cell
+	 * @return boolean
+	 * @throws RuntimeException
 	 */
 	protected boolean isCellHasChild(String tabLocator, int row, int col) {
 		boolean hasChild = false;
@@ -361,15 +360,16 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * get text of a specified webtable cell.
 	 * 
-	 * @param 	tabLocator the webtable locator
-	 * @param 	row row number of your cell
-	 * @param 	col column number of your cell
-	 * @return 	the text value of the cell
-	 * @throws	RuntimeException
+	 * @param tabLocator the webtable locator
+	 * @param row row number of your cell
+	 * @param col column number of your cell
+	 * @return the text value of the cell
+	 * @throws RuntimeException
 	 */
 	protected String getTabCellText(String tabLocator, int row, int col) {
 		String text = null;
-		String locator = tabLocator + "/tbody/tr[" + String.valueOf(row) + "]/td[" + String.valueOf(col) + "]";
+		String locator = tabLocator + "/tbody/tr[" + String.valueOf(row) + "]/td["
+				+ String.valueOf(col) + "]";
 		if (!tabLocator.startsWith("//")) {
 			locator = "//table[" + tabLocator + "]/tbody/tr[" + String.valueOf(row) + "]/td["
 					+ String.valueOf(col) + "]";
@@ -391,19 +391,20 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * modify value of a specified webtable cell(for editbox).
 	 * 
-	 * @param 	tabLocator the webtable locator
-	 * @param 	row row number of your cell
-	 * @param 	col column number of your cell
-	 * @param 	index the index of element in table cell
-	 * @param 	setText the text you want to set into the edit
-	 * @throws	RuntimeException
+	 * @param tabLocator the webtable locator
+	 * @param row row number of your cell
+	 * @param col column number of your cell
+	 * @param index the index of element in table cell
+	 * @param setText the text you want to set into the edit
+	 * @throws RuntimeException
 	 */
 	protected void editTableCell(String tabLocator, int row, int col, int index, String setText) {
 		long timeBegins = System.currentTimeMillis();
 		boolean isSucceed = false;
 		String locator = "//table[" + tabLocator + "]/tbody/tr[" + String.valueOf(row) + "]/td["
 				+ String.valueOf(col) + "]/input[" + String.valueOf(index) + "]";
-		String javaScript = "this.browserbot.findElement(\"" + locator + "\").innerText = '" + setText + "';";
+		String javaScript = "this.browserbot.findElement(\"" + locator + "\").innerText = '"
+				+ setText + "';";
 		while (System.currentTimeMillis() - timeBegins < getStepTimeout()) {
 			try {
 				if (selenium.isElementPresent(locator)) {
@@ -423,12 +424,12 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * modify value of a specified webtable cell(for picklist) by label.
 	 * 
-	 * @param 	tabLocator the webtable locator
-	 * @param 	row row number of your cell
-	 * @param 	col column number of your cell
-	 * @param 	index the index of element in table cell
-	 * @param 	setText the choice you want to choose from list, default use label
-	 * @throws	RuntimeException
+	 * @param tabLocator the webtable locator
+	 * @param row row number of your cell
+	 * @param col column number of your cell
+	 * @param index the index of element in table cell
+	 * @param setText the choice you want to choose from list, default use label
+	 * @throws RuntimeException
 	 */
 	protected void selectTableCell(String tabLocator, int row, int col, int index, String setText) {
 		String locator = "//table[" + tabLocator + "]/tbody/tr[" + String.valueOf(row) + "]/td["
@@ -443,11 +444,11 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * click the element inside of a specified webtable cell.
 	 * 
-	 * @param 	tabLocator the webtable locator
-	 * @param 	row row number of your cell
-	 * @param 	col column number of your cell
-	 * @param 	index the index of element in table cell
-	 * @throws	RuntimeException
+	 * @param tabLocator the webtable locator
+	 * @param row row number of your cell
+	 * @param col column number of your cell
+	 * @param index the index of element in table cell
+	 * @throws RuntimeException
 	 */
 	protected void clickTableCell(String tabLocator, int row, int col, int index) {
 		String locator = "//table[" + tabLocator + "]/tbody/tr[" + String.valueOf(row) + "]/td["
@@ -460,8 +461,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * rewrite click method, add timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @throws RuntimeException
 	 */
 	protected void newClick(String locator) {
 		boolean isSucceed = false;
@@ -485,8 +486,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * rewrite click method, check pafa non-repeat click control.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @throws RuntimeException
 	 */
 	protected void menuClickAndCheck(String locator, int checkSenconds) {
 		boolean isSucceed = false;
@@ -496,19 +497,19 @@ public class SeleniumWebPublic extends SeleniumController {
 			try {
 				if (selenium.isElementPresent(locator)) {
 					selenium.click(locator);
-					for(int i = 0; i < checkSenconds; i ++){
+					for (int i = 0; i < checkSenconds; i++) {
 						pause(1000);
 						isSucceed = !selenium.isElementPresent(errLocator);
-						if (!isSucceed){
+						if (!isSucceed) {
 							break;
 						}
 					}
 				}
-				if (new Win32GuiByVbs().ieVersion().startsWith("6.0")){
+				if (new Win32GuiByVbs().ieVersion().startsWith("6.0")) {
 					AU3.closeWindow("提示信息");
-				}else{
+				} else {
 					AU3.closeWindow("来自网页的消息");
-				}				
+				}
 			} catch (SeleniumException se) {
 			} catch (Exception re) {
 				throw new RuntimeException(re.getMessage());
@@ -520,9 +521,9 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * rewrite type method, add timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @param 	text the text you want to set into the edit
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @param text the text you want to set into the edit
+	 * @throws RuntimeException
 	 */
 	protected void newType(String locator, String text) {
 		boolean isSucceed = false;
@@ -546,9 +547,9 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * rewrite select method, add timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @param 	text the choice you want to select from the list
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @param text the choice you want to select from the list
+	 * @throws RuntimeException
 	 */
 	protected void newSelect(String locator, String text) {
 		boolean isSucceed = false;
@@ -572,14 +573,15 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * fourcefully change the innertext,specially for not editable.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @param 	setText the text you want to set into the element
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @param setText the text you want to set into the element
+	 * @throws RuntimeException
 	 */
 	protected void setCalendar(String locator, String setText) {
 		boolean isSucceed = false;
 		locator = locator.replace("@", "").replace("'", "");
-		String javascript = "this.browserbot.findElement('" + locator + "').innerText = '" + setText + "';";
+		String javascript = "this.browserbot.findElement('" + locator + "').innerText = '"
+				+ setText + "';";
 		long timeBegins = System.currentTimeMillis();
 		while (System.currentTimeMillis() - timeBegins < getStepTimeout()) {
 			try {
@@ -600,9 +602,9 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * wait for attribute not equals specified value during timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @param 	value the value of your element attribute
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @param value the value of your element attribute
+	 * @throws RuntimeException
 	 */
 	protected void waitForAttrNotEquals(String locator, String value) {
 		boolean isSucceed = false;
@@ -625,9 +627,9 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * wait for specified text within timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @param 	text the element text you want to wait for
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @param text the element text you want to wait for
+	 * @throws RuntimeException
 	 */
 	protected void waitForText(String locator, String text) {
 		boolean isSucceed = false;
@@ -650,8 +652,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * wait for specified text within timeout setting, fail if not found.
 	 * 
-	 * @param 	text the element text you want to wait for
-	 * @throws	RuntimeException
+	 * @param text the element text you want to wait for
+	 * @throws RuntimeException
 	 */
 	protected void waitForTextPresent(String text) {
 		boolean isSucceed = false;
@@ -674,8 +676,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * wait for element disappears with timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @throws RuntimeException
 	 */
 	protected void waitForEleNotPresent(String locator) {
 		boolean isSucceed = false;
@@ -698,8 +700,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * wait for the specified element appears with timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @throws RuntimeException
 	 */
 	protected void waitForElement(String locator) {
 		boolean isSucceed = false;
@@ -722,8 +724,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * wait for element visiable with timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @throws RuntimeException
 	 */
 	protected void waitForEleVisible(String locator) {
 		boolean isSucceed = false;
@@ -741,8 +743,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * wait for element not visiable with timeout setting.
 	 * 
-	 * @param 	locator the element locator on the page
-	 * @throws	RuntimeException
+	 * @param locator the element locator on the page
+	 * @throws RuntimeException
 	 */
 	protected void waitForEleNotVisible(String locator) {
 		boolean isSucceed = false;
@@ -760,9 +762,9 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * open some special windows, which can't be opened by click method.
 	 * 
-	 * @param 	locator the element locator, click witch can popup a new window
-	 * @param 	sysAddress the system root address like http://egis-pos-stg.paic.com.cn
-	 * @throws	RuntimeException
+	 * @param locator the element locator, click witch can popup a new window
+	 * @param sysAddress the system root address like http://egis-pos-stg.paic.com.cn
+	 * @throws RuntimeException
 	 */
 	protected void openAndSelectWindow(String locator, String sysAddress) {
 		String addressTo = null;
@@ -806,8 +808,8 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * override the newOpenWindow method using default system root url null.
 	 * 
-	 * @param 	locator the element locator, click witch can popup a new window
-	 * @throws	RuntimeException
+	 * @param locator the element locator, click witch can popup a new window
+	 * @throws RuntimeException
 	 */
 	protected void openAndSelectWindow(String locator) {
 		openAndSelectWindow(locator, null);
@@ -816,11 +818,11 @@ public class SeleniumWebPublic extends SeleniumController {
 	/**
 	 * get and write browser message to file using AU3 compiled exe.
 	 * 
-	 * @param 	title pop window title
-	 * @param 	idOrName the id or name of the text's father element
-	 * @param 	eleType the type of the element which to get text
-	 * @param 	timeout time out setting to find the pop window
-	 * @throws	RuntimeException
+	 * @param title pop window title
+	 * @param idOrName the id or name of the text's father element
+	 * @param eleType the type of the element which to get text
+	 * @param timeout time out setting to find the pop window
+	 * @throws RuntimeException
 	 */
 	protected void assertErrors(String title, String idOrName, String eleType, int timeout) {
 		String fileName = ROOT_DIR + "/error_info_" + SBF.getMilSecNow() + ".txt";

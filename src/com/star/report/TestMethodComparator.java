@@ -19,8 +19,8 @@ import org.testng.ITestNGMethod;
 import java.util.Comparator;
 
 /****************************************************************************************
- * Comparator for sorting TestNG test methods. Sorts method alphabeticaly (first
- * by fully-qualified class name, then by method name).
+ * Comparator for sorting TestNG test methods. Sorts method alphabeticaly (first by fully-qualified
+ * class name, then by method name).
  * 
  * @author Daniel Dyer
  ****************************************************************************************/

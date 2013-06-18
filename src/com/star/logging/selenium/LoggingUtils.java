@@ -30,7 +30,8 @@ public final class LoggingUtils {
 			loggingWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
 					resultFileNameAndPath), resultEncoding));
 		} catch (IOException ioExc) {
-			throw new RuntimeException("ERROR while creating file: '" + resultFileNameAndPath + "'", ioExc);
+			throw new RuntimeException(
+					"ERROR while creating file: '" + resultFileNameAndPath + "'", ioExc);
 		}
 		return loggingWriter;
 	}
@@ -50,7 +51,8 @@ public final class LoggingUtils {
 		return humanReadableFormat.format(currentDateTime);
 	}
 
-	static String[] getCorrectedArgsArray(LoggingBean loggingBean, int presetNumArgs, String defaultValue) {
+	static String[] getCorrectedArgsArray(LoggingBean loggingBean, int presetNumArgs,
+			String defaultValue) {
 		String[] currentArgs;
 		if ((null == loggingBean) || (null == loggingBean.getArgs()))
 			currentArgs = new String[0];

@@ -12,21 +12,20 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import com.star.logging.frame.LoggingManager;
 import com.star.support.externs.Win32GuiByAu3;
 
-public class RuntimeSupport{
+public class RuntimeSupport {
 
 	private WebDriver driver;
 	private final LoggingManager LOG = new LoggingManager(RuntimeSupport.class.getName());
 
-	public RuntimeSupport(){
+	public RuntimeSupport() {
 	}
 
-	public RuntimeSupport(WebDriver driver){
+	public RuntimeSupport(WebDriver driver) {
 		this.driver = driver;
 	}
 
 	/**
-	 * take a screen shot and save the file by path and name</BR>
-	 * 网页截图操作，按照指定的文件名称保存快照文件。
+	 * take a screen shot and save the file by path and name</BR> 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
 	 * @param webDriver the WebDriver instance.
 	 * @param fileName the file path&name of the screenshot to be saved.
@@ -41,15 +40,15 @@ public class RuntimeSupport{
 	}
 
 	/**
-	 * take a screen shot and save the file by path and name</BR>
-	 * 网页截图操作，按照指定的文件名称保存快照文件。
+	 * take a screen shot and save the file by path and name</BR> 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
 	 * @param fileName the file path&name of the screenshot to be saved
 	 * @throws IllegalArgumentException
 	 */
 	public void screenShot(String fileName) {
-		if (null == driver){
-			throw new IllegalArgumentException("the construction must have WebDriver object parameter!");
+		if (null == driver) {
+			throw new IllegalArgumentException(
+					"the construction must have WebDriver object parameter!");
 		}
 		try {
 			screenShot(fileName, driver);
@@ -60,52 +59,51 @@ public class RuntimeSupport{
 	}
 
 	/**
-	 * take a screen shot and save the file.</BR>
-	 * 网页截图操作，按照指定的文件名称保存快照文件。
+	 * take a screen shot and save the file.</BR> 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
 	 * @param fileName the file path&name of the screenshot to be saved
 	 * @param webDriver the WebDriver instance.
 	 * @throws Exception
 	 */
-	public void screenShot(String fileName, WebDriver webDriver) throws Exception{
+	public void screenShot(String fileName, WebDriver webDriver) throws Exception {
 		RemoteWebDriver swd = (RemoteWebDriver) new Augmenter().augment(webDriver);
 		File file = ((TakesScreenshot) swd).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(file, new File(fileName));
 	}
-	
+
 	/**
 	 * Description: get the xpath string of webelements.
-	 *
+	 * 
 	 * @param driver webdriver instance.
 	 * @param element the webelement.
 	 * @return the xpath string.
 	 */
-	public String getElementXpath(WebDriver driver, WebElement element){
+	public String getElementXpath(WebDriver driver, WebElement element) {
 		String js = JScriptCollection.GET_ELEMENT_XPATH.getValue();
 		return (String) ((JavascriptExecutor) driver).executeScript(js, element);
 	}
-	
-	public void checkAfterClick(){
-		
+
+	public void checkAfterClick() {
+
 	}
-	
-	public void checkAfterValueChange(){
-		
+
+	public void checkAfterValueChange() {
+
 	}
-	
-	public void checkAfterBlur(){
-		
+
+	public void checkAfterBlur() {
+
 	}
-	
-	public void checkAfterAlterAccept(){
-		
+
+	public void checkAfterAlterAccept() {
+
 	}
-	
-	public void checkAfterAlterDismiss(){
-		
+
+	public void checkAfterAlterDismiss() {
+
 	}
-	
-	public void checkAfterNavigate(){
-		
+
+	public void checkAfterNavigate() {
+
 	}
 }

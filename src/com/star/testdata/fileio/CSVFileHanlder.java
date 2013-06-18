@@ -18,13 +18,13 @@ public class CSVFileHanlder {
 	private BufferedReader reader;
 	private BufferedWriter writer;
 	private String charSet = "ISO-8859-1";
-	private String separator = ","; 
+	private String separator = ",";
 
 	/**
 	 * class construct with initlize to set filename for csv file operations.
 	 * 
-	 * @param	fileName the file name to be read or write
-	 * @param	fileEncode the file charset
+	 * @param fileName the file name to be read or write
+	 * @param fileEncode the file charset
 	 */
 	public CSVFileHanlder(String fileName, String fileEncode) {
 		this.file = new File(fileName);
@@ -34,7 +34,7 @@ public class CSVFileHanlder {
 	/**
 	 * class construct with initlize to set filename for csv file operations.
 	 * 
-	 * @param	fileName the file name to be read or write
+	 * @param fileName the file name to be read or write
 	 */
 	public CSVFileHanlder(String fileName) {
 		this.file = new File(fileName);
@@ -43,29 +43,29 @@ public class CSVFileHanlder {
 	/**
 	 * set the separator of the csv file, defaul value is ",".
 	 * 
-	 * @param	spacer the separator of the csv file in each line, such as ",".
+	 * @param spacer the separator of the csv file in each line, such as ",".
 	 */
-	public void setSeparator(String spacer){
+	public void setSeparator(String spacer) {
 		this.separator = spacer;
 	}
 
 	/**
-	 * set the charset of the csv file, defaul value is "ISO-8859-1".
-	 * used only when user did not set it by class construct.
+	 * set the charset of the csv file, defaul value is "ISO-8859-1". used only when user did not
+	 * set it by class construct.
 	 * 
-	 * @param	fileEncode the charset of the csv file.
+	 * @param fileEncode the charset of the csv file.
 	 */
-	public void setCharSet(String fileEncode){
+	public void setCharSet(String fileEncode) {
 		this.charSet = fileEncode;
 	}
 
 	/**
 	 * read specified row and column value of csv file
 	 * 
-	 * @param	row the row index of the file
-	 * @param	col the column index of the file
+	 * @param row the row index of the file
+	 * @param col the column index of the file
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	public String readCSVCellValue(int row, int col) {
 		String line = null;
@@ -86,6 +86,8 @@ public class CSVFileHanlder {
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
+		} finally{
+			System.gc();
 		}
 		return null;
 	}
@@ -93,9 +95,9 @@ public class CSVFileHanlder {
 	/**
 	 * read specified line value of csv file
 	 * 
-	 * @param	row the row index of the file
+	 * @param row the row index of the file
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	public String readCSVLineValue(int row) {
 		String line = null;
@@ -113,6 +115,8 @@ public class CSVFileHanlder {
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
+		} finally{
+			System.gc();
 		}
 
 		return null;
@@ -136,6 +140,8 @@ public class CSVFileHanlder {
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
+		} finally{
+			System.gc();
 		}
 
 		return csvList;
@@ -183,10 +189,11 @@ public class CSVFileHanlder {
 	 */
 	public void putListToCSV(List<String> dataList) {
 		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charSet));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false),
+					charSet));
 			for (int i = 0; i < dataList.size(); i++) {
 				writer.write(dataList.get(i));
-				if (i != dataList.size() - 1){
+				if (i != dataList.size() - 1) {
 					writer.newLine();
 				}
 			}
@@ -195,29 +202,32 @@ public class CSVFileHanlder {
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
+		} finally{
+			System.gc();
 		}
 	}
 
 	/**
-	 * parse the data list and put it to the csv file, for append. 
+	 * parse the data list and put it to the csv file, for append.
 	 * 
-	 * @param	value the string text to be put into the csv file
-	 * @param	row line number of the csv file to be modified
+	 * @param value the string text to be put into the csv file
+	 * @param row line number of the csv file to be modified
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	public void putLineToCSV(String value, int row) {
 		List<String> original = readCSVToList();
 
 		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charSet));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false),
+					charSet));
 			for (int i = 0; i < original.size(); i++) {
 				if (i != row - 1) {
 					writer.write(original.get(i));
 				} else {
 					writer.write(new String(value.getBytes(), charSet));
 				}
-				if (i != original.size() - 1){
+				if (i != original.size() - 1) {
 					writer.newLine();
 				}
 			}
@@ -226,17 +236,19 @@ public class CSVFileHanlder {
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
+		} finally{
+			System.gc();
 		}
 	}
 
 	/**
-	 * parse the data list and put it to the csv file, for append. 
+	 * parse the data list and put it to the csv file, for append.
 	 * 
-	 * @param	cellValue the string text to be put into the csv file
-	 * @param	row line number of the csv file
-	 * @param	col column number of the csv file
+	 * @param cellValue the string text to be put into the csv file
+	 * @param row line number of the csv file
+	 * @param col column number of the csv file
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	public void putValueToCSV(String cellValue, int row, int col) {
 		List<String> original = readCSVToList();
@@ -244,7 +256,8 @@ public class CSVFileHanlder {
 		String[] text = null;
 
 		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charSet));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false),
+					charSet));
 			for (int i = 0; i < original.size(); i++) {
 				if (i != row - 1) {
 					writer.write(original.get(i));
@@ -269,7 +282,7 @@ public class CSVFileHanlder {
 					}
 					writer.write(sb.toString());
 				}
-				if (i != original.size() - 1){
+				if (i != original.size() - 1) {
 					writer.newLine();
 				}
 			}
@@ -278,19 +291,22 @@ public class CSVFileHanlder {
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
+		} finally{
+			System.gc();
 		}
 	}
 
 	/**
-	 * append text to csv file, on the end of the file. 
+	 * append text to csv file, on the end of the file.
 	 * 
-	 * @param	text text to append to the csv file
+	 * @param text text to append to the csv file
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	public void appendLineToCSV(String text) {
 		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), charSet));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true),
+					charSet));
 			writer.newLine();
 			writer.write(text);
 			writer.flush();
@@ -298,19 +314,22 @@ public class CSVFileHanlder {
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
+		} finally{
+			System.gc();
 		}
 	}
 
 	/**
-	 * parse the data list and put it to the csv file, for append. 
+	 * parse the data list and put it to the csv file, for append.
 	 * 
-	 * @param	dataList data list to be put into the csv file
+	 * @param dataList data list to be put into the csv file
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	public void appendListToCSV(List<String> dataList) {
 		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), charSet));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true),
+					charSet));
 			for (int i = 0; i < dataList.size(); i++) {
 				writer.newLine();
 				writer.write(dataList.get(i));
@@ -320,6 +339,8 @@ public class CSVFileHanlder {
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException(e);
+		} finally{
+			System.gc();
 		}
 	}
 }

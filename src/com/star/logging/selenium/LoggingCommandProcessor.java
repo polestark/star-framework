@@ -34,8 +34,8 @@ public class LoggingCommandProcessor implements CommandProcessor {
 	public LoggingCommandProcessor(String serverHost, int serverPort, String browserStartCommand,
 			String browserUrl, ResultsFormatter myFormatter) {
 		this.formatter = myFormatter;
-		this.realCommandProcessor = new HttpCommandProcessor(serverHost, serverPort, browserStartCommand,
-				browserUrl);
+		this.realCommandProcessor = new HttpCommandProcessor(serverHost, serverPort,
+				browserStartCommand, browserUrl);
 	}
 
 	public String doCommand(String commandName, String[] args) {
@@ -48,7 +48,8 @@ public class LoggingCommandProcessor implements CommandProcessor {
 				extraInfo = args[1] != null ? args[1] : "";
 			}
 			logComment(comment, extraInfo, cmdStartMillis);
-		} else if (SeleniumExtensions.COMMAND_EXTENSION_LOG_AUTO_SCREENSHOT.getName().equals(commandName)) {
+		} else if (SeleniumExtensions.COMMAND_EXTENSION_LOG_AUTO_SCREENSHOT.getName().equals(
+				commandName)) {
 			String baseName = args[0] != null ? args[0] : "";
 			doAutomaticScreenshot(baseName);
 		} else if (SeleniumExtensions.COMMAND_EXTENSION_LOG_ASSERTION.getName().equals(commandName)) {
@@ -232,8 +233,8 @@ public class LoggingCommandProcessor implements CommandProcessor {
 			long cmdStartMillis) {
 		Boolean screenshot = Boolean.valueOf(true);
 		if (null != this.callbackNotifier) {
-			screenshot = this.callbackNotifier.errorLogging(this.callbackInstance, commandName, args, result,
-					exception, cmdStartMillis);
+			screenshot = this.callbackNotifier.errorLogging(this.callbackInstance, commandName,
+					args, result, exception, cmdStartMillis);
 		}
 		if (screenshot.booleanValue())
 			doAutomaticScreenshot("Error");
@@ -274,8 +275,8 @@ public class LoggingCommandProcessor implements CommandProcessor {
 	}
 
 	void logComment(String comment, String extraInfo, long cmdStartMillis) {
-		doLogging(SeleniumExtensions.COMMAND_EXTENSION_LOG_COMMENT.getName(), new String[] { comment,
-				extraInfo }, "", cmdStartMillis);
+		doLogging(SeleniumExtensions.COMMAND_EXTENSION_LOG_COMMENT.getName(), new String[] {
+				comment, extraInfo }, "", cmdStartMillis);
 	}
 
 	boolean isCommandExcludedFromLogging(String commandName) {
@@ -287,7 +288,8 @@ public class LoggingCommandProcessor implements CommandProcessor {
 				.getStackTrace(), "DefaultSelenium");
 	}
 
-	String getRealCallingClassWithLineNumberAsString(StackTraceElement currentCallingClassAsStackTraceElement) {
+	String getRealCallingClassWithLineNumberAsString(
+			StackTraceElement currentCallingClassAsStackTraceElement) {
 		return StackTraceUtils
 				.stackTraceElementWithLinenumberAsString(currentCallingClassAsStackTraceElement);
 	}
@@ -300,8 +302,8 @@ public class LoggingCommandProcessor implements CommandProcessor {
 		this.seleniumTestMetrics.setEndTimeStamp(System.currentTimeMillis());
 
 		if (this.loggingEventsQueue.size() > 0) {
-			LoggingBean lastBeanInQueue = (LoggingBean) this.loggingEventsQueue.get(this.loggingEventsQueue
-					.size() - 1);
+			LoggingBean lastBeanInQueue = (LoggingBean) this.loggingEventsQueue
+					.get(this.loggingEventsQueue.size() - 1);
 			if (lastBeanInQueue.isWaitInvolved()) {
 				lastBeanInQueue.setResult("ERROR,wait timed out");
 				doAutomaticScreenshot("WaitTimeout");
@@ -312,7 +314,8 @@ public class LoggingCommandProcessor implements CommandProcessor {
 	}
 
 	void doAutomaticScreenshot(String baseFileName) {
-		String autoScreenshotFullPath = this.formatter.generateFilenameForAutomaticScreenshot(baseFileName);
+		String autoScreenshotFullPath = this.formatter
+				.generateFilenameForAutomaticScreenshot(baseFileName);
 		Boolean internal = Boolean.valueOf(true);
 		if (null != this.callbackNotifier) {
 			String pathFile = this.formatter.generateFilenameForAutomaticScreenshot("WaitTimeout");
@@ -326,7 +329,8 @@ public class LoggingCommandProcessor implements CommandProcessor {
 		return this.seleniumTestMetrics.getFailedCommands() > 0L;
 	}
 
-	public void setCallbackNotifier(LoggingNotifier callbackLoggingNotifier, Object callbackLoggingInstance) {
+	public void setCallbackNotifier(LoggingNotifier callbackLoggingNotifier,
+			Object callbackLoggingInstance) {
 		this.callbackNotifier = callbackLoggingNotifier;
 		this.callbackInstance = callbackLoggingInstance;
 	}

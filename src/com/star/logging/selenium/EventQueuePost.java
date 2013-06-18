@@ -17,7 +17,8 @@ public class EventQueuePost {
 	}
 
 	void formatAndOutputCommand(LoggingBean loggingBean) {
-		if (SeleniumExtensions.COMMAND_EXTENSION_LOG_COMMENT.getName().equals(loggingBean.getCommandName())) {
+		if (SeleniumExtensions.COMMAND_EXTENSION_LOG_COMMENT.getName().equals(
+				loggingBean.getCommandName())) {
 			this.formatter.commentLogEvent(loggingBean);
 			return;
 		}
@@ -89,10 +90,11 @@ public class EventQueuePost {
 		this.formatter.footerLogEvent();
 	}
 
-	void postProcessMethod(boolean completeMethodResult, LoggingBean currentLoggingBean, String currentMethod) {
+	void postProcessMethod(boolean completeMethodResult, LoggingBean currentLoggingBean,
+			String currentMethod) {
 		currentLoggingBean.setCommandSuccessful(completeMethodResult);
-		currentLoggingBean.setArgs(new String[] { "executing " + currentLoggingBean.getCallingClass() + "::"
-				+ currentMethod });
+		currentLoggingBean.setArgs(new String[] { "executing "
+				+ currentLoggingBean.getCallingClass() + "::" + currentMethod });
 		this.formatter.methodLogEvent(currentLoggingBean);
 	}
 

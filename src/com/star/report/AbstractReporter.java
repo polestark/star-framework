@@ -36,13 +36,12 @@ import com.star.report.ReportNGException;
 import com.star.report.ReportNGUtils;
 
 /****************************************************************************************
- * Convenient base class for the ReportNG reporters. Provides commmon
- * functionality.
+ * Convenient base class for the ReportNG reporters. Provides commmon functionality.
  * 
  * @author Daniel Dyer
  ****************************************************************************************/
 public abstract class AbstractReporter implements IReporter {
-	
+
 	private static final String ENCODING = "UTF-8";
 	private static final String META_KEY = "meta";
 	protected static final String TEMPLATE_EXTENSION = ".vm";
@@ -61,7 +60,8 @@ public abstract class AbstractReporter implements IReporter {
 	 ****************************************************************************************/
 	protected AbstractReporter(String classpathPrefix) {
 		this.classpathPrefix = classpathPrefix;
-		ENGINE.setProperty("runtime.log.logsystem.class", "org.apache.velocity.runtime.log.NullLogSystem");
+		ENGINE.setProperty("runtime.log.logsystem.class",
+				"org.apache.velocity.runtime.log.NullLogSystem");
 		ENGINE.setProperty("runtime.log.invalid.references", true);
 		ENGINE.setProperty("resource.loader", "classpath");
 		ENGINE.setProperty("classpath.resource.loader.class",
@@ -74,8 +74,8 @@ public abstract class AbstractReporter implements IReporter {
 	}
 
 	/****************************************************************************************
-	 * Helper method that creates a Velocity context and initialises it with a
-	 * reference to the ReportNG utils, report metadata and localised messages.
+	 * Helper method that creates a Velocity context and initialises it with a reference to the
+	 * ReportNG utils, report metadata and localised messages.
 	 * 
 	 * @return An initialised Velocity context.
 	 ****************************************************************************************/
@@ -88,12 +88,13 @@ public abstract class AbstractReporter implements IReporter {
 	}
 
 	/****************************************************************************************
-	 * Generate the specified output file by merging the specified Velocity Engine
-	 * template with the supplied context.
+	 * Generate the specified output file by merging the specified Velocity Engine template with the
+	 * supplied context.
 	 * 
-	 * @throws	Exception
+	 * @throws Exception
 	 ****************************************************************************************/
-	protected void generateFile(File file, String templateName, VelocityContext context) throws Exception {
+	protected void generateFile(File file, String templateName, VelocityContext context)
+			throws Exception {
 		OutputStream out = new FileOutputStream(file);
 		Writer writer = new BufferedWriter(new OutputStreamWriter(out, "utf-8"));
 		try {
@@ -112,8 +113,8 @@ public abstract class AbstractReporter implements IReporter {
 	 * @param targetFileName The name of the file created in {@literal outputDirectory}.
 	 * @throws IOException If the resource cannot be copied.
 	 ****************************************************************************************/
-	protected void copyClasspathResource(File outputDirectory, String resourceName, String targetFileName)
-			throws IOException {
+	protected void copyClasspathResource(File outputDirectory, String resourceName,
+			String targetFileName) throws IOException {
 		String resourcePath = classpathPrefix + resourceName;
 		InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
 		copyStream(outputDirectory, resourceStream, targetFileName);
@@ -127,7 +128,8 @@ public abstract class AbstractReporter implements IReporter {
 	 * @param targetFileName The name of the file created in {@literal outputDirectory}.
 	 * @throws IOException If the file cannot be copied.
 	 ****************************************************************************************/
-	protected void copyFile(File outputDirectory, File sourceFile, String targetFileName) throws IOException {
+	protected void copyFile(File outputDirectory, File sourceFile, String targetFileName)
+			throws IOException {
 		InputStream fileStream = new FileInputStream(sourceFile);
 		try {
 			copyStream(outputDirectory, fileStream, targetFileName);
@@ -151,7 +153,8 @@ public abstract class AbstractReporter implements IReporter {
 		Writer writer = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(stream, ENCODING));
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(resourceFile), ENCODING));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(resourceFile),
+					ENCODING));
 
 			String line = reader.readLine();
 			while (line != null) {
@@ -171,11 +174,10 @@ public abstract class AbstractReporter implements IReporter {
 	}
 
 	/****************************************************************************************
-	 * Deletes any empty directories under the output directory. These
-	 * directories are created by TestNG for its own reports regardless of
-	 * whether those reports are generated. If you are using the default TestNG
-	 * reports as well as ReportNG, these directories will not be empty and will
-	 * be retained. Otherwise they will be removed.
+	 * Deletes any empty directories under the output directory. These directories are created by
+	 * TestNG for its own reports regardless of whether those reports are generated. If you are
+	 * using the default TestNG reports as well as ReportNG, these directories will not be empty and
+	 * will be retained. Otherwise they will be removed.
 	 * 
 	 * @param outputDirectory The directory to search for empty directories.
 	 ****************************************************************************************/

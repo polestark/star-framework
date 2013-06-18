@@ -37,7 +37,7 @@ import com.star.report.ReportNGException;
  * @author Daniel Dyer
  ****************************************************************************************/
 public class JUnitXMLReporter extends AbstractReporter {
-	
+
 	private static final String RESULTS_KEY = "results";
 	private static final String TEMPLATES_PATH = "com/star/report/templates/xml/";
 	private static final String RESULTS_FILE = "results.xml";
@@ -48,13 +48,14 @@ public class JUnitXMLReporter extends AbstractReporter {
 	}
 
 	/****************************************************************************************
-	 * Generates a set of XML files (JUnit format) that contain data about the
-	 * outcome of the specified test suites.
+	 * Generates a set of XML files (JUnit format) that contain data about the outcome of the
+	 * specified test suites.
 	 * 
 	 * @param suites Data about the test runs.
 	 * @param outputDirectoryName The directory in which to create the report.
 	 ****************************************************************************************/
-	public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectoryName) {
+	public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
+			String outputDirectoryName) {
 		removeEmptyDirectories(new File(outputDirectoryName));
 
 		File outputDirectory = new File(outputDirectoryName, REPORT_DIRECTORY);
@@ -67,9 +68,8 @@ public class JUnitXMLReporter extends AbstractReporter {
 			context.put(RESULTS_KEY, results);
 
 			try {
-				generateFile(
-						new File(outputDirectory, results.getTestClass().getName() + '_' + RESULTS_FILE),
-						RESULTS_FILE + TEMPLATE_EXTENSION, context);
+				generateFile(new File(outputDirectory, results.getTestClass().getName() + '_'
+						+ RESULTS_FILE), RESULTS_FILE + TEMPLATE_EXTENSION, context);
 			} catch (Exception ex) {
 				throw new ReportNGException("Failed generating JUnit XML report.", ex);
 			}
@@ -77,18 +77,20 @@ public class JUnitXMLReporter extends AbstractReporter {
 	}
 
 	/****************************************************************************************
-	 * Flatten a list of test suite results into a collection of results grouped
-	 * by test class. This method basically strips away the TestNG way of
-	 * organising tests and arranges the results by test class.
+	 * Flatten a list of test suite results into a collection of results grouped by test class. This
+	 * method basically strips away the TestNG way of organising tests and arranges the results by
+	 * test class.
 	 ****************************************************************************************/
 	private Collection<TestClassResults> flattenResults(List<ISuite> suites) {
 		Map<IClass, TestClassResults> flattenedResults = new HashMap<IClass, TestClassResults>();
 		for (ISuite suite : suites) {
 			for (ISuiteResult suiteResult : suite.getResults().values()) {
-				/*organiseByClass(suiteResult.getTestContext().getFailedConfigurations().getAllResults(),
-						flattenedResults);*/
-				organiseByClass(suiteResult.getTestContext().getSkippedConfigurations().getAllResults(),
-						flattenedResults);
+				/*
+				 * organiseByClass(suiteResult.getTestContext().
+				 * getFailedConfigurations().getAllResults(), flattenedResults);
+				 */
+				organiseByClass(suiteResult.getTestContext().getSkippedConfigurations()
+						.getAllResults(), flattenedResults);
 				organiseByClass(suiteResult.getTestContext().getFailedTests().getAllResults(),
 						flattenedResults);
 				organiseByClass(suiteResult.getTestContext().getSkippedTests().getAllResults(),
@@ -100,7 +102,8 @@ public class JUnitXMLReporter extends AbstractReporter {
 		return flattenedResults.values();
 	}
 
-	private void organiseByClass(Set<ITestResult> testResults, Map<IClass, TestClassResults> flattenedResults) {
+	private void organiseByClass(Set<ITestResult> testResults,
+			Map<IClass, TestClassResults> flattenedResults) {
 		for (ITestResult testResult : testResults) {
 			getResultsForClass(flattenedResults, testResult).addResult(testResult);
 		}
@@ -120,8 +123,8 @@ public class JUnitXMLReporter extends AbstractReporter {
 	}
 
 	/****************************************************************************************
-	 * Groups together all of the data about the tests results from the methods
-	 * of a single test class.
+	 * Groups together all of the data about the tests results from the methods of a single test
+	 * class.
 	 ****************************************************************************************/
 	public static final class TestClassResults {
 		private final IClass testClass;

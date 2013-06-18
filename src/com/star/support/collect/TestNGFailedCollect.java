@@ -18,18 +18,19 @@ import com.star.logging.frame.LoggingManager;
 
 public class TestNGFailedCollect {
 
-	private static final LoggingManager LOG = new LoggingManager(TestNGFailedCollect.class.getName());
+	private static final LoggingManager LOG = new LoggingManager(
+			TestNGFailedCollect.class.getName());
 	private static final String FAILS = "(failed)";
 	private static final String ENCODE = "UTF-8";
-	private static final String REPORT = "./report/"; 
-	private static final String TASK = "./task/"; 
-	
-	public static void main(String[] args) throws Exception{
+	private static final String REPORT = "./report/";
+	private static final String TASK = "./task/";
+
+	public static void main(String[] args) throws Exception {
 		modiXMLDocument(args[0]);
 	}
-	
-	public static void modiXMLDocument(String taskName) throws Exception{
-		if (!taskName.contains("/") && !taskName.contains("\\")){
+
+	public static void modiXMLDocument(String taskName) throws Exception {
+		if (!taskName.contains("/") && !taskName.contains("\\")) {
 			taskName = TASK + taskName;
 		}
 		modiXMLDocument(taskName, REPORT + "testng-failed.xml", REPORT + "失败重跑.xml");
@@ -41,23 +42,24 @@ public class TestNGFailedCollect {
 	 * @param taskName path and name of the testng task file to be parsed.
 	 * @param failName path and name of the testng-run-failed file to be parsed.
 	 * @param outName path and name of the new created xml file for rerun.
-	 * @throws Exception 
+	 * @throws Exception
 	 * 
 	 * @throws RuntimeException
 	 **/
-	public static void modiXMLDocument(String taskName, String failName, String outName) throws Exception {		
-		if (! new File(taskName).exists()){
+	public static void modiXMLDocument(String taskName, String failName, String outName)
+			throws Exception {
+		if (!new File(taskName).exists()) {
 			throw new RuntimeException("the TestNG task file 【 " + taskName + "】 does not exist!");
 		}
-		
-		if (! new File(failName).exists()){
+
+		if (!new File(failName).exists()) {
 			System.out.println("the TestNG run failed file 【 " + failName + "】 does not exist!");
 			return;
 		}
-		
-		final String xmlContent = readXMLDocument(taskName);		
+
+		final String xmlContent = readXMLDocument(taskName);
 		final List<String> failList = readTestNGFailed(failName);
-		
+
 		try {
 			org.dom4j.Document document = DocumentHelper.parseText(xmlContent);
 			OutputFormat format = OutputFormat.createPrettyPrint();
@@ -74,7 +76,7 @@ public class TestNGFailedCollect {
 				equals = true;
 				for (int j = 0; j < failList.size(); j++) {
 					equals = (testName.equals(failList.get(j)));
-					if (equals){
+					if (equals) {
 						break;
 					}
 				}
@@ -115,7 +117,7 @@ public class TestNGFailedCollect {
 			return new String(buff.toByteArray(), "UTF-8");
 		} catch (Exception e) {
 			LOG.error(e, "XML read failed:");
-			throw new RuntimeException("XML read failed:" + e.getMessage());			
+			throw new RuntimeException("XML read failed:" + e.getMessage());
 		}
 	}
 
@@ -124,9 +126,9 @@ public class TestNGFailedCollect {
 	 * 
 	 * @param fileName path and name of the file to be read.
 	 * @return the failed tests' name List.
-	 * @throws Exception 
+	 * @throws Exception
 	 **/
-	private static List<String> readTestNGFailed(String fileName) throws Exception{
+	private static List<String> readTestNGFailed(String fileName) throws Exception {
 		Document document = new ReadXMLDocument().loadXMLDocument(fileName);
 		NodeList nodeList = document.getElementsByTagName("test");
 		String nodeValue = null;
@@ -134,7 +136,7 @@ public class TestNGFailedCollect {
 
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			nodeValue = nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue();
-			if (nodeValue != null){
+			if (nodeValue != null) {
 				resList.add(nodeValue.replace(FAILS, "").trim());
 			}
 		}

@@ -22,16 +22,19 @@ public final class LoggingAssert {
 		}
 	}
 
-	public static void assertEquals(String message, Object expected, Object actual, LoggingSelenium selenium) {
+	public static void assertEquals(String message, Object expected, Object actual,
+			LoggingSelenium selenium) {
 		try {
 			Assert.assertEquals(message, expected, actual);
 		} catch (AssertionError e) {
-			selenium.logAssertion("assertEquals", message, "expected=" + expected + " actual=" + actual);
+			selenium.logAssertion("assertEquals", message, "expected=" + expected + " actual="
+					+ actual);
 			throw e;
 		}
 	}
 
-	public static <T> void assertThat(String message, T actual, Matcher<T> matcher, LoggingSelenium selenium) {
+	public static <T> void assertThat(String message, T actual, Matcher<T> matcher,
+			LoggingSelenium selenium) {
 		try {
 			Assert.assertSame(message, actual, matcher);
 		} catch (AssertionError e) {

@@ -83,13 +83,14 @@ public class HTMLReporter extends AbstractReporter {
 	}
 
 	/****************************************************************************************
-	 * Generates a set of HTML files that contain data about the outcome of the
-	 * specified test suites.
+	 * Generates a set of HTML files that contain data about the outcome of the specified test
+	 * suites.
 	 * 
 	 * @param suites Data about the test runs.
 	 * @param outputDirectoryName The directory in which to create the report.
 	 ****************************************************************************************/
-	public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectoryName) {
+	public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
+			String outputDirectoryName) {
 		removeEmptyDirectories(new File(outputDirectoryName));
 
 		boolean useFrames = System.getProperty(FRAMES_PROPERTY, "true").equals("true");
@@ -119,10 +120,12 @@ public class HTMLReporter extends AbstractReporter {
 	 ****************************************************************************************/
 	private void createFrameset(File outputDirectory) throws Exception {
 		VelocityContext context = createContext();
-		generateFile(new File(outputDirectory, INDEX_FILE), INDEX_FILE + TEMPLATE_EXTENSION, context);
+		generateFile(new File(outputDirectory, INDEX_FILE), INDEX_FILE + TEMPLATE_EXTENSION,
+				context);
 	}
 
-	private void createOverview(List<ISuite> suites, File outputDirectory, boolean isIndex) throws Exception {
+	private void createOverview(List<ISuite> suites, File outputDirectory, boolean isIndex)
+			throws Exception {
 		VelocityContext context = createContext();
 		context.put(SUITES_KEY, suites);
 		generateFile(new File(outputDirectory, isIndex ? INDEX_FILE : OVERVIEW_FILE), OVERVIEW_FILE
@@ -137,7 +140,8 @@ public class HTMLReporter extends AbstractReporter {
 	private void createSuiteList(List<ISuite> suites, File outputDirectory) throws Exception {
 		VelocityContext context = createContext();
 		context.put(SUITES_KEY, suites);
-		generateFile(new File(outputDirectory, SUITES_FILE), SUITES_FILE + TEMPLATE_EXTENSION, context);
+		generateFile(new File(outputDirectory, SUITES_FILE), SUITES_FILE + TEMPLATE_EXTENSION,
+				context);
 	}
 
 	/****************************************************************************************
@@ -156,11 +160,15 @@ public class HTMLReporter extends AbstractReporter {
 						.getFailedConfigurations()));
 				context.put(SKIPPED_CONFIG_KEY, sortByTestClass(result.getTestContext()
 						.getSkippedConfigurations()));
-				context.put(FAILED_TESTS_KEY, sortByTestClass(result.getTestContext().getFailedTests()));
-				context.put(SKIPPED_TESTS_KEY, sortByTestClass(result.getTestContext().getSkippedTests()));
-				context.put(PASSED_TESTS_KEY, sortByTestClass(result.getTestContext().getPassedTests()));
+				context.put(FAILED_TESTS_KEY, sortByTestClass(result.getTestContext()
+						.getFailedTests()));
+				context.put(SKIPPED_TESTS_KEY, sortByTestClass(result.getTestContext()
+						.getSkippedTests()));
+				context.put(PASSED_TESTS_KEY, sortByTestClass(result.getTestContext()
+						.getPassedTests()));
 				String fileName = String.format("suite%d_test%d_%s", index, index2, RESULTS_FILE);
-				generateFile(new File(outputDirectory, fileName), RESULTS_FILE + TEMPLATE_EXTENSION, context);
+				generateFile(new File(outputDirectory, fileName),
+						RESULTS_FILE + TEMPLATE_EXTENSION, context);
 				++index2;
 			}
 			++index;
@@ -177,8 +185,8 @@ public class HTMLReporter extends AbstractReporter {
 				context.put(SUITE_KEY, suite);
 				context.put(METHODS_KEY, methods);
 				String fileName = String.format("suite%d_%s", index, CHRONOLOGY_FILE);
-				generateFile(new File(outputDirectory, fileName), CHRONOLOGY_FILE + TEMPLATE_EXTENSION,
-						context);
+				generateFile(new File(outputDirectory, fileName), CHRONOLOGY_FILE
+						+ TEMPLATE_EXTENSION, context);
 			}
 			++index;
 		}
@@ -213,13 +221,15 @@ public class HTMLReporter extends AbstractReporter {
 	private void createGroups(List<ISuite> suites, File outputDirectory) throws Exception {
 		int index = 1;
 		for (ISuite suite : suites) {
-			SortedMap<String, SortedSet<ITestNGMethod>> groups = sortGroups(suite.getMethodsByGroups());
+			SortedMap<String, SortedSet<ITestNGMethod>> groups = sortGroups(suite
+					.getMethodsByGroups());
 			if (!groups.isEmpty()) {
 				VelocityContext context = createContext();
 				context.put(SUITE_KEY, suite);
 				context.put(GROUPS_KEY, groups);
 				String fileName = String.format("suite%d_%s", index, GROUPS_FILE);
-				generateFile(new File(outputDirectory, fileName), GROUPS_FILE + TEMPLATE_EXTENSION, context);
+				generateFile(new File(outputDirectory, fileName), GROUPS_FILE + TEMPLATE_EXTENSION,
+						context);
 			}
 			++index;
 		}
@@ -233,14 +243,14 @@ public class HTMLReporter extends AbstractReporter {
 	private void createLog(File outputDirectory) throws Exception {
 		if (!Reporter.getOutput().isEmpty()) {
 			VelocityContext context = createContext();
-			generateFile(new File(outputDirectory, OUTPUT_FILE), OUTPUT_FILE + TEMPLATE_EXTENSION, context);
+			generateFile(new File(outputDirectory, OUTPUT_FILE), OUTPUT_FILE + TEMPLATE_EXTENSION,
+					context);
 		}
 	}
 
 	/****************************************************************************************
-	 * Sorts groups alphabetically and also sorts methods within groups
-	 * alphabetically (class name first, then method name). Also eliminates
-	 * duplicate entries.
+	 * Sorts groups alphabetically and also sorts methods within groups alphabetically (class name
+	 * first, then method name). Also eliminates duplicate entries.
 	 ****************************************************************************************/
 	private SortedMap<String, SortedSet<ITestNGMethod>> sortGroups(
 			Map<String, Collection<ITestNGMethod>> groups) {
@@ -254,8 +264,7 @@ public class HTMLReporter extends AbstractReporter {
 	}
 
 	/****************************************************************************************
-	 * Reads the CSS and JavaScript files from the JAR file and writes them to
-	 * the output directory.
+	 * Reads the CSS and JavaScript files from the JAR file and writes them to the output directory.
 	 * 
 	 * @param outputDirectory Where to put the resources.
 	 * @throws IOException If the resources can't be read or written.

@@ -38,7 +38,7 @@ public class SeleniumController {
 	protected static final ParseProperties CONFIG = new ParseProperties("config/config.properties");
 	protected static final String ROOT_DIR = System.getProperty("user.dir");
 	protected static final String LOG_DIR = ROOT_DIR + "/log/";
-	
+
 	private static BufferedWriter bufferWriter;
 	private static ResultsFormatter lresFormatter;
 	private static HttpCommandProcessor hcmdProcessor;
@@ -54,10 +54,10 @@ public class SeleniumController {
 	/**
 	 * create LoggingSelenium instance.
 	 * 
-	 * @param 	resName result file name to write logs
-	 * @param 	port the server prot to start selenium servers
-	 * @return 	LoggingSelenium instance
-	 * @throws	RuntimeException
+	 * @param resName result file name to write logs
+	 * @param port the server prot to start selenium servers
+	 * @return LoggingSelenium instance
+	 * @throws RuntimeException
 	 */
 	protected LoggingSelenium getSelenium(String resName, String port) {
 		LoggingDefaultSelenium lSelenium = null;
@@ -69,7 +69,8 @@ public class SeleniumController {
 			lresFormatter = new HtmlResultFormatter(bufferWriter, ENCODING);
 			lresFormatter.setScreenShotBaseUri("");
 			lresFormatter.setAutomaticScreenshotPath(LOG_DIR);
-			hcmdProcessor = new HttpCommandProcessor(SERVERIP, Integer.parseInt(port), RBROWSER, SETUPURL);
+			hcmdProcessor = new HttpCommandProcessor(SERVERIP, Integer.parseInt(port), RBROWSER,
+					SETUPURL);
 			lcmdProcessor = new LoggingCommandProcessor(hcmdProcessor, lresFormatter);
 			lSelenium = new LoggingDefaultSelenium(lcmdProcessor);
 		} catch (Exception e) {
@@ -84,7 +85,7 @@ public class SeleniumController {
 	 * 
 	 * @param portList the list of port can be used as selenium servers
 	 * @param className the testcase's class name running to use this server
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	protected void startServer(String portList, String className) {
 		String portStr[] = portList.split(";");
@@ -95,10 +96,10 @@ public class SeleniumController {
 				RCC.setSingleWindow(false);
 				RCC.setEnsureCleanSession(true);
 				RCC.setReuseBrowserSessions(false);
-				if (!Boolean.parseBoolean(CLOSETXT)){
+				if (!Boolean.parseBoolean(CLOSETXT)) {
 					RCC.setDontTouchLogging(false);
 					RCC.setBrowserSideLogEnabled(true);
-					RCC.setLogOutFileName(distinctName(LOG_DIR, className, ".log"));					
+					RCC.setLogOutFileName(distinctName(LOG_DIR, className, ".log"));
 				}
 				RCC.setTrustAllSSLCertificates(true);
 				server = new SeleniumServer(false, RCC);
@@ -118,7 +119,7 @@ public class SeleniumController {
 	/**
 	 * wait milli seconds.
 	 * 
-	 * @param	millis time to wait, in millisecond
+	 * @param millis time to wait, in millisecond
 	 */
 	protected void pause(long millis) {
 		try {
@@ -131,7 +132,7 @@ public class SeleniumController {
 	/**
 	 * start selenium.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	protected void startSelenium() {
 		try {
@@ -148,7 +149,7 @@ public class SeleniumController {
 	/**
 	 * close selenium opened browser session.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	protected void closeSelenium() {
 		if (hcmdProcessor != null) {
@@ -159,7 +160,7 @@ public class SeleniumController {
 	/**
 	 * stop selenium
 	 * 
-	 * @throws	SeleniumException
+	 * @throws SeleniumException
 	 */
 	protected void stopSelenium() {
 		if (selenium != null) {
@@ -170,7 +171,7 @@ public class SeleniumController {
 	/**
 	 * stop the selenium server
 	 * 
-	 * @throws	SeleniumException
+	 * @throws SeleniumException
 	 */
 	protected void stopServer() {
 		if (server != null) {
@@ -178,20 +179,19 @@ public class SeleniumController {
 		}
 	}
 
-
 	/**
 	 * test initialize: start selenium-server, create log bufferwriter
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
-	public void testCunstruction(String testClassName){
+	public void testCunstruction(String testClassName) {
 		startServer(SERVPORT, testClassName);
 	}
 
 	/**
 	 * test clear: stop selenium,close log bufferwriter, stop selenium-server.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	public void testTermination() {
 		closeSelenium();

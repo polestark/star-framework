@@ -21,20 +21,20 @@ public class ParseProperties {
 	/**
 	 * construct with parameter intialize
 	 * 
-	 * @param	filePath whole path and name of config file
-	 * @throws	RuntimeException
+	 * @param filePath whole path and name of config file
+	 * @throws RuntimeException
 	 **/
-	public ParseProperties(String filePath) {		
-		if (filePath == null){
+	public ParseProperties(String filePath) {
+		if (filePath == null) {
 			throw new RuntimeException("the parameter can not be null!");
 		}
-		
+
 		String env = "";
 		Properties property = System.getProperties();
-		if (property.containsKey(ENV)){
+		if (property.containsKey(ENV)) {
 			env = "_" + property.getProperty(ENV).toLowerCase();
 		}
-		
+
 		if (filePath.toLowerCase().endsWith("config.properties")) {
 			this.fileName = "config/config" + env + ".properties";
 		} else {
@@ -46,18 +46,18 @@ public class ParseProperties {
 	/**
 	 * get specified key in config files
 	 * 
-	 * @param	key the key name to get value
-	 * @throws	RuntimeException
+	 * @param key the key name to get value
+	 * @throws RuntimeException
 	 **/
 	public String get(String key) {
 		String keyValue = null;
 		Properties properties = new Properties();
-		try{
+		try {
 			if (!file.exists()) {
 				throw new FileNotFoundException("the config file [" + fileName + "] not exist!");
 			}
 			properties.load(new FileInputStream(file));
-		}catch(Exception e){
+		} catch (Exception e) {
 			throw new RuntimeException("load properties failed:" + e.getMessage());
 		}
 		if (properties.containsKey(key)) {

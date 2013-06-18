@@ -18,49 +18,52 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class WebDriverTable{
-	
+public class WebDriverTable {
+
 	private By tabBy = null;
 	private WebElement table = null;
 	private List<WebElement> tabRows = null;
 	private List<WebElement> tables = null;
-	
+
 	/**
 	 * construct with parameters initialize.
 	 * 
-	 * @param	driver the WebDriver instance.
-	 * @param	tabFinder the By locator of the table.
-	 * @param	bodyOrHead choice of table body and head to operate.
+	 * @param driver the WebDriver instance.
+	 * @param tabFinder the By locator of the table.
+	 * @param bodyOrHead choice of table body and head to operate.
 	 */
-	public WebDriverTable(WebDriver driver, By tabFinder, String bodyOrHead){
+	public WebDriverTable(WebDriver driver, By tabFinder, String bodyOrHead) {
 		this.tabBy = tabFinder;
 		this.tables = driver.findElements(tabBy);
-		if (null == tables || tables.size() == 0){
+		if (null == tables || tables.size() == 0) {
 			throw new NoSuchElementException("the table " + tabFinder.toString() + "was not found!");
 		}
 		this.table = tables.get(0);
-		this.tabRows = table.findElements(By.tagName(bodyOrHead)).get(0).findElements(By.tagName("tr"));
-		if (null == tabRows || tabRows.size() == 0){
-			throw new InvalidElementStateException("the table " + tabFinder.toString() + "is empty!");
+		this.tabRows = table.findElements(By.tagName(bodyOrHead)).get(0)
+				.findElements(By.tagName("tr"));
+		if (null == tabRows || tabRows.size() == 0) {
+			throw new InvalidElementStateException("the table " + tabFinder.toString()
+					+ "is empty!");
 		}
 	}
-	
+
 	/**
 	 * construct with parameters initialize.
 	 * 
-	 * @param	driver the WebDriver instance.
-	 * @param	tabFinder the By locator of the table.
+	 * @param driver the WebDriver instance.
+	 * @param tabFinder the By locator of the table.
 	 */
-	public WebDriverTable(WebDriver driver, By tabFinder){
+	public WebDriverTable(WebDriver driver, By tabFinder) {
 		this.tabBy = tabFinder;
 		this.tables = driver.findElements(tabBy);
-		if (null == tables || tables.size() == 0){
+		if (null == tables || tables.size() == 0) {
 			throw new NoSuchElementException("the table " + tabFinder.toString() + "was not found!");
 		}
 		this.table = tables.get(0);
 		this.tabRows = table.findElements(By.xpath("*/tr"));
-		if (null == tabRows || tabRows.size() == 0){
-			throw new InvalidElementStateException("the table " + tabFinder.toString() + "is empty!");
+		if (null == tabRows || tabRows.size() == 0) {
+			throw new InvalidElementStateException("the table " + tabFinder.toString()
+					+ "is empty!");
 		}
 	}
 
@@ -69,7 +72,7 @@ public class WebDriverTable{
 	 * 
 	 * @return the table element.
 	 */
-	public WebElement tableElement(){
+	public WebElement tableElement() {
 		return this.table;
 	}
 
@@ -78,7 +81,7 @@ public class WebDriverTable{
 	 * 
 	 * @return the first table head element.
 	 */
-	public WebElement tableHeader(){
+	public WebElement tableHeader() {
 		return this.table.findElements(By.tagName("thead")).get(0);
 	}
 
@@ -87,10 +90,10 @@ public class WebDriverTable{
 	 * 
 	 * @return the first table body element.
 	 */
-	public WebElement tableBody(){
+	public WebElement tableBody() {
 		return this.table.findElements(By.tagName("tbody")).get(0);
 	}
-	
+
 	/**
 	 * get row count of a webtable.
 	 * 
@@ -121,8 +124,8 @@ public class WebDriverTable{
 	 */
 	public WebElement childItem(int row, int col, String type, int index) {
 		List<WebElement> cells = tabRows.get(row - 1).findElements(By.xpath("td"));
-		return (type.contains("cell"))? cells.get(col - 1):
-				childsGetter(cells.get(col - 1), type).get(index - 1);
+		return (type.contains("cell")) ? cells.get(col - 1)
+				: childsGetter(cells.get(col - 1), type).get(index - 1);
 	}
 
 	/**
@@ -137,14 +140,14 @@ public class WebDriverTable{
 	}
 
 	/**
-	 * button/edit/checkbox are using the same html tag "input", others may be the same.</BR>
-	 * this method will get the WebElements List accord the user element classes.
+	 * button/edit/checkbox are using the same html tag "input", others may be the same.</BR> this
+	 * method will get the WebElements List accord the user element classes.
 	 * 
 	 * @param father the father element to get childs.
 	 * @param elementClass link/button/edit/checkbox/image/list and so on.
-	 * @return	the WebElements List.
+	 * @return the WebElements List.
 	 */
-	private List<WebElement> childsGetter(WebElement father, String elementClass){
+	private List<WebElement> childsGetter(WebElement father, String elementClass) {
 		return father.findElements(By.tagName(elementTagGetter(elementClass)));
 	}
 
@@ -154,22 +157,22 @@ public class WebDriverTable{
 	 * @param elementType link/button/edit/checkbox/image/list and so on.
 	 * @throws IllegalArgumentException.
 	 */
-	private String elementTagGetter(String elementType){
-		if (elementType.toLowerCase().trim().contains("link")){
+	private String elementTagGetter(String elementType) {
+		if (elementType.toLowerCase().trim().contains("link")) {
 			return "a";
-		}else if(elementType.toLowerCase().trim().contains("button")){
+		} else if (elementType.toLowerCase().trim().contains("button")) {
 			return "input";
-		}else if(elementType.toLowerCase().trim().contains("edit")){
+		} else if (elementType.toLowerCase().trim().contains("edit")) {
 			return "input";
-		}else if(elementType.toLowerCase().trim().contains("checkbox")){
+		} else if (elementType.toLowerCase().trim().contains("checkbox")) {
 			return "input";
-		}else if(elementType.toLowerCase().trim().contains("image")){
+		} else if (elementType.toLowerCase().trim().contains("image")) {
 			return "img";
-		}else if(elementType.toLowerCase().trim().contains("list")){
+		} else if (elementType.toLowerCase().trim().contains("list")) {
 			return "select";
-		}else if(elementType.toLowerCase().trim().contains("text")){
+		} else if (elementType.toLowerCase().trim().contains("text")) {
 			return "textarea";
-		}else{
+		} else {
 			return elementType.toLowerCase();
 		}
 	}

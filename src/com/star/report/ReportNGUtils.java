@@ -33,8 +33,7 @@ import org.testng.ITestResult;
 import org.testng.Reporter;
 
 /****************************************************************************************
- * Utility class that provides various helper methods that can be invoked from a
- * Velocity template.
+ * Utility class that provides various helper methods that can be invoked from a Velocity template.
  * 
  * @author Daniel Dyer
  ****************************************************************************************/
@@ -108,8 +107,8 @@ public class ReportNGUtils {
 	}
 
 	/****************************************************************************************
-	 * Retieves the output from all calls to
-	 * {@link org.testng.Reporter#log(String)} across all tests.
+	 * Retieves the output from all calls to {@link org.testng.Reporter#log(String)} across all
+	 * tests.
 	 * 
 	 * @return A (possibly empty) list of log messages.
 	 ****************************************************************************************/
@@ -131,8 +130,8 @@ public class ReportNGUtils {
 	}
 
 	/****************************************************************************************
-	 * Decorate the string representation of an argument to give some hint as to
-	 * its type (e.g. render Strings in double quotes).
+	 * Decorate the string representation of an argument to give some hint as to its type (e.g.
+	 * render Strings in double quotes).
 	 * 
 	 * @param argument The argument to render.
 	 * @return The string representation of the argument.
@@ -158,8 +157,8 @@ public class ReportNGUtils {
 	}
 
 	/****************************************************************************************
-	 * @return A comma-separated string listing all dependent groups. Returns an
-	 *         empty string it there are no dependent groups.
+	 * @return A comma-separated string listing all dependent groups. Returns an empty string it
+	 *         there are no dependent groups.
 	 ****************************************************************************************/
 	public String getDependentGroups(ITestResult result) {
 		String[] groups = result.getMethod().getGroupsDependedUpon();
@@ -175,8 +174,8 @@ public class ReportNGUtils {
 	}
 
 	/****************************************************************************************
-	 * @return A comma-separated string listing all dependent methods. Returns
-	 *         an empty string it there are no dependent methods.
+	 * @return A comma-separated string listing all dependent methods. Returns an empty string it
+	 *         there are no dependent methods.
 	 ****************************************************************************************/
 	public String getDependentMethods(ITestResult result) {
 		String[] methods = result.getMethod().getMethodsDependedUpon();
@@ -207,10 +206,9 @@ public class ReportNGUtils {
 	}
 
 	/****************************************************************************************
-	 * Replace any angle brackets, quotes, apostrophes or ampersands with the
-	 * corresponding XML/HTML entities to avoid problems displaying the String
-	 * in an XML document. Assumes that the String does not already contain any
-	 * entities (otherwise the ampersands will be escaped again).
+	 * Replace any angle brackets, quotes, apostrophes or ampersands with the corresponding XML/HTML
+	 * entities to avoid problems displaying the String in an XML document. Assumes that the String
+	 * does not already contain any entities (otherwise the ampersands will be escaped again).
 	 * 
 	 * @param s The String to escape.
 	 * @return The escaped String.
@@ -228,12 +226,12 @@ public class ReportNGUtils {
 	}
 
 	/****************************************************************************************
-	 * Converts a char into a String that can be inserted into an XML document,
-	 * replacing special characters with XML entities as required.
+	 * Converts a char into a String that can be inserted into an XML document, replacing special
+	 * characters with XML entities as required.
 	 * 
 	 * @param character The character to convert.
-	 * @return An XML entity representing the character (or a String containing
-	 *         just the character if it does not need to be escaped).
+	 * @return An XML entity representing the character (or a String containing just the character
+	 *         if it does not need to be escaped).
 	 ****************************************************************************************/
 	private String escapeChar(char character) {
 		switch (character) {
@@ -253,8 +251,8 @@ public class ReportNGUtils {
 	}
 
 	/****************************************************************************************
-	 * Works like {@link #escapeString(String)} but also replaces line breaks
-	 * with &lt;br /&gt; tags and preserves significant whitespace.
+	 * Works like {@link #escapeString(String)} but also replaces line breaks with &lt;br /&gt; tags
+	 * and preserves significant whitespace.
 	 * 
 	 * @param s The String to escape.
 	 * @return The escaped String.
@@ -283,10 +281,9 @@ public class ReportNGUtils {
 	}
 
 	/****************************************************************************************
-	 * TestNG returns a compound thread ID that includes the thread name and its
-	 * numeric ID, separated by an 'at' sign. We only want to use the thread
-	 * name as the ID is mostly unimportant and it takes up too much space in
-	 * the generated report.
+	 * TestNG returns a compound thread ID that includes the thread name and its numeric ID,
+	 * separated by an 'at' sign. We only want to use the thread name as the ID is mostly
+	 * unimportant and it takes up too much space in the generated report.
 	 * 
 	 * @param threadId The compound thread ID.
 	 * @return The thread name.
@@ -319,8 +316,7 @@ public class ReportNGUtils {
 		for (ITestNGMethod m : methods) {
 			if (m == method) {
 				found = true;
-			}
-			else if (found && m.getId().equals(method.getId())) {
+			} else if (found && m.getId().equals(method.getId())) {
 				return m.getDate();
 			}
 		}
@@ -328,9 +324,8 @@ public class ReportNGUtils {
 	}
 
 	/****************************************************************************************
-	 * Returns the timestamp for the time at which the suite finished executing.
-	 * This is determined by finding the latest end time for each of the
-	 * individual tests in the suite.
+	 * Returns the timestamp for the time at which the suite finished executing. This is determined
+	 * by finding the latest end time for each of the individual tests in the suite.
 	 * 
 	 * @param suite The suite to find the end time of.
 	 * @return The end time (as a number of milliseconds since 00:00 1st January 1970 UTC).

@@ -33,25 +33,25 @@ public class DataBaseUtils {
 	/**
 	 * construct with initialize database choose operation.
 	 * 
-	 * @param	dbChoice	the db choice set in your config
+	 * @param dbChoice the db choice set in your config
 	 **/
 	public DataBaseUtils(String dbChoice) {
 		this.choice = dbChoice;
 	}
-	
-	public void setConnectMode(String mode){
+
+	public void setConnectMode(String mode) {
 		this.connectMode = mode;
 	}
 
-	public void setTimeBuffer(int timeout){
-		this.timeBuffer = timeout;		
+	public void setTimeBuffer(int timeout) {
+		this.timeBuffer = timeout;
 	}
-	
-	private void setDefaultConnectMode(){
+
+	private void setDefaultConnectMode() {
 		Properties property = System.getProperties();
-		if (property.containsValue("int")){
+		if (property.containsValue("int")) {
 			setConnectMode(DBHelper.MODE_DIRECT);
-		}else{
+		} else {
 			setConnectMode(DBHelper.MODE_PROXY);
 		}
 		dbConfig.setConnectMode(connectMode);
@@ -60,7 +60,7 @@ public class DataBaseUtils {
 	/**
 	 * create database connection.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 **/
 	private DB dbConn() {
 		try {
@@ -69,7 +69,7 @@ public class DataBaseUtils {
 			String dbDDNS = CONFIG.get(this.choice.toLowerCase() + "Dns");
 			String dbPORT = CONFIG.get(this.choice.toLowerCase() + "Port");
 			String dbDSID = CONFIG.get(this.choice.toLowerCase() + "Sid");
-			
+
 			if (null == connectMode) {
 				setDefaultConnectMode();
 			} else {
@@ -79,7 +79,7 @@ public class DataBaseUtils {
 			}
 
 			dbConfig.setWebserviceUrl(DB_PROXY);
-			return dbConfig.get(dbUSER, dbDPWD, dbDDNS, Integer.parseInt(dbPORT), dbDSID);	
+			return dbConfig.get(dbUSER, dbDPWD, dbDDNS, Integer.parseInt(dbPORT), dbDSID);
 		} catch (Exception ex) {
 			LOG.error(ex);
 			throw new RuntimeException("Create DataBase Connection Failed:" + ex.getMessage());
@@ -89,9 +89,9 @@ public class DataBaseUtils {
 	/**
 	 * put data into list use webservice.
 	 * 
-	 * @param	sql exam: "select plan_code from plan where plan_code like ? and rownum <= ?"
-	 * @param	params exam: "P055%,10"
-	 * @throws	RuntimeException
+	 * @param sql exam: "select plan_code from plan where plan_code like ? and rownum <= ?"
+	 * @param params exam: "P055%,10"
+	 * @throws RuntimeException
 	 **/
 	public List<?> queryToList(String sql, String params) {
 		String[] paraArray = null;
@@ -111,10 +111,10 @@ public class DataBaseUtils {
 	/**
 	 * put data into map use webservice.
 	 * 
-	 * @param	sql exam: "select plan_code from plan where plan_code like ? and rownum <= ?"
-	 * @param	params exam: "P055%,10"
-	 * @param	lineNum exam: 5
-	 * @throws	RuntimeException
+	 * @param sql exam: "select plan_code from plan where plan_code like ? and rownum <= ?"
+	 * @param params exam: "P055%,10"
+	 * @param lineNum exam: 5
+	 * @throws RuntimeException
 	 **/
 	public Map<?, ?> queryToMap(String sql, String params, int lineNum) {
 		Map<?, ?> dataMap = null;
@@ -129,9 +129,9 @@ public class DataBaseUtils {
 	/**
 	 * override queryToMap method use default line number 1.
 	 * 
-	 * @param	sql exam: "select plan_code from plan where plan_code like ? and rownum <= ?"
-	 * @param	params exam: "P055%,10"
-	 * @throws	RuntimeException
+	 * @param sql exam: "select plan_code from plan where plan_code like ? and rownum <= ?"
+	 * @param params exam: "P055%,10"
+	 * @throws RuntimeException
 	 **/
 	public Map<?, ?> queryToMap(String sql, String params) {
 		return queryToMap(sql, params, 1);
@@ -140,9 +140,9 @@ public class DataBaseUtils {
 	/**
 	 * execute dml(insert/delete/update)/ddl sql statement.
 	 * 
-	 * @param	sql exam: "update plan set paln_code = plan_code where plan_code like ?"
-	 * @param	params exam: "P055%"
-	 * @throws	RuntimeException
+	 * @param sql exam: "update plan set paln_code = plan_code where plan_code like ?"
+	 * @param params exam: "P055%"
+	 * @throws RuntimeException
 	 **/
 	public int execModify(String sql, String params) {
 		try {
@@ -154,14 +154,14 @@ public class DataBaseUtils {
 	}
 
 	/**
-	 * execute procedure, get output in parameter list.</BR>
-	 * exams: execProcedure("gpos_package_calculate.calc_susp_days", "iiiooo",</BR>
-	 *         "GP02000000469462,2012-01-01,2012-05-05,null,null,null");
+	 * execute procedure, get output in parameter list.</BR> exams:
+	 * execProcedure("gpos_package_calculate.calc_susp_days", "iiiooo",</BR>
+	 * "GP02000000469462,2012-01-01,2012-05-05,null,null,null");
 	 * 
-	 * @param	procName exam: package_name.procedure_name
-	 * @param	paramDesc exam: i:input, o:output; etc: "iiii" means 4 input parameters
-	 * @param	params all out parameter will be put in string typed array.
-	 * @throws	RuntimeException
+	 * @param procName exam: package_name.procedure_name
+	 * @param paramDesc exam: i:input, o:output; etc: "iiii" means 4 input parameters
+	 * @param params all out parameter will be put in string typed array.
+	 * @throws RuntimeException
 	 **/
 	public List<String> execProcedure(String procName, String paramDesc, String params) {
 		String[] paraArray = params.split(",");
@@ -183,13 +183,13 @@ public class DataBaseUtils {
 	}
 
 	/**
-	 * execute function, get output in string.</BR>
-	 * exams: execFunction("add_months", "ii", "sysdate,3")
+	 * execute function, get output in string.</BR> exams: execFunction("add_months", "ii",
+	 * "sysdate,3")
 	 * 
-	 * @param	funcName exam: add_months
-	 * @param	paramDesc exam: i:input, o:output; etc: "iiii" means 4 input parameters
-	 * @param	params out will be a string.
-	 * @throws	RuntimeException
+	 * @param funcName exam: add_months
+	 * @param paramDesc exam: i:input, o:output; etc: "iiii" means 4 input parameters
+	 * @param params out will be a string.
+	 * @throws RuntimeException
 	 **/
 	public String execFunction(String funcName, String paramDesc, String params) {
 		try {

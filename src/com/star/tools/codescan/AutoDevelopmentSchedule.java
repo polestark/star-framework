@@ -25,10 +25,10 @@ public class AutoDevelopmentSchedule {
 	private static CountTestNGTest ctt;
 	private static CountJUnitTest cjt;
 	private static StringBufferUtils str = new StringBufferUtils();
-	
+
 	private static final String time = str.formatedTime("yyyy-MM-dd");
 	private static final String workRoot = "D:\\03_test_develop\\";
-	
+
 	private static int countNatualClass = 0;
 	private static int countTestClass = 0;
 	private static int countTestMethod = 0;
@@ -40,7 +40,8 @@ public class AutoDevelopmentSchedule {
 		tws.setReadCharSet("UTF-8");
 		String fileName = "D:\\02_自动化测试管理\\养老险健康险测试案例汇总" + time + ".xls";
 		String collectFile = workRoot + "TestNG_Test_List.csv";
-		reader = new BufferedReader(new InputStreamReader(new FileInputStream(collectFile), "ISO-8859-1"));
+		reader = new BufferedReader(new InputStreamReader(new FileInputStream(collectFile),
+				"ISO-8859-1"));
 		String line = null;
 		int index = 1;
 
@@ -85,17 +86,17 @@ public class AutoDevelopmentSchedule {
 		while (reader.ready() && null != (line = reader.readLine())) {
 			String[] lineContent = line.split(",");
 			String projectName = lineContent[0];
-			
+
 			Sheet sheetList = workbook.createSheet(projectName + "_case_list");
 			sheetList.setColumnWidth((short) 0, (short) 40000);
-			
+
 			String frameName = lineContent[1];
 			row = sheet.createRow(index);
 			String sourceFolder = workRoot + projectName + "\\src";
 			tws.fileListReset();
 			List<String> natualClasses = tws.testClassFiles(sourceFolder);
 			List<String> testClasses = tws.testClass(sourceFolder);
-			//tws.fileListReset();
+			// tws.fileListReset();
 			int classCount = testClasses.size();
 
 			int methodCount = 0;
@@ -107,41 +108,41 @@ public class AutoDevelopmentSchedule {
 			List<String> classes = null;
 			int taskTestCount = 0;
 			int taskMethodCount = 0;
-			
-			if (frameName.equalsIgnoreCase("testng")){
-				for (int i = 2; i < lineContent.length; i ++){
+
+			if (frameName.equalsIgnoreCase("testng")) {
+				for (int i = 2; i < lineContent.length; i++) {
 					ctt = new CountTestNGTest(workRoot, projectName, lineContent[i]);
 					classes = ctt.testNGClasses();
-					if (null != lineContent[i] && !lineContent[i].isEmpty() && null != classes){
+					if (null != lineContent[i] && !lineContent[i].isEmpty() && null != classes) {
 						taskClasses = str.listDistinctMerge(taskClasses, classes);
 					}
 				}
 				taskTestCount = taskClasses.size();
-				if (ctt != null){
+				if (ctt != null) {
 					ctt.clearCount();
 				}
-				for (int n = 0; n < taskTestCount; n ++){
+				for (int n = 0; n < taskTestCount; n++) {
 					String testName = taskClasses.get(n);
-					if (testName.contains("webtestunit")){
-						taskMethodCount += ctt.testNGMethods(testName, sheetList);					
+					if (testName.contains("webtestunit")) {
+						taskMethodCount += ctt.testNGMethods(testName, sheetList);
 					}
-				}				
-			}else{
-				for (int i = 2; i < lineContent.length; i ++){
+				}
+			} else {
+				for (int i = 2; i < lineContent.length; i++) {
 					cjt = new CountJUnitTest(workRoot, projectName, lineContent[i]);
 					classes = cjt.junitClasses();
-					if (null != lineContent[i] && !lineContent[i].isEmpty() && null != classes){
+					if (null != lineContent[i] && !lineContent[i].isEmpty() && null != classes) {
 						taskClasses = str.listDistinctMerge(taskClasses, classes);
 					}
 				}
 				taskTestCount = taskClasses.size();
-				if (cjt != null){
+				if (cjt != null) {
 					cjt.clearCount();
 				}
-				for (int n = 0; n < taskTestCount; n ++){
+				for (int n = 0; n < taskTestCount; n++) {
 					String testName = taskClasses.get(n);
-					if (testName.contains("webtestunit")){
-						taskMethodCount += cjt.junitMethods(testName, sheetList);					
+					if (testName.contains("webtestunit")) {
+						taskMethodCount += cjt.junitMethods(testName, sheetList);
 					}
 				}
 			}
@@ -160,14 +161,14 @@ public class AutoDevelopmentSchedule {
 			System.out.println("	run-method: " + taskMethodCount);
 			System.out.println(projectName + "未提交运行的Test:");
 			Thread.currentThread().join(100);
-			
+
 			List<String> notRunned = str.listMinus(testClasses, taskClasses);
-			if (null != notRunned && !notRunned.isEmpty()){
-				for (int x = 0; x < notRunned.size(); x ++){
+			if (null != notRunned && !notRunned.isEmpty()) {
+				for (int x = 0; x < notRunned.size(); x++) {
 					System.out.println("	" + notRunned.get(x));
-				}			
-			}else{
-				System.out.println("	****************无****************");				
+				}
+			} else {
+				System.out.println("	****************无****************");
 			}
 
 			cell = row.createCell(0);
@@ -199,8 +200,8 @@ public class AutoDevelopmentSchedule {
 			cell.setCellType(0);
 			cell.setCellValue(taskMethodCount);
 			cell.setCellStyle(cellStyle);
-			
-			index ++;
+
+			index++;
 		}
 		reader.close();
 
@@ -242,7 +243,7 @@ public class AutoDevelopmentSchedule {
 		cell.setCellType(0);
 		cell.setCellValue(countTaskMethod);
 		cell.setCellStyle(cellStyle);
-		
+
 		workbook.write(fileOut);
 		fileOut.flush();
 		fileOut.close();

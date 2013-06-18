@@ -12,9 +12,9 @@ import java.util.Random;
 import java.util.Set;
 
 public class StringBufferUtils {
-	
+
 	private static final CertificateCode CODE = new CertificateCode();
-	
+
 	/**
 	 * get current time string in specified date format.
 	 * 
@@ -95,8 +95,8 @@ public class StringBufferUtils {
 	/**
 	 * count the times for a string appears in anothor string.
 	 * 
-	 * @param	myString the string to search. 
-	 * @param	myChar the char to count in the string.
+	 * @param myString the string to search.
+	 * @param myChar the char to count in the string.
 	 */
 	public int countStrRepeat(String myString, String myChar) {
 		int count = 0, start = 0;
@@ -105,20 +105,20 @@ public class StringBufferUtils {
 			count++;
 		}
 		return count;
-	}	
-	
+	}
+
 	/**
 	 * create folders before file write, if father folder not exists.
-	 *
+	 * 
 	 * @param fileName the file to be analyzed.
 	 */
-	public void createFoldersNeeded(String fileName){
+	public void createFoldersNeeded(String fileName) {
 		String[] folders = fileName.split("\\\\");
-		String folderName = folders[0] + "\\";		
-		for (int i = 1; i < folders.length - 1; i ++){
+		String folderName = folders[0] + "\\";
+		for (int i = 1; i < folders.length - 1; i++) {
 			folderName += folders[i] + "\\";
-		}				
-		if (!new File(folderName).exists()){
+		}
+		if (!new File(folderName).exists()) {
 			new File(folderName).mkdirs();
 		}
 	}
@@ -126,7 +126,7 @@ public class StringBufferUtils {
 	/**
 	 * generate specified length string with numbers.
 	 * 
-	 * @param	lengthOfNumber the length of the number string to be created.
+	 * @param lengthOfNumber the length of the number string to be created.
 	 */
 	public String getRndNumByLen(int lengthOfNumber) {
 		int i, count = 0;
@@ -148,7 +148,7 @@ public class StringBufferUtils {
 	/**
 	 * generate specified length string with chars.
 	 * 
-	 * @param	lengthOfString the length of the string to be created. 
+	 * @param lengthOfString the length of the string to be created.
 	 */
 	public String getRndStrByLen(int lengthOfString) {
 		int i, count = 0;
@@ -169,9 +169,9 @@ public class StringBufferUtils {
 	/**
 	 * generate random number for idno.
 	 * 
-	 * @param	capCity province name or capital city name of the province.
-	 * @param	birthDay birth date of the person to get idnos.
-	 * @param	sexCode sex of the person to get idnos.
+	 * @param capCity province name or capital city name of the province.
+	 * @param birthDay birth date of the person to get idnos.
+	 * @param sexCode sex of the person to get idnos.
 	 */
 	public String getCertiCode(String capCity, String birthDay, String sexCode) {
 		return CODE.getCertiCode(capCity, birthDay, sexCode);
@@ -180,9 +180,9 @@ public class StringBufferUtils {
 	/**
 	 * generate random number for idno.
 	 * 
-	 * @param	cityCode the city code of the chinese areas.
-	 * @param	birthDay birth date of the person to get idnos.
-	 * @param	sexCode sex of the person to get idnos.
+	 * @param cityCode the city code of the chinese areas.
+	 * @param birthDay birth date of the person to get idnos.
+	 * @param sexCode sex of the person to get idnos.
 	 */
 	public String getCertiCode(int cityCode, String birthDay, String sexCode) {
 		return CODE.getCertiCode(cityCode, birthDay, sexCode);
@@ -191,9 +191,9 @@ public class StringBufferUtils {
 	/**
 	 * oracle lpad method in java.
 	 * 
-	 * @param	appointedStr original string
-	 * @param	finalLen goal length of the string
-	 * @param	fillWith chars to be filled with when string is shorter the goal length. 
+	 * @param appointedStr original string
+	 * @param finalLen goal length of the string
+	 * @param fillWith chars to be filled with when string is shorter the goal length.
 	 */
 	public String strLeftExpand(String appointedStr, int finalLen, char fillWith) {
 		return CODE.strLeftExpand(appointedStr, finalLen, fillWith);
@@ -202,9 +202,9 @@ public class StringBufferUtils {
 	/**
 	 * oracle rpad method in java.
 	 * 
-	 * @param	appointedStr original string
-	 * @param	finalLen goal length of the string
-	 * @param	fillWith chars to be filled with when string is shorter the goal length.
+	 * @param appointedStr original string
+	 * @param finalLen goal length of the string
+	 * @param fillWith chars to be filled with when string is shorter the goal length.
 	 */
 	public String strRightExpand(String appointedStr, int finalLen, char fillWith) {
 		return CODE.strRightExpand(appointedStr, finalLen, fillWith);
@@ -212,11 +212,12 @@ public class StringBufferUtils {
 
 	/**
 	 * replace element from list.
+	 * 
 	 * @param list the original list.
 	 * @param index the position to replace element.
 	 * @param newElement the new element for the list.
 	 */
-	public List<String> listElementReplace(List<String> list, int index, String newElement){
+	public List<String> listElementReplace(List<String> list, int index, String newElement) {
 		list.remove(index);
 		list.add(index, newElement);
 		return list;
@@ -224,57 +225,60 @@ public class StringBufferUtils {
 
 	/**
 	 * merge to list and drop the same element.
+	 * 
 	 * @param list1 the first list.
 	 * @param list2 the second list.
 	 * 
-	 * @return the merged and distincted list. 
+	 * @return the merged and distincted list.
 	 */
-	public List<String> listDistinctMerge(List<String> list1, List<String> list2){
+	public List<String> listDistinctMerge(List<String> list1, List<String> list2) {
 		Iterator<String> it = list2.iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			list1.add(it.next());
 		}
-		
+
 		List<String> newList = new ArrayList<String>();
 		Set<String> distinct = new HashSet<String>();
-		
+
 		for (Iterator<String> iter = list1.iterator(); iter.hasNext();) {
 			String element = iter.next();
-			if (distinct.add(element)){
+			if (distinct.add(element)) {
 				newList.add(element);
-			}else{
-				System.err.println("element: 【" + element + "】 has more than one of the same object!");
-				try{
+			} else {
+				System.err.println("element: 【" + element
+						+ "】 has more than one of the same object!");
+				try {
 					Thread.currentThread().join(100);
-				}catch(InterruptedException ie){
+				} catch (InterruptedException ie) {
 				}
 			}
 		}
-		return newList;		
+		return newList;
 	}
 
 	/**
 	 * merge to list and return element which not equals in two lists.
+	 * 
 	 * @param list1 the first list.
 	 * @param list2 the second list.
 	 * 
 	 * @return the un-same emlent list.
 	 */
-	public List<String> listMinus(List<String> list1, List<String> list2){
+	public List<String> listMinus(List<String> list1, List<String> list2) {
 		List<String> bigger;
 		List<String> smaller;
-		if(list1.size() >= list2.size()){
+		if (list1.size() >= list2.size()) {
 			bigger = list1;
 			smaller = list2;
-		}else{
+		} else {
 			bigger = list2;
-			smaller = list1;			
+			smaller = list1;
 		}
-		
+
 		Iterator<String> it = smaller.iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			bigger.remove(it.next());
 		}
-		return bigger;		
+		return bigger;
 	}
 }

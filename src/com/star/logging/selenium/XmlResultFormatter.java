@@ -10,7 +10,8 @@ import java.util.Date;
 public class XmlResultFormatter implements ResultsFormatter {
 	static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"%s\"?>\n";
 	static final String ROOT_ELEMENT = "testResult";
-	static final SimpleDateFormat FILENAME_DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
+	static final SimpleDateFormat FILENAME_DATETIME_FORMAT = new SimpleDateFormat(
+			"yyyy-MM-dd_HH-mm");
 	private Writer resultsWriter;
 	private String resultFileEncoding = "ISO-8859-1";
 	private XStream xstream;

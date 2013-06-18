@@ -20,7 +20,8 @@ public class HtmlResultFormatter implements ResultsFormatter {
 	static final String CSS_CLASS_DONE = "status_done";
 	static final String CSS_CLASS_TITLE = "title";
 	static final String TOOL_TIPP_MESSAGE_TIME_DELTA = "time delta reporting is alpha and subject to change";
-	static final SimpleDateFormat LOGGING_DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	static final SimpleDateFormat LOGGING_DATETIME_FORMAT = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss");
 	static SimpleDateFormat FILENAME_DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
 
 	String localFsPathSeparator = File.separator;
@@ -51,8 +52,9 @@ public class HtmlResultFormatter implements ResultsFormatter {
 		String[] loggingBeanArgs = LoggingUtils.getCorrectedArgsArray(loggingBean, 2, "");
 		String commentToBeLogged = loggingBeanArgs[0];
 		String additionalInformation = loggingBeanArgs[1];
-		logToWriter(MessageFormat.format("<tr class=\"{0}\"><td colspan=\"{1}\">{2}</td></tr>\n", new Object[] {
-				"title", Integer.valueOf(7), commentToBeLogged + extraInformationLogEvent(additionalInformation) }));
+		logToWriter(MessageFormat.format("<tr class=\"{0}\"><td colspan=\"{1}\">{2}</td></tr>\n",
+				new Object[] { "title", Integer.valueOf(7),
+						commentToBeLogged + extraInformationLogEvent(additionalInformation) }));
 	}
 
 	String formatMetrics(TestMetricsBean metrics) {
@@ -63,20 +65,22 @@ public class HtmlResultFormatter implements ResultsFormatter {
 
 			if (StringUtils.isNotBlank(metrics.getLastFailedCommandMessage())) {
 				failedCommandsRow = failedCommandsRow + "<tr class=\"" + "status_failed"
-						+ "\"><td>last failed message:</td><td>" + metrics.getLastFailedCommandMessage()
-						+ "</td></tr>\n";
+						+ "\"><td>last failed message:</td><td>"
+						+ metrics.getLastFailedCommandMessage() + "</td></tr>\n";
 			} else {
 				System.err.println("WARNING: NO LastFailedCommandMessage");
 			}
 		}
 		return MessageFormat
 				.format("<table border=1 cellspacing=0 cellpadding=2>\n<tr><td>test-started:</td><td>{0}</td></tr>\n<tr><td>test-finished:</td><td>{1}</td></tr>\n<tr><td>test-duration:</td><td>{2} ms</td></tr>\n<tr><td>commands-processed:</td><td>{3}</td></tr>\n<tr><td>verifications-processed:</td><td>{4}</td></tr>\n{5}\n</table>\n",
-						new Object[] { 
-								LOGGING_DATETIME_FORMAT.format(Long.valueOf(metrics.getStartTimeStamp())),
-								LOGGING_DATETIME_FORMAT.format(Long.valueOf(metrics.getEndTimeStamp())),
-								Long.valueOf(metrics.getTestDuration()), 
+						new Object[] {
+								LOGGING_DATETIME_FORMAT.format(Long.valueOf(metrics
+										.getStartTimeStamp())),
+								LOGGING_DATETIME_FORMAT.format(Long.valueOf(metrics
+										.getEndTimeStamp())),
+								Long.valueOf(metrics.getTestDuration()),
 								Long.valueOf(metrics.getCommandsProcessed()),
-								Long.valueOf(metrics.getVerificationsProcessed()), 
+								Long.valueOf(metrics.getVerificationsProcessed()),
 								failedCommandsRow });
 	}
 
@@ -103,16 +107,17 @@ public class HtmlResultFormatter implements ResultsFormatter {
 	String extraInformationLogEvent(String extraInformation) {
 		String result = "";
 		if (null != extraInformation) {
-			result = MessageFormat.format(
-					"<span style=\"font-size:9px;font-family:arial,verdana,sans-serif;\">{0}</span>",
-					new Object[] { extraInformation });
+			result = MessageFormat
+					.format("<span style=\"font-size:9px;font-family:arial,verdana,sans-serif;\">{0}</span>",
+							new Object[] { extraInformation });
 		}
 		return result;
 	}
 
 	public void commandLogEvent(LoggingBean loggingBean) {
 		if (!loggingBean.isExcludeFromLogging()) {
-			String resultClass = loggingBean.isCommandSuccessful() ? "status_done" : "status_failed";
+			String resultClass = loggingBean.isCommandSuccessful() ? "status_done"
+					: "status_failed";
 			if ("captureScreenshot".equals(loggingBean.getCommandName()))
 				logToWriter(formatScreenshot(loggingBean, resultClass));
 			else
@@ -142,9 +147,10 @@ public class HtmlResultFormatter implements ResultsFormatter {
 	}
 
 	public String generateFilenameForAutomaticScreenshot(String baseName) {
-		String constWaitTimeoutScreenshotFileName = "automatic" + baseName + "Screenshot" + timeStampForFileName()
-				+ ".png";
-		return this.automaticScreenshotPath + this.localFsPathSeparator + constWaitTimeoutScreenshotFileName;
+		String constWaitTimeoutScreenshotFileName = "automatic" + baseName + "Screenshot"
+				+ timeStampForFileName() + ".png";
+		return this.automaticScreenshotPath + this.localFsPathSeparator
+				+ constWaitTimeoutScreenshotFileName;
 	}
 
 	public String getAutomaticScreenshotPath() {
@@ -158,17 +164,17 @@ public class HtmlResultFormatter implements ResultsFormatter {
 	String formatScreenshot(LoggingBean loggingBean, String resultClass) {
 		return MessageFormat
 				.format("<tr class=\"{0}\"><td colspan=\"{1}\" valign=\"center\" align=\"center\" halign=\"center\">{2}</td><td>{3}</td><td>{4}</td></tr>\n",
-						new Object[] { resultClass, 
-								Integer.valueOf(5),
+						new Object[] { resultClass, Integer.valueOf(5),
 								formatScreenshotFileImgTag(loggingBean.getArgs()[0]),
-								Long.valueOf(loggingBean.getDeltaMillis()), 
+								Long.valueOf(loggingBean.getDeltaMillis()),
 								loggingBean.getCallingClass() });
 	}
 
 	String formatScreenshotFileImgTag(String absFsPathToScreenshot) {
-		String screenshotPathNormalized = absFsPathToScreenshot.replace(this.localFsPathSeparator, "/");
-		String screenShotName = screenshotPathNormalized.substring(screenshotPathNormalized.lastIndexOf("/")
-				+ "/".length());
+		String screenshotPathNormalized = absFsPathToScreenshot.replace(this.localFsPathSeparator,
+				"/");
+		String screenShotName = screenshotPathNormalized.substring(screenshotPathNormalized
+				.lastIndexOf("/") + "/".length());
 		String screenshotRelativeUrl;
 		if ("".equals(this.screenShotBaseUri))
 			screenshotRelativeUrl = screenShotName;
@@ -178,14 +184,15 @@ public class HtmlResultFormatter implements ResultsFormatter {
 
 		return MessageFormat
 				.format("<a href=\"{0}\"><img src=\"{1}\" width=\"{2}\" height=\"{3}\" alt=\"Selenium Screenshot\" title=\"Selenium Screenshot\"/><br/>{4}</a>",
-						new Object[] { screenshotRelativeUrl, screenshotRelativeUrl, Integer.valueOf(200),
-								Integer.valueOf(200), screenShotName });
+						new Object[] { screenshotRelativeUrl, screenshotRelativeUrl,
+								Integer.valueOf(200), Integer.valueOf(200), screenShotName });
 	}
 
 	String formatCommandAsHtml(LoggingBean loggingBean, String resultClass, String toolTippMessage) {
 		StringBuilder htmlWrappedCommand = new StringBuilder();
-		htmlWrappedCommand.append("<tr class=\"" + resultClass + "\" title=\"" + toolTippMessage + "\" alt=\""
-				+ toolTippMessage + "\">" + "<td>" + quoteHtml(loggingBean.getCommandName()) + "</td>");
+		htmlWrappedCommand.append("<tr class=\"" + resultClass + "\" title=\"" + toolTippMessage
+				+ "\" alt=\"" + toolTippMessage + "\">" + "<td>"
+				+ quoteHtml(loggingBean.getCommandName()) + "</td>");
 
 		int writtenColumns = 0;
 		if (loggingBean.getArgs() != null) {
@@ -200,8 +207,9 @@ public class HtmlResultFormatter implements ResultsFormatter {
 		htmlWrappedCommand.append("<td>" + quoteHtml(loggingBean.getSrcResult()) + "</td><td>"
 				+ quoteHtml(loggingBean.getSelResult()) + "</td><td title=\""
 				+ "time delta reporting is alpha and subject to change" + "\" alt=\""
-				+ "time delta reporting is alpha and subject to change" + "\">" + loggingBean.getDeltaMillis()
-				+ "</td><td>" + loggingBean.getCallingClass() + "</td></tr>\n");
+				+ "time delta reporting is alpha and subject to change" + "\">"
+				+ loggingBean.getDeltaMillis() + "</td><td>" + loggingBean.getCallingClass()
+				+ "</td></tr>\n");
 
 		return htmlWrappedCommand.toString();
 	}

@@ -8,16 +8,17 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import com.star.tools.ReadXMLDocument;
 
-public class CountCommitTest{
-	
+public class CountCommitTest {
+
 	private final ReadXMLDocument xml = new ReadXMLDocument();
 	private static List<String> fileList = new ArrayList<String>();
-	
+
 	/**
 	 * set the java file reading encoding.
+	 * 
 	 * @param encode the charset of the java files.
 	 */
-	public void setReadCharSet(String encode){
+	public void setReadCharSet(String encode) {
 		xml.setReadCharSet("UTF-8");
 	}
 
@@ -26,31 +27,32 @@ public class CountCommitTest{
 	 * 
 	 * @return the charset of the java files.
 	 */
-	public String getReadCharSet(){
+	public String getReadCharSet() {
 		return xml.getReadCharSet();
 	}
 
 	/**
 	 * reset static virible when use recursion method.
 	 */
-	public void fileListReset(){
+	public void fileListReset() {
 		fileList.removeAll(fileList);
 	}
-	
+
 	/**
 	 * get all java files under specified folder and put it into arraylist.
 	 * 
 	 * @param workFolder the src file folders of the project.
 	 * @throws Exception
 	 */
-	public List<String> testClassFiles(String workFolder) throws Exception{
+	public List<String> testClassFiles(String workFolder) throws Exception {
 		File file = new File(workFolder);
-		if (file.isDirectory()){
-			for (File files : file.listFiles()){
+		if (file.isDirectory()) {
+			for (File files : file.listFiles()) {
 				testClassFiles(files.getAbsolutePath());
 			}
-		}else{
-			if (file.getAbsolutePath().endsWith("java") && file.getAbsolutePath().contains("webtestunit")){
+		} else {
+			if (file.getAbsolutePath().endsWith("java")
+					&& file.getAbsolutePath().contains("webtestunit")) {
 				fileList.add(file.getAbsolutePath());
 			}
 		}
@@ -63,11 +65,11 @@ public class CountCommitTest{
 	 * @param workFolder the src file folders of the project.
 	 * @throws Exception
 	 */
-	public int countTestClass(String workFolder) throws Exception{
+	public int countTestClass(String workFolder) throws Exception {
 		return testClass(workFolder).size();
 	}
-	
-	public List<String> testClass(String workFolder) throws Exception{
+
+	public List<String> testClass(String workFolder) throws Exception {
 		String eachLine = null;
 		fileListReset();
 		String className = null;
@@ -81,7 +83,8 @@ public class CountCommitTest{
 			BufferedReader reader = new BufferedReader(isr);
 			boolean added = false;
 			while ((eachLine = reader.readLine()) != null && !added) {
-				className = file.getAbsolutePath().replace(".java", "").substring(beginIndex).replace("\\", ".");
+				className = file.getAbsolutePath().replace(".java", "").substring(beginIndex)
+						.replace("\\", ".");
 				if (eachLine.trim().indexOf("@Test") == 0) {
 					added = true;
 					tests.add(className);
@@ -100,17 +103,17 @@ public class CountCommitTest{
 	 * @param fileName java file name.
 	 * @throws Exception
 	 */
-	public int countTestMethod(String fileName) throws Exception{
+	public int countTestMethod(String fileName) throws Exception {
 		String eachLine = null;
 		int testCount = 0;
 		FileInputStream fis = new FileInputStream(new File(fileName));
 		InputStreamReader isr = new InputStreamReader(fis, getReadCharSet());
 		BufferedReader reader = new BufferedReader(isr);
-		while((eachLine = reader.readLine()) != null){
+		while ((eachLine = reader.readLine()) != null) {
 			if (eachLine.trim().indexOf("@Test") == 0) {
-				testCount ++;
+				testCount++;
 			}
-		}			
+		}
 		reader.close();
 		isr.close();
 		fis.close();

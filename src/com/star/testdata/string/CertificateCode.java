@@ -3,9 +3,9 @@ package com.star.testdata.string;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CertificateCode{
+public class CertificateCode {
 	public static Map<String, Integer> areaCode = new HashMap<String, Integer>();
-	
+
 	/**
 	 * data dictionary of area code of id cards.
 	 **/
@@ -86,9 +86,9 @@ public class CertificateCode{
 	/**
 	 * generate random number for idno.
 	 * 
-	 * @param	capCity province name or capital city name of the province.
-	 * @param	birthDay birth date of the person to get idnos.
-	 * @param	sexCode sex of the person to get idnos.
+	 * @param capCity province name or capital city name of the province.
+	 * @param birthDay birth date of the person to get idnos.
+	 * @param sexCode sex of the person to get idnos.
 	 **/
 	public String getCertiCode(String capCity, String birthDay, String sexCode) {
 		StringBuilder generater = new StringBuilder();
@@ -102,9 +102,9 @@ public class CertificateCode{
 	/**
 	 * generate random number for idno.
 	 * 
-	 * @param	cityCode the city code of the chinese areas.
-	 * @param	birthDay birth date of the person to get idnos.
-	 * @param	sexCode sex of the person to get idnos.
+	 * @param cityCode the city code of the chinese areas.
+	 * @param birthDay birth date of the person to get idnos.
+	 * @param sexCode sex of the person to get idnos.
 	 **/
 	public String getCertiCode(int cityCode, String birthDay, String sexCode) {
 		StringBuilder generater = new StringBuilder();
@@ -155,9 +155,9 @@ public class CertificateCode{
 	/**
 	 * oracle lpad method in java.
 	 * 
-	 * @param	appointedStr original string
-	 * @param	finalLen goal length of the string
-	 * @param	fillWith chars to be filled with when string is shorter the goal length. 
+	 * @param appointedStr original string
+	 * @param finalLen goal length of the string
+	 * @param fillWith chars to be filled with when string is shorter the goal length.
 	 **/
 	public String strLeftExpand(String appointedStr, int finalLen, char fillWith) {
 		String tempStr = appointedStr;
@@ -170,9 +170,9 @@ public class CertificateCode{
 	/**
 	 * oracle rpad method in java.
 	 * 
-	 * @param	appointedStr original string
-	 * @param	finalLen goal length of the string
-	 * @param	fillWith chars to be filled with when string is shorter the goal length.
+	 * @param appointedStr original string
+	 * @param finalLen goal length of the string
+	 * @param fillWith chars to be filled with when string is shorter the goal length.
 	 **/
 	public String strRightExpand(String appointedStr, int finalLen, char fillWith) {
 		String tempStr = appointedStr;

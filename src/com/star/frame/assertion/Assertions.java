@@ -6,35 +6,36 @@ import org.openqa.selenium.WebDriver;
 import com.star.tools.ReadConfiguration;
 import com.star.tools.StackTraceUtils;
 import com.star.support.externs.Win32GuiByAu3;
-import com.star.logging.webdriver.LoggingSetting;
+import com.star.logging.webdriver.HTMLLogWriter;
 
 /**
  * @author 测试仔刘毅
  */
-public class Assert4STAR {
+public class Assertions {
 	private final ReadConfiguration config = new ReadConfiguration(
 			"/com/star/core/webdriver/webdirver_config.properties");
 
 	private final String CAPTURE_MESSAGE = config.get("CAPTURE_MESSAGE");
 	private String captureTo = null;
 	private String className = null;
-	private LoggingSetting loggerHelper = null;
+	private HTMLLogWriter loggerHelper = null;
 	private boolean exitRun = true;
 	private boolean needLog = false;
-	
+
 	private StackTraceUtils stack = new StackTraceUtils();
 	private StackTraceElement[] traces;
 	private StackTraceElement trace;
-	
+
 	/**
 	 * Description: cunstruction with parameter initialize.
 	 * 
 	 * @param mdriver the webdriver object.
-	 * @param captureToPath the log path to put the screen shot files. 
+	 * @param captureToPath the log path to put the screen shot files.
 	 * @param className class name which calling this method.
 	 * @param loggerHelper the LoggerModeChoice object that used this class.
 	 */
-	public Assert4STAR(WebDriver mdriver, String captureToPath, String className, LoggingSetting loggerHelper) {
+	public Assertions(WebDriver mdriver, String captureToPath, String className,
+			HTMLLogWriter loggerHelper) {
 		this.loggerHelper = loggerHelper;
 		this.captureTo = captureToPath;
 		this.className = className;
@@ -44,35 +45,35 @@ public class Assert4STAR {
 	 * Description: cunstruction with parameter initialize.
 	 * 
 	 * @param driver the webdriver object.
-	 * @param captureToPath the log path to put the screen shot files. 
+	 * @param captureToPath the log path to put the screen shot files.
 	 * @param className class name which calling this method.
 	 */
-	public Assert4STAR(WebDriver driver, String captureToPath, String className) {
+	public Assertions(WebDriver driver, String captureToPath, String className) {
 		this(driver, captureToPath, className, null);
 	}
-	
+
 	/**
 	 * Description: set if exit on condition assert failed.
-	 *
+	 * 
 	 * @param exitOnError the bool value to decide if exit when error occured.
 	 */
-	public void setExitOnAssertFailure(boolean exitOnError){
+	public void setExitOnAssertFailure(boolean exitOnError) {
 		this.exitRun = exitOnError;
 	}
-	
+
 	/**
 	 * Description: set if your want to record log after assert passed.
-	 *
+	 * 
 	 * @param needRecord if set true, it will record log after assert passed.
 	 */
-	public void setRecordOnSucceed(boolean needRecord){
+	public void setRecordOnSucceed(boolean needRecord) {
 		this.needLog = needRecord;
 	}
-	
+
 	/**
 	 * Description:record log when assert passed.
 	 */
-	private void recordMessageAfterAssertion(String status, String message){
+	private void recordAfterAssertion(String status, String message) {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 		int first = 3, last = 3;
 		String mtdName = trace[first].getMethodName();
@@ -88,75 +89,76 @@ public class Assert4STAR {
 		map.put("method", mtdName);
 		map.put("status", status);
 		map.put("message", message);
-		map.put("classname", cName);
-		loggerHelper.LogWrite(map);
+		map.put("class_name", cName);
+		loggerHelper.logWrite(map);
 	}
-	
+
 	/**
 	 * Description:record log when assert passed.
 	 */
-	private void recordSuccessAfterAssertion(){
-		if (needLog && null != loggerHelper){
-			recordMessageAfterAssertion("passed", "assert passed!");
+	private void recordSuccessAfterAssertion() {
+		if (needLog && null != loggerHelper) {
+			recordAfterAssertion("passed", "assert passed!");
 		}
 	}
-	
+
 	/**
 	 * Description:throw RuntimeException has been caught that stops the test run.
-	 *
+	 * 
 	 * @param exception the Exception object been caught.
 	 */
-	private void exitOnAssertionError(AssertionError exception){
-		if (exitRun){
+	private void exitOnAssertionError(AssertionError exception) {
+		if (exitRun) {
 			throw new RuntimeException(exception);
-		}				
+		}
 	}
-	
+
 	/**
 	 * Description: throw user defined RuntimeException that stops the test run.
-	 *
+	 * 
 	 * @param message the user defined message to be recorded.
 	 */
-	private void exitOnAssertionError(String message){
-		if (exitRun){
+	private void exitOnAssertionError(String message) {
+		if (exitRun) {
 			throw new RuntimeException(message);
 		}
 	}
 
 	/**
 	 * Description: take screen shot by remotewebdriver.
-	 *
+	 * 
 	 * @throws Exception
 	 */
-	private void screenShotOnAssertionError(Throwable e){
+	private void screenShotOnAssertionError(Throwable e) {
 		String time = String.valueOf(System.currentTimeMillis());
 		String fileName = captureTo + className + "_assertion_" + time + ".png";
-		//未为RemoteWebDriver重新实现TakeScreenShot，故无法使用默认的截图
+		// 未为RemoteWebDriver重新实现TakeScreenShot，故无法使用默认的截图
 		new Win32GuiByAu3().screenCapture(fileName);
-		if (null != loggerHelper){
-			recordMessageAfterAssertion("failed", "assert " + CAPTURE_MESSAGE + " [" + fileName + "]");
+		if (null != loggerHelper) {
+			recordAfterAssertion("failed", "assert " + CAPTURE_MESSAGE + " [" + fileName + "]");
 		}
 	}
-	
+
 	/**
 	 * Description: print error message on console.
-	 *
+	 * 
 	 * @param exception the Throwables.
 	 */
 	private void consolePrintOnError(Throwable exception) {
 		traces = exception.getStackTrace();
 		trace = traces[stack.getTraceClassLevel(traces)];
-		String info = trace.getClassName() + ", method: " + trace.getMethodName() + ", line: " + trace.getLineNumber();
+		String info = trace.getClassName() + ", method: " + trace.getMethodName() + ", line: "
+				+ trace.getLineNumber();
 		System.err.println("Assert failed: \n" + info);
 	}
-	
+
 	/**
 	 * Description: to do something when assert failed.
-	 *
+	 * 
 	 * @param ae the AssertionError.
 	 * @param message user defined messages.
 	 */
-	private void handleOnAssertError(AssertionError ae, String message){
+	private void handleOnAssertError(AssertionError ae, String message) {
 		screenShotOnAssertionError(ae);
 		consolePrintOnError(ae);
 		if (null == message) {
@@ -169,7 +171,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertTrue method.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param condition the condition to be judged.
 	 */
@@ -184,7 +186,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertTrue method.
-	 *
+	 * 
 	 * @param condition the condition to be judged.
 	 */
 	public void assertTrue(Boolean condition) {
@@ -193,7 +195,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertFalse method.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param condition the condition to be judged.
 	 */
@@ -203,7 +205,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertFalse method.
-	 *
+	 * 
 	 * @param condition the condition to be judged.
 	 */
 	public void assertFalse(Boolean condition) {
@@ -212,7 +214,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertNull method.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param object the object to be judged if is null.
 	 */
@@ -222,7 +224,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertNull method.
-	 *
+	 * 
 	 * @param object the object to be judged if is null.
 	 */
 	public void assertNull(Object object) {
@@ -231,7 +233,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertNotNull method.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param object the object to be judged if is null.
 	 */
@@ -241,7 +243,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertNotNull method.
-	 *
+	 * 
 	 * @param object the object to be judged if is null.
 	 */
 	public void assertNotNull(Object object) {
@@ -250,7 +252,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertSame method.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected object.
 	 * @param actual the actual object.
@@ -266,7 +268,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertSame method.
-	 *
+	 * 
 	 * @param expected the expected object.
 	 * @param actual the actual object.
 	 */
@@ -276,7 +278,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertNotSame method.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected object.
 	 * @param actual the actual object.
@@ -292,7 +294,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertNotSame method.
-	 *
+	 * 
 	 * @param expected the expected object.
 	 * @param actual the actual object.
 	 */
@@ -302,7 +304,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected object.
 	 * @param actual the actual object.
@@ -318,7 +320,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method.
-	 *
+	 * 
 	 * @param expected the expected object.
 	 * @param actual the actual object.
 	 */
@@ -328,7 +330,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for string type value compare.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected value.
 	 * @param actual the actual value.
@@ -344,7 +346,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for string type value compare.
-	 *
+	 * 
 	 * @param expected the expected value.
 	 * @param actual the actual value.
 	 */
@@ -354,7 +356,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for double type value compare.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected value.
 	 * @param actual the actual value.
@@ -371,7 +373,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for double type value compare.
-	 *
+	 * 
 	 * @param expected the expected value.
 	 * @param actual the actual value.
 	 * @param delta the delta value for compare.
@@ -382,7 +384,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for float type value compare.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected value.
 	 * @param actual the actual value.
@@ -399,7 +401,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for float type value compare.
-	 *
+	 * 
 	 * @param expected the expected value.
 	 * @param actual the actual value.
 	 * @param delta the delta value for compare.
@@ -410,7 +412,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for long type value compare.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected value.
 	 * @param actual the actual value.
@@ -421,7 +423,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for long type value compare.
-	 *
+	 * 
 	 * @param expected the expected value.
 	 * @param actual the actual value.
 	 */
@@ -431,7 +433,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for bool type value compare.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected value.
 	 * @param actual the actual value.
@@ -442,7 +444,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for bool type value compare.
-	 *
+	 * 
 	 * @param expected the expected value.
 	 * @param actual the actual value.
 	 */
@@ -452,7 +454,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for byte type value compare.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected value.
 	 * @param actual the actual value.
@@ -463,7 +465,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for byte type value compare.
-	 *
+	 * 
 	 * @param expected the expected value.
 	 * @param actual the actual value.
 	 */
@@ -473,7 +475,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for char type value compare.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected value.
 	 * @param actual the actual value.
@@ -484,7 +486,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for char type value compare.
-	 *
+	 * 
 	 * @param expected the expected value.
 	 * @param actual the actual value.
 	 */
@@ -494,7 +496,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for short type value compare.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected value.
 	 * @param actual the actual value.
@@ -505,7 +507,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for short type value compare.
-	 *
+	 * 
 	 * @param expected the expected value.
 	 * @param actual the actual value.
 	 */
@@ -515,7 +517,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for int type value compare.
-	 *
+	 * 
 	 * @param message user defined error message to throw in Exception.
 	 * @param expected the expected value.
 	 * @param actual the actual value.
@@ -526,7 +528,7 @@ public class Assert4STAR {
 
 	/**
 	 * Description: JUnit/TestNG assertEquals method for int type value compare.
-	 *
+	 * 
 	 * @param expected the expected value.
 	 * @param actual the actual value.
 	 */

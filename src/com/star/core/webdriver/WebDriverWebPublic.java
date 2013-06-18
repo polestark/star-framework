@@ -30,8 +30,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected static WebDriverTable webTable = null;
 
 	/**
-	 * execute js functions to do something</BR>
-	 * 使用remote webdriver执行JS函数。
+	 * execute js functions to do something</BR> 使用remote webdriver执行JS函数。
 	 * 
 	 * @param js js function string
 	 * @param report text content to be reported
@@ -43,30 +42,27 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * execute js functions to do something</BR>
-	 * 使用remote webdriver执行JS函数。
+	 * execute js functions to do something</BR> 使用remote webdriver执行JS函数。
 	 * 
 	 * @param js js function string
 	 * @param report text content to be reported
 	 */
-	protected void jsExecutor(String js, String report){
-		((JavascriptExecutor)driver).executeScript(js);
+	protected void jsExecutor(String js, String report) {
+		((JavascriptExecutor) driver).executeScript(js);
 		pass(report);
 	}
 
 	/**
-	 * get some value from js functions.</BR>
-	 * 使用remote webdriver执行JS函数并且获得返回值。
+	 * get some value from js functions.</BR> 使用remote webdriver执行JS函数并且获得返回值。
 	 * 
 	 * @param js js function string
 	 */
-	protected Object jsReturner(String js){
-		return ((JavascriptExecutor)driver).executeScript(js);
+	protected Object jsReturner(String js) {
+		return ((JavascriptExecutor) driver).executeScript(js);
 	}
 
 	/**
-	 * take a screen shot and save the file by path and name</BR>
-	 * 网页截图操作，按照指定的文件名称保存快照文件。
+	 * take a screen shot and save the file by path and name</BR> 网页截图操作，按照指定的文件名称保存快照文件。
 	 * 
 	 * @param fileName the file path&name of the screenshot to be saved
 	 */
@@ -86,8 +82,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the alert is existing</BR>
-	 * 判断弹出的对话框（Dialog）是否存在。
+	 * judge if the alert is existing</BR> 判断弹出的对话框（Dialog）是否存在。
 	 */
 	protected boolean alertExists() {
 		try {
@@ -99,8 +94,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the alert is present in specified seconds</BR>
-	 * 在指定的时间内判断弹出的对话框（Dialog）是否存在。
+	 * judge if the alert is present in specified seconds</BR> 在指定的时间内判断弹出的对话框（Dialog）是否存在。
 	 * 
 	 * @param seconds timeout in seconds
 	 */
@@ -117,22 +111,20 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * judge if the element is existing</BR>
-	 * 判断指定的对象是否存在。
+	 * judge if the element is existing</BR> 判断指定的对象是否存在。
 	 * 
 	 * @param by the element locator By
 	 */
 	protected boolean elementExists(By by) {
 		try {
 			return (findElements(by).size() > 0) ? true : false;
-		} catch(NoSuchElementException ne){
+		} catch (NoSuchElementException ne) {
 			return false;
 		}
 	}
 
 	/**
-	 * judge if the element is present in specified seconds</BR>
-	 * 在指定的时间内判断指定的对象是否存在。
+	 * judge if the element is present in specified seconds</BR> 在指定的时间内判断指定的对象是否存在。
 	 * 
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
@@ -182,10 +174,9 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * refresh current browser page by url re-navigate</BR>
-	 * 通过当前页面URL跳转的方式重新加载当前页面。
+	 * refresh current browser page by url re-navigate</BR> 通过当前页面URL跳转的方式重新加载当前页面。
 	 */
-	protected void browserRefresh(){
+	protected void browserRefresh() {
 		driver.navigate().to(driver.getCurrentUrl());
 		tableRefresh();
 	}
@@ -207,25 +198,23 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * maximize browser window: support ie, ff3.6 and lower</BR>
-	 * 网页窗口最大化操作。
+	 * maximize browser window: support ie, ff3.6 and lower</BR> 网页窗口最大化操作。
 	 */
 	protected void maximizeWindow() {
 		windowMaximize();
-		//jsExecutor(JScriptCollection.MAXIMIZE_WINDOW.getValue(), "current window maximized");
+		// jsExecutor(JScriptCollection.MAXIMIZE_WINDOW.getValue(),
+		// "current window maximized");
 	}
 
 	/**
-	 * maximize browser window</BR>
-	 * 网页窗口最大化操作。
+	 * maximize browser window</BR> 网页窗口最大化操作。
 	 */
 	protected void windowMaximize() {
 		driver.manage().window().maximize();
 	}
 
 	/**
-	 * select default window and default frame</BR>
-	 * 在当前页面中自动选择默认的页面框架（frame）。
+	 * select default window and default frame</BR> 在当前页面中自动选择默认的页面框架（frame）。
 	 */
 	protected void selectDefaultWindowFrame() {
 		driver.switchTo().defaultContent();
@@ -233,8 +222,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to active element</BR>
-	 * 在当前操作的页面和对象时自动选择已被激活的对象。
+	 * switch to active element</BR> 在当前操作的页面和对象时自动选择已被激活的对象。
 	 */
 	protected void focusOnActiveElement() {
 		driver.switchTo().activeElement();
@@ -242,8 +230,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to new window supporting, by deleting first hanlder</BR>
-	 * 选择最新弹出的窗口，需要预存第一个窗口的handle。
+	 * switch to new window supporting, by deleting first hanlder</BR> 选择最新弹出的窗口，需要预存第一个窗口的handle。
 	 * 
 	 * @param firstHandle the first window handle
 	 */
@@ -270,8 +257,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected void selectNewWindow(Set<String> originalHandles) {
 		Set<String> newHandles = driver.getWindowHandles();
 		Iterator<String> olds = originalHandles.iterator();
-		while(olds.hasNext()){
-			newHandles.remove(olds.next());			
+		while (olds.hasNext()) {
+			newHandles.remove(olds.next());
 		}
 		Iterator<String> news = newHandles.iterator();
 		while (news.hasNext()) {
@@ -282,8 +269,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to window by title</BR>
-	 * 按照网页标题选择窗口，标题内容需要全部匹配。
+	 * switch to window by title</BR> 按照网页标题选择窗口，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window to be switched to
 	 */
@@ -304,40 +290,38 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * switch to window by title</BR>
-	 * 按照网页标题选择窗口，标题内容需要全部匹配，超时未出现则报错。
+	 * switch to window by title</BR> 按照网页标题选择窗口，标题内容需要全部匹配，超时未出现则报错。
 	 * 
 	 * @param windowTitle the title of the window to be switched to.
 	 * @param timeout time to wait for the window appears, unit of seconds.
 	 */
 	protected void selectWindowWithTimeout(String windowTitle, int timeout) {
-		ASSERT.assertTrue("window is not present after " + timeout + "seconds!", 
+		ASSERT.assertTrue("window is not present after " + timeout + "seconds!",
 				browserExists(windowTitle, timeout));
 		selectWindow(windowTitle);
 	}
-	
+
 	/**
 	 * switch to parent window when child was closed unexpectly.</BR>
 	 * 在打开的子窗口被意外（被动、非工具预期的行为）关闭之后，切换回父窗口。
-	 *
+	 * 
 	 * @param handles handles set when child windows are still alive.
 	 * @param childHandle child window whitch to be closed.
 	 * @param parentHandle the parent handle of windows.
 	 */
-	protected void selectParentWindow(Set<String> handles, String childHandle, String parentHandle){
-		if (!handles.toString().contains(childHandle) || !handles.toString().contains(parentHandle)){
+	protected void selectParentWindow(Set<String> handles, String childHandle, String parentHandle) {
+		if (!handles.toString().contains(childHandle) || !handles.toString().contains(parentHandle)) {
 			throw new IllegalArgumentException("you are using the wrong parameters!");
 		}
 		handles.remove(childHandle);
 		driver.switchTo().window(parentHandle);
 		waitForAlertDisappear(5);
 	}
-	
+
 	/**
-	 * Description: switch to a window handle that exists now.</BR>
-	 * 切换到一个存在句柄（或者说当前还存在的）的窗口。
+	 * Description: switch to a window handle that exists now.</BR> 切换到一个存在句柄（或者说当前还存在的）的窗口。
 	 */
-	protected void selectExistWindow(){
+	protected void selectExistWindow() {
 		Set<String> windowHandles = driver.getWindowHandles();
 		windowHandles = clearHandleCache(windowHandles);
 		String exist_0 = windowHandles.toArray()[0].toString();
@@ -413,8 +397,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * close windows except specified window hanlde, by string full pattern</BR>
-	 * 关闭除了指定句柄之外的所有窗口。
+	 * close windows except specified window hanlde, by string full pattern</BR> 关闭除了指定句柄之外的所有窗口。
 	 * 
 	 * @param windowHandle the hanlde of the window not to be closed.
 	 */
@@ -431,14 +414,13 @@ public class WebDriverWebPublic extends WebDriverController {
 		driver.switchTo().window(windowHandle);
 		pass("all windows closed except handle [ " + windowHandle + " ]");
 	}
-	
+
 	/**
-	 * Description: clear error handles does not actruely.</BR>
-	 * 清理掉实际上并不存在的窗口句柄缓存。
-	 *
+	 * Description: clear error handles does not actruely.</BR> 清理掉实际上并不存在的窗口句柄缓存。
+	 * 
 	 * @param windowHandles the window handles Set.
 	 */
-	private Set<String> clearHandleCache(Set<String> windowHandles){
+	private Set<String> clearHandleCache(Set<String> windowHandles) {
 		List<String> errors = new ArrayList<String>();
 		for (String handle : windowHandles) {
 			try {
@@ -449,7 +431,7 @@ public class WebDriverWebPublic extends WebDriverController {
 				consoleError("window handle " + handle + " does not exist acturely!");
 			}
 		}
-		for (int i = 0; i < errors.size(); i ++){
+		for (int i = 0; i < errors.size(); i++) {
 			windowHandles.remove(errors.get(i));
 		}
 		return windowHandles;
@@ -460,7 +442,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * 关闭除了指定标题页面之外的所有窗口，例外窗口如果重名，按照指定的重名顺序关闭，标题内容需要全部匹配。
 	 * 
 	 * @param windowTitle the title of the window not to be closed
-	 * @param index the index of the window to keep shared the same title with others, begins with 1.
+	 * @param index the index of the window to keep shared the same title with others, begins with
+	 *            1.
 	 */
 	protected void closeWindowExcept(String windowTitle, int index) {
 		Set<String> windowHandles = driver.getWindowHandles();
@@ -487,8 +470,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for new window which has no title in few seconds</BR>
-	 * 判断在指定的时间内是否有新的窗口弹出，无论其是否有标题。
+	 * wait for new window which has no title in few seconds</BR> 判断在指定的时间内是否有新的窗口弹出，无论其是否有标题。
 	 * 
 	 * @param browserCount windows count before new window appears.
 	 * @param seconds time unit in seconds.
@@ -506,8 +488,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for new window which has no title in few seconds</BR>
-	 * 判断在指定的时间内是否有新的窗口弹出，无论其是否有标题。
+	 * wait for new window which has no title in few seconds</BR> 判断在指定的时间内是否有新的窗口弹出，无论其是否有标题。
 	 * 
 	 * @param oldHandles windows handle Set before new window appears.
 	 * @param seconds time unit in seconds.
@@ -525,8 +506,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by index</BR>
-	 * 按照序号选择框架（frame）。
+	 * select a frame by index</BR> 按照序号选择框架（frame）。
 	 * 
 	 * @param index the index of the frame to select
 	 */
@@ -536,8 +516,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by name or id</BR>
-	 * 按照名称或者ID选择框架（frame）。
+	 * select a frame by name or id</BR> 按照名称或者ID选择框架（frame）。
 	 * 
 	 * @param nameOrId the name or id of the frame to select
 	 */
@@ -547,8 +526,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by frameElement</BR>
-	 * 按照框架对象本身选择框架（frame）。
+	 * select a frame by frameElement</BR> 按照框架对象本身选择框架（frame）。
 	 * 
 	 * @param frameElement the frame element to select
 	 */
@@ -558,8 +536,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by frame element locator: By</BR>
-	 * 按照指定的元素定位方式选择框架（frame）。
+	 * select a frame by frame element locator: By</BR> 按照指定的元素定位方式选择框架（frame）。
 	 * 
 	 * @param by the frame element locator
 	 */
@@ -581,8 +558,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select a frame by frame element locator: By.</BR>
-	 * 按照指定的元素定位方式选择框架（frame），在指定时间内frame不存在则报错。
+	 * select a frame by frame element locator: By.</BR> 按照指定的元素定位方式选择框架（frame），在指定时间内frame不存在则报错。
 	 * 
 	 * @param by the frame element locator.
 	 * @param timeout time to wait for the frame available, unit of seconds.
@@ -594,8 +570,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * edit a content editable iframe</BR>
-	 * 编辑指定框架（frame）内的最直接展示文本内容。
+	 * edit a content editable iframe</BR> 编辑指定框架（frame）内的最直接展示文本内容。
 	 * 
 	 * @param by the frame element locaotr
 	 * @param text the text string to be input
@@ -607,15 +582,14 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the get method, adding user defined log</BR>
-	 * 地址跳转方法，使用WebDriver原生get方法，加入失败重试的次数定义。
+	 * rewrite the get method, adding user defined log</BR> 地址跳转方法，使用WebDriver原生get方法，加入失败重试的次数定义。
 	 * 
 	 * @param url the url you want to open.
 	 * @param actionCount retry times when load timeout occuers.
 	 */
 	protected void get(String url, int actionCount) {
-		for (int i = 0; i < actionCount; i ++){
-			if (i == 0){
+		for (int i = 0; i < actionCount; i++) {
+			if (i == 0) {
 				setPageLoadTimeout(30);
 			}
 			try {
@@ -623,15 +597,14 @@ public class WebDriverWebPublic extends WebDriverController {
 				pass("navigate to url [ " + url + " ]");
 				return;
 			} catch (TimeoutException e) {
-			} finally{
-				setPageLoadTimeout(maxLoadTime);				
+			} finally {
+				setPageLoadTimeout(maxLoadTime);
 			}
 		}
 	}
 
 	/**
-	 * rewrite the get method, adding user defined log</BR>
-	 * 地址跳转方法，使用WebDriver原生get方法，默认加载超重试【1】次。
+	 * rewrite the get method, adding user defined log</BR> 地址跳转方法，使用WebDriver原生get方法，默认加载超重试【1】次。
 	 * 
 	 * @param url the url you want to open.
 	 */
@@ -640,39 +613,35 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * navigate to some where by url</BR>
-	 * 地址跳转方法，与WebDriver原生navigate.to方法内容完全一致。
+	 * navigate to some where by url</BR> 地址跳转方法，与WebDriver原生navigate.to方法内容完全一致。
 	 * 
 	 * @param url the url you want to open
 	 */
-	protected void navigateTo(String url){
+	protected void navigateTo(String url) {
 		driver.navigate().to(url);
 		pass("navigate to url [ " + url + " ]");
 	}
 
 	/**
-	 * navigate back</BR>
-	 * 地址跳转方法，与WebDriver原生navigate.back方法内容完全一致。
+	 * navigate back</BR> 地址跳转方法，与WebDriver原生navigate.back方法内容完全一致。
 	 * 
 	 * @throws RuntimeException
 	 */
-	protected void navigateBack(){
+	protected void navigateBack() {
 		driver.navigate().back();
 		pass("navigate back");
 	}
 
 	/**
-	 * navigate forward</BR>
-	 * 地址跳转方法，与WebDriver原生navigate.forward方法内容完全一致。
+	 * navigate forward</BR> 地址跳转方法，与WebDriver原生navigate.forward方法内容完全一致。
 	 */
-	protected void navigateForward(){
+	protected void navigateForward() {
 		driver.navigate().forward();
 		pass("navigate forward");
 	}
 
 	/**
-	 * rewrite the click method, adding user defined log</BR>
-	 * 在等到对象可见之后点击指定的对象。
+	 * rewrite the click method, adding user defined log</BR> 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param element the WebElement you want to click.
 	 */
@@ -683,8 +652,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the click method, click on the element to be find by By</BR>
-	 * 在等到对象可见之后点击指定的对象。
+	 * rewrite the click method, click on the element to be find by By</BR> 在等到对象可见之后点击指定的对象。
 	 * 
 	 * @param by the locator you want to find the element.
 	 */
@@ -695,8 +663,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * forcely click, by executing javascript</BR>
-	 * 在等到对象可见之后点击指定的对象，使用JavaScript执行的方式去操作，</BR>
+	 * forcely click, by executing javascript</BR> 在等到对象可见之后点击指定的对象，使用JavaScript执行的方式去操作，</BR>
 	 * 这种方法使用过后一般需要调用一次selectDefaultWindowFrame以确保运行稳定。
 	 * 
 	 * @param element the webelement you want to operate
@@ -707,21 +674,19 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * forcely click, by executing javascript</BR>
-	 * 在等到对象可见之后点击指定的对象，使用JavaScript执行的方式去操作，</BR>
+	 * forcely click, by executing javascript</BR> 在等到对象可见之后点击指定的对象，使用JavaScript执行的方式去操作，</BR>
 	 * 这种方法使用过后一般需要调用一次selectDefaultWindowFrame以确保运行稳定。
 	 * 
 	 * @param by the locator you want to find the element
 	 */
 	protected void clickByJavaScript(By by) {
 		waitForElementVisible(by, maxWaitfor);
-		jsExecutor(JScriptCollection.CLICK_BY_JAVASCRIPT.getValue(), 
+		jsExecutor(JScriptCollection.CLICK_BY_JAVASCRIPT.getValue(),
 				"click on element [ " + by.toString() + " ] ", findElement(by));
 	}
 
 	/**
-	 * doubleclick on the element to be find by By</BR>
-	 * 在等到对象可见之后双击指定的对象.
+	 * doubleclick on the element to be find by By</BR> 在等到对象可见之后双击指定的对象.
 	 * 
 	 * @param element the webelement you want to operate
 	 */
@@ -733,8 +698,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * doubleclick on the element</BR>
-	 * 在等到对象可见之后双击指定的对象.
+	 * doubleclick on the element</BR> 在等到对象可见之后双击指定的对象.
 	 * 
 	 * @param by the locator you want to find the element
 	 */
@@ -746,8 +710,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * right click on the element to be find by By</BR>
-	 * 在等到对象可见之后鼠标右键点击指定的对象.
+	 * right click on the element to be find by By</BR> 在等到对象可见之后鼠标右键点击指定的对象.
 	 * 
 	 * @param element the webelement you want to operate
 	 */
@@ -759,8 +722,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * right click on the element</BR>
-	 * 在等到对象可见之后鼠标右键点击指定的对象。
+	 * right click on the element</BR> 在等到对象可见之后鼠标右键点击指定的对象。
 	 * 
 	 * @param by the locator you want to find the element
 	 */
@@ -772,8 +734,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the submit method, adding user defined log</BR>
-	 * 在等到指定对象可见之后在该对象上做确认/提交的操作。
+	 * rewrite the submit method, adding user defined log</BR> 在等到指定对象可见之后在该对象上做确认/提交的操作。
 	 * 
 	 * @param element the webelement you want to operate
 	 */
@@ -796,8 +757,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the clear method, adding user defined log</BR>
-	 * 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
+	 * rewrite the clear method, adding user defined log</BR> 在等到指定对象可见之后在该对象上做清理操作，一般用于输入框和选择框。
 	 * 
 	 * @param element the webelement you want to operate
 	 */
@@ -846,8 +806,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the sendKeys method, adding user defined log</BR>
-	 * 清理指定对象中已经输入的内容重新输入，操作之前自动等待到对象可见。
+	 * rewrite the sendKeys method, adding user defined log</BR> 清理指定对象中已经输入的内容重新输入，操作之前自动等待到对象可见。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param text the text you want to input to element
@@ -875,8 +834,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * readonly text box or richtext box input</BR>
-	 * 使用DOM（Documnet Object Modal）修改页面中对象的文本属性值，使用ID定位对象则返回唯一对象，其余返回数组。
+	 * readonly text box or richtext box input</BR> 使用DOM（Documnet Object
+	 * Modal）修改页面中对象的文本属性值，使用ID定位对象则返回唯一对象，其余返回数组。
 	 * 
 	 * @param by the attribute of the element, default support is TagName/Name/Id
 	 * @param byValue the attribute value of the element
@@ -888,9 +847,11 @@ public class WebDriverWebPublic extends WebDriverController {
 		String js = null;
 
 		if (by.equalsIgnoreCase("tagname")) {
-			js = "document.getElementsByTagName('" + byValue + "')[" + index + "].value='" + text + "'";
+			js = "document.getElementsByTagName('" + byValue + "')[" + index + "].value='" + text
+					+ "'";
 		} else if (by.equalsIgnoreCase("name")) {
-			js = "document.getElementsByName('" + byValue + "')[" + index + "].value='" + text + "'";
+			js = "document.getElementsByName('" + byValue + "')[" + index + "].value='" + text
+					+ "'";
 		} else if (by.equalsIgnoreCase("id")) {
 			js = "document.getElementById('" + byValue + "').value='" + text + "'";
 		} else {
@@ -936,8 +897,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * sendKeys by using keybord event on element</BR>
-	 * 使用键盘模拟的方法在指定的对象上输入指定的文本。
+	 * sendKeys by using keybord event on element</BR> 使用键盘模拟的方法在指定的对象上输入指定的文本。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param text the text you want to input to element
@@ -950,8 +910,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * sendKeys by using keybord event on element to be found by By</BR>
-	 * 使用键盘模拟的方法在指定的对象上输入指定的文本。
+	 * sendKeys by using keybord event on element to be found by By</BR> 使用键盘模拟的方法在指定的对象上输入指定的文本。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the text you want to input to element
@@ -976,8 +935,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by index</BR>
-	 * 按照指定序号选择下拉列表中的选项。
+	 * select an item from a picklist by index</BR> 按照指定序号选择下拉列表中的选项。
 	 * 
 	 * @param element the picklist element
 	 * @param index the index of the item to be selected
@@ -990,8 +948,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by index</BR>
-	 * 按照指定序号选择下拉列表中的选项。
+	 * select an item from a picklist by index</BR> 按照指定序号选择下拉列表中的选项。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param index the index of the item to be selected
@@ -1032,8 +989,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value</BR>
-	 * 按照指定选项的可见文本值（用户直接可以看到的文本）选择下拉列表中的选项。
+	 * select an item from a picklist by item value</BR> 按照指定选项的可见文本值（用户直接可以看到的文本）选择下拉列表中的选项。
 	 * 
 	 * @param element the picklist element
 	 * @param text the item value of the item to be selected
@@ -1046,8 +1002,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * select an item from a picklist by item value</BR>
-	 * 按照指定选项的可见文本值（用户直接可以看到的文本）选择下拉列表中的选项。
+	 * select an item from a picklist by item value</BR> 按照指定选项的可见文本值（用户直接可以看到的文本）选择下拉列表中的选项。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param text the item value of the item to be selected
@@ -1060,8 +1015,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * set the checkbox on or off</BR>
-	 * 将指定的复选框对象设置为选中或者不选中状态。
+	 * set the checkbox on or off</BR> 将指定的复选框对象设置为选中或者不选中状态。
 	 * 
 	 * @param element the checkbox element
 	 * @param onOrOff on or off to set the checkbox
@@ -1076,8 +1030,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * set the checkbox on or off</BR>
-	 * 将指定的复选框对象设置为选中或者不选中状态。
+	 * set the checkbox on or off</BR> 将指定的复选框对象设置为选中或者不选中状态。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param onOrOff on or off to set the checkbox
@@ -1093,8 +1046,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * find elements displayed on the page</BR>
-	 * 按照指定的定位方式寻找所有可见的对象。
+	 * find elements displayed on the page</BR> 按照指定的定位方式寻找所有可见的对象。
 	 * 
 	 * @param by the way to locate webelements
 	 * @return displayed webelement list
@@ -1117,8 +1069,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * find elements displayed on the page</BR>
-	 * 按照指定的定位方式寻找第一可见的对象。
+	 * find elements displayed on the page</BR> 按照指定的定位方式寻找第一可见的对象。
 	 * 
 	 * @param by the way to locate webelement
 	 * @return the first displayed webelement
@@ -1129,8 +1080,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the findElements method, adding user defined log</BR>
-	 * 按照指定的定位方式寻找象。
+	 * rewrite the findElements method, adding user defined log</BR> 按照指定的定位方式寻找象。
 	 * 
 	 * @param by the locator of the elements to be find
 	 * @return the webelements you want to find
@@ -1140,8 +1090,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the findElement method, adding user defined log</BR>
-	 * 按照指定的定位方式寻找象。
+	 * rewrite the findElement method, adding user defined log</BR> 按照指定的定位方式寻找象。
 	 * 
 	 * @param by the locator of the element to be find
 	 * @return the first element accord your locator
@@ -1153,8 +1102,7 @@ public class WebDriverWebPublic extends WebDriverController {
 
 	/**
 	 * store the WebDriverWebTable object, it only changes on By changing</BR>
-	 * 缓存WebTable对象，在WebTable对象不为空的情况下（为空则直接新建对象），</BR>
-	 * 如果定位方式相同则直接返回原有对象，否则重新创建WebTable对象。
+	 * 缓存WebTable对象，在WebTable对象不为空的情况下（为空则直接新建对象），</BR> 如果定位方式相同则直接返回原有对象，否则重新创建WebTable对象。
 	 * 
 	 * @param tabBy the element locator By
 	 */
@@ -1177,14 +1125,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * refresh the webtable on the same locator, only if it changes</BR>
 	 * 如果同一定位方式的WebTable内容发生变化需要重新定位，则需要刷新WebTable。
 	 */
-	protected void tableRefresh(){
+	protected void tableRefresh() {
 		WebDriverWebPublic.tabFinder = By.id("骚年，醒悟吧");
-		WebDriverWebPublic.webTable = null;	
+		WebDriverWebPublic.webTable = null;
 	}
 
 	/**
-	 * get row count of a webtable</BR>
-	 * 返回一个WebTable的行的总数。
+	 * get row count of a webtable</BR> 返回一个WebTable的行的总数。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
 	 * @return the row count of the webTable
@@ -1197,8 +1144,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get column count of a specified webtable row</BR>
-	 * 返回一个WebTable在制定行上的列的总数。
+	 * get column count of a specified webtable row</BR> 返回一个WebTable在制定行上的列的总数。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
 	 * @param rowNum row index of your webTable to count
@@ -1207,8 +1153,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	protected int tableColCount(By tabBy, int rowNum) {
 		webTable = tableCache(tabBy);
 		int colCount = webTable.colCount(rowNum);
-		pass("count columns of the webTable " + tabBy.toString() 
-			+ " on the row [ " + rowNum + " ], got: [ " + colCount + " ]");
+		pass("count columns of the webTable " + tabBy.toString() + " on the row [ " + rowNum
+				+ " ], got: [ " + colCount + " ]");
 		return colCount;
 	}
 
@@ -1228,8 +1174,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get the cell text of the webTable on specified row and column</BR>
-	 * 返回WebTable的指定行和列的中的文本内容。
+	 * get the cell text of the webTable on specified row and column</BR> 返回WebTable的指定行和列的中的文本内容。
 	 * 
 	 * @param tabBy By, by which you can locate the webTable
 	 * @param row row index of the webTable.
@@ -1244,30 +1189,29 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for window appears in the time unit seconds</BR>
-	 * 在指定时间内等待窗口出现，超时则报错，用以缓冲运行，增加健壮性。
+	 * wait for window appears in the time unit seconds</BR> 在指定时间内等待窗口出现，超时则报错，用以缓冲运行，增加健壮性。
 	 * 
 	 * @param browserTitle the title of the browser window.
 	 * @param seconds timeout in timeunit of seconds.
 	 * @return if the window exists.
 	 */
 	protected boolean waitForWindowPresent(String browserTitle, int seconds) {
-		ASSERT.assertTrue("window is not present after " + seconds + "seconds!", browserExists(browserTitle, seconds));
+		ASSERT.assertTrue("window is not present after " + seconds + "seconds!",
+				browserExists(browserTitle, seconds));
 		return true;
 	}
 
 	/**
-	 * wait for window appears in the time unit seconds</BR>
-	 * 在指定时间内等待新窗口出现，超时则报错，用以缓冲运行，增加健壮性。
+	 * wait for window appears in the time unit seconds</BR> 在指定时间内等待新窗口出现，超时则报错，用以缓冲运行，增加健壮性。
 	 */
 	protected boolean waitForNewWindowOpened(int oldCount, int seconds) {
-		ASSERT.assertTrue("new window did not opened in " + seconds + "seconds!",isNewWindowExits(oldCount, seconds));
+		ASSERT.assertTrue("new window did not opened in " + seconds + "seconds!",
+				isNewWindowExits(oldCount, seconds));
 		return true;
 	}
 
 	/**
-	 * wait for window appears in the time unit seconds</BR>
-	 * 在指定时间内等待新窗口出现，超时则报错，用以缓冲运行，增加健壮性。
+	 * wait for window appears in the time unit seconds</BR> 在指定时间内等待新窗口出现，超时则报错，用以缓冲运行，增加健壮性。
 	 */
 	protected boolean waitForNewWindowOpened(Set<String> oldHandles, int seconds) {
 		ASSERT.assertTrue("new window did not opened in " + seconds + "seconds!",
@@ -1276,8 +1220,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for and switch to frame when avilable in timeout setting</BR>
-	 * 在指定时间内等待，直到指定框架出现并且选择他。
+	 * wait for and switch to frame when avilable in timeout setting</BR> 在指定时间内等待，直到指定框架出现并且选择他。
 	 * 
 	 * @param locator the id or name of frames.
 	 * @param seconds timeout in seconds
@@ -1293,9 +1236,8 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * use js to judge if the browser load completed.
-	 * 用js返回值判断页面是否加载完毕。
-	 *
+	 * use js to judge if the browser load completed. 用js返回值判断页面是否加载完毕。
+	 * 
 	 * @return load comploete or not.
 	 */
 	protected boolean pageLoadSucceed() {
@@ -1304,25 +1246,24 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * use js to judge if the browser load completed.
-	 * 用js返回值判断页面是否加载完毕，超时未加载完毕则报错。
-	 *
+	 * use js to judge if the browser load completed. 用js返回值判断页面是否加载完毕，超时未加载完毕则报错。
+	 * 
 	 * @param timeout max time used to load page.
 	 */
-	protected boolean waitForPageToLoad(int timeout){
+	protected boolean waitForPageToLoad(int timeout) {
 		long start = System.currentTimeMillis();
 		boolean loadCompleted = false;
 		while (!loadCompleted && ((System.currentTimeMillis() - start) < timeout * 1000)) {
 			loadCompleted = pageLoadSucceed();
 			pause(stepTimeUnit);
 		}
-		ASSERT.assertTrue("the page did not load complete in " + timeout + "seconds!",loadCompleted);
+		ASSERT.assertTrue("the page did not load complete in " + timeout + "seconds!",
+				loadCompleted);
 		return true;
 	}
 
 	/**
-	 * wait for alert appears in the time unit of seconds</BR>
-	 * 在指定时间内等待，对话框（Dialog）出现，用以缓冲运行，增加健壮性。
+	 * wait for alert appears in the time unit of seconds</BR> 在指定时间内等待，对话框（Dialog）出现，用以缓冲运行，增加健壮性。
 	 */
 	protected boolean waitForAlertPresent(int seconds) {
 		ASSERT.assertTrue("alert does not appear in " + seconds + " seconds!", alertExists(seconds));
@@ -1347,26 +1288,24 @@ public class WebDriverWebPublic extends WebDriverController {
 		ASSERT.assertFalse("alert does not disappear in " + seconds + " seconds!", exists);
 		return exists;
 	}
-	
+
 	/**
 	 * Description: wait until window.
-	 *
+	 * 
 	 * @param count init window count.
 	 * @param timeout for waiting.
 	 */
-	protected void waitForPageSyncronize(int count, int timeout){
+	protected void waitForPageSyncronize(int count, int timeout) {
 		long begins = System.currentTimeMillis();
 		int windowCount = driver.getWindowHandles().size();
 		windowCount = driver.getWindowHandles().size();
-		while (windowCount != count && System.currentTimeMillis() - begins < timeout * 1000){
+		while (windowCount != count && System.currentTimeMillis() - begins < timeout * 1000) {
 			windowCount = driver.getWindowHandles().size();
 		}
 	}
 
-
 	/**
-	 * wait for the element visiable in timeout setting</BR>
-	 * 在指定时间内等待，直到对象可见。
+	 * wait for the element visiable in timeout setting</BR> 在指定时间内等待，直到对象可见。
 	 * 
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
@@ -1382,8 +1321,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for the element visiable in timeout setting</BR>
-	 * 在指定时间内等待，直到对象可见。
+	 * wait for the element visiable in timeout setting</BR> 在指定时间内等待，直到对象可见。
 	 * 
 	 * @param element the element to be found.
 	 * @param seconds timeout in seconds.
@@ -1399,8 +1337,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for the element not visiable in timeout setting</BR>
-	 * 在指定时间内等待，直到对象不可见。
+	 * wait for the element not visiable in timeout setting</BR> 在指定时间内等待，直到对象不可见。
 	 * 
 	 * @param by the element locator.
 	 * @param seconds timeout in seconds.
@@ -1416,8 +1353,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for the element present in timeout setting</BR>
-	 * 在指定时间内等待，直到对象出现在页面上。
+	 * wait for the element present in timeout setting</BR> 在指定时间内等待，直到对象出现在页面上。
 	 * 
 	 * @param by the element locator.
 	 * @param seconds timeout in seconds.
@@ -1433,8 +1369,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for the element clickable in timeout setting</BR>
-	 * 在指定时间内等待，直到对象能够被点击。
+	 * wait for the element clickable in timeout setting</BR> 在指定时间内等待，直到对象能够被点击。
 	 * 
 	 * @param by the element locator By
 	 * @param seconds timeout in seconds
@@ -1450,8 +1385,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * wait for text appears on element in timeout setting</BR>
-	 * 在指定时间内等待，直到指定对象上出现指定文本。
+	 * wait for text appears on element in timeout setting</BR> 在指定时间内等待，直到指定对象上出现指定文本。
 	 * 
 	 * @param by the element locator By
 	 * @param text the text to be found of element
@@ -1486,8 +1420,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the alert dialog not to appears</BR>
-	 * 通过JS函数重载，在对话框（Alert）出现之前点击掉它，或者说等价于不让其出现。
+	 * make the alert dialog not to appears</BR> 通过JS函数重载，在对话框（Alert）出现之前点击掉它，或者说等价于不让其出现。
 	 */
 	protected void ensrueBeforeAlert() {
 		jsExecutor(JScriptCollection.ENSRUE_BEFORE_ALERT.getValue(),
@@ -1495,8 +1428,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * make the warn dialog not to appears when window.close()</BR>
-	 * 通过JS函数重载，在浏览器窗口关闭之前除去它的告警提示。
+	 * make the warn dialog not to appears when window.close()</BR> 通过JS函数重载，在浏览器窗口关闭之前除去它的告警提示。
 	 */
 	protected void ensureBeforeWinClose() {
 		jsExecutor(JScriptCollection.ENSURE_BEFORE_WINCLOSE.getValue(),
@@ -1540,8 +1472,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * choose OK/Cancel button's OK on alerts</BR>
-	 * 在弹出的对话框（Dialog）上点击确认/是等接受性按钮。
+	 * choose OK/Cancel button's OK on alerts</BR> 在弹出的对话框（Dialog）上点击确认/是等接受性按钮。
 	 */
 	protected void chooseOKOnAlert() {
 		driver.switchTo().alert().accept();
@@ -1559,8 +1490,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * choose Cancel on alerts</BR>
-	 * 在弹出的对话框（Dialog）上点击取消/否等拒绝性按钮。
+	 * choose Cancel on alerts</BR> 在弹出的对话框（Dialog）上点击取消/否等拒绝性按钮。
 	 */
 	protected void chooseCancelOnAlert() {
 		driver.switchTo().alert().dismiss();
@@ -1578,8 +1508,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get the text of the alerts</BR>
-	 * 返回对话框（Dialog）上的提示信息文本内容。
+	 * get the text of the alerts</BR> 返回对话框（Dialog）上的提示信息文本内容。
 	 * 
 	 * @return alert text string
 	 */
@@ -1590,8 +1519,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * set text on alerts</BR>
-	 * 向对话框（InputBox）中输入文本。
+	 * set text on alerts</BR> 向对话框（InputBox）中输入文本。
 	 * 
 	 * @param text the text string you want to input on alerts
 	 */
@@ -1601,30 +1529,27 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * use js to make the element to be un-hidden</BR>
-	 * 使用JS执行的方法强制让某些隐藏的控件显示出来。
+	 * use js to make the element to be un-hidden</BR> 使用JS执行的方法强制让某些隐藏的控件显示出来。
 	 * 
 	 * @param element the element to be operate
 	 */
 	protected void makeElementUnHidden(WebElement element) {
-		jsExecutor(JScriptCollection.MAKE_ELEMENT_UNHIDDEN.getValue(), 
+		jsExecutor(JScriptCollection.MAKE_ELEMENT_UNHIDDEN.getValue(),
 				"rewrite js to make elements to be visible", element);
 	}
 
 	/**
-	 * use js to make the element to be un-hidden</BR>
-	 * 使用JS执行的方法强制让某些隐藏的控件显示出来。
+	 * use js to make the element to be un-hidden</BR> 使用JS执行的方法强制让某些隐藏的控件显示出来。
 	 * 
 	 * @param by the By locator to find the element
 	 */
 	protected void makeElementUnHidden(By by) {
-		jsExecutor(JScriptCollection.MAKE_ELEMENT_UNHIDDEN.getValue(), 
+		jsExecutor(JScriptCollection.MAKE_ELEMENT_UNHIDDEN.getValue(),
 				"rewrite js to make elements to be visible", findElement(by));
 	}
 
 	/**
-	 * rewrite the getTitle method, adding user defined log</BR>
-	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
+	 * rewrite the getTitle method, adding user defined log</BR> 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @return the title on your current session
 	 */
@@ -1690,14 +1615,13 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return current session id string
 	 */
 	protected String getSessionId() {
-		String sessionId = ((RemoteWebDriver)driver).getSessionId().toString();
+		String sessionId = ((RemoteWebDriver) driver).getSessionId().toString();
 		pass("current sessionid is:" + sessionId);
 		return sessionId;
 	}
 
 	/**
-	 * rewrite the getTagName method, adding user defined log</BR>
-	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
+	 * rewrite the getTagName method, adding user defined log</BR> 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the tagname string
@@ -1750,8 +1674,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the isSelected method, adding user defined log</BR>
-	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
+	 * rewrite the isSelected method, adding user defined log</BR> 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the bool value of whether is the WebElement selected
@@ -1771,13 +1694,12 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected boolean isSelected(By by) {
 		boolean isSelected = findElement(by).isSelected();
-		pass("element [ " + by.toString() + " ] selected? "	+ String.valueOf(isSelected));
+		pass("element [ " + by.toString() + " ] selected? " + String.valueOf(isSelected));
 		return isSelected;
 	}
 
 	/**
-	 * rewrite the isEnabled method, adding user defined log</BR>
-	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
+	 * rewrite the isEnabled method, adding user defined log</BR> 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the bool value of whether is the WebElement enabled
@@ -1802,8 +1724,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the getText method, adding user defined log</BR>
-	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
+	 * rewrite the getText method, adding user defined log</BR> 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 */
@@ -1827,8 +1748,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * rewrite the isDisplayed method, adding user defined log</BR>
-	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
+	 * rewrite the isDisplayed method, adding user defined log</BR> 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @return the bool value of whether is the WebElement displayed
@@ -1853,8 +1773,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * get its css property value</BR>
-	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
+	 * get its css property value</BR> 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param element the webelement you want to operate
 	 * @param propertyName the name of the property you want to get
@@ -1867,8 +1786,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	}
 
 	/**
-	 * find the element by By and get its css property value</BR>
-	 * 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
+	 * find the element by By and get its css property value</BR> 与工具原生API作用完全一致，只是增加了操作结果检查和日志记录。
 	 * 
 	 * @param by the locator you want to find the element
 	 * @param propertyName the name of the property you want to get

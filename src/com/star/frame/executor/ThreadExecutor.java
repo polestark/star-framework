@@ -12,8 +12,7 @@ public class ThreadExecutor {
 	/**
 	 * set process execute timeout
 	 * 
-	 * @param timeOut
-	 *            timeout of milliseconds.
+	 * @param timeOut timeout of milliseconds.
 	 */
 	public void setThreadTimeOut(long timeOut) {
 		this.threadTimeOut = timeOut + this.readTimeOut;
@@ -31,8 +30,7 @@ public class ThreadExecutor {
 	/**
 	 * set process buffer read timeout
 	 * 
-	 * @param timeOut
-	 *            timeout of milliseconds.
+	 * @param timeOut timeout of milliseconds.
 	 */
 	public void setReadTimeOut(long timeOut) {
 		this.readTimeOut = timeOut;
@@ -50,8 +48,7 @@ public class ThreadExecutor {
 	/**
 	 * execute exe/bat/shell string or file by java.
 	 * 
-	 * @param command
-	 *            command to be executed
+	 * @param command command to be executed
 	 * @throws RuntimeException
 	 * @throws TimeoutException
 	 */
@@ -77,8 +74,7 @@ public class ThreadExecutor {
 	/**
 	 * execute vbs by java.
 	 * 
-	 * @param command
-	 *            vbs file with params Object to be executed
+	 * @param command vbs file with params Object to be executed
 	 * @throws RuntimeException
 	 * @throws TimeoutException
 	 */
@@ -107,16 +103,14 @@ public class ThreadExecutor {
 		/**
 		 * construct with parameter sets.
 		 * 
-		 * @param process
-		 *            the process instance.
+		 * @param process the process instance.
 		 */
 		public ProcessListener(Process process) {
 			this.process = process;
 		}
 
 		/**
-		 * read inputstream before process.waitfor(). keep threads never hangs
-		 * up.
+		 * read inputstream before process.waitfor(). keep threads never hangs up.
 		 */
 		@Override
 		public void run() {
@@ -139,8 +133,7 @@ public class ThreadExecutor {
 		/**
 		 * construct with parameter sets.
 		 * 
-		 * @param input
-		 *            the InputStream instance.
+		 * @param input the InputStream instance.
 		 */
 		public StreamReader(InputStream input) {
 			this.input = input;
@@ -155,7 +148,7 @@ public class ThreadExecutor {
 				InputStreamReader isReader = new InputStreamReader(input, "GBK");
 				BufferedReader bfRader = new BufferedReader(isReader);
 				while (bfRader.readLine() != null) {
-					//do nothing.
+					// do nothing.
 				}
 				bfRader.close();
 				isReader.close();

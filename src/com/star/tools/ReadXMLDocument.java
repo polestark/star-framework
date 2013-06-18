@@ -8,14 +8,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
-public class ReadXMLDocument{
+public class ReadXMLDocument {
 	private String charSet = "UTF-8";
-	
+
 	/**
 	 * set the java file reading encoding.
+	 * 
 	 * @param encode the charset of the java files.
 	 */
-	public void setReadCharSet(String encode){
+	public void setReadCharSet(String encode) {
 		this.charSet = encode;
 	}
 
@@ -24,7 +25,7 @@ public class ReadXMLDocument{
 	 * 
 	 * @return the charset of the java files.
 	 */
-	public String getReadCharSet(){
+	public String getReadCharSet() {
 		return this.charSet;
 	}
 
@@ -72,5 +73,5 @@ public class ReadXMLDocument{
 		domFactory.setNamespaceAware(true);
 		DocumentBuilder builder = domFactory.newDocumentBuilder();
 		return builder.parse(fileName);
-	}	
+	}
 }

@@ -16,11 +16,11 @@ public class ReadConfiguration {
 	/**
 	 * construct with parameter intialize
 	 * 
-	 * @param	fileName whole path and name of config file
-	 * @throws	RuntimeException, IllegalArgumentException
+	 * @param fileName whole path and name of config file
+	 * @throws RuntimeException, IllegalArgumentException
 	 */
-	public ReadConfiguration(String fileName) {		
-		if (fileName == null){
+	public ReadConfiguration(String fileName) {
+		if (fileName == null) {
 			throw new IllegalArgumentException("the parameter can not be null!");
 		}
 		try {
@@ -28,12 +28,13 @@ public class ReadConfiguration {
 		} catch (IOException ioe) {
 			LOG.error(ioe);
 			throw new RuntimeException(ioe);
-		}		
+		}
 	}
 
 	/**
 	 * get specified key in config files
-	 * @param	key the key name to get value
+	 * 
+	 * @param key the key name to get value
 	 */
 	public String get(String key) {
 		String keyValue = null;

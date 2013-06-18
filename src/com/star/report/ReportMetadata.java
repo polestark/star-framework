@@ -63,20 +63,17 @@ public final class ReportMetadata {
 	}
 
 	/****************************************************************************************
-	 * @return The URL (absolute or relative) of an HTML coverage report
-	 *         associated with the test run. Null if there is no coverage
-	 *         report.
+	 * @return The URL (absolute or relative) of an HTML coverage report associated with the test
+	 *         run. Null if there is no coverage report.
 	 ****************************************************************************************/
 	public String getCoverageLink() {
 		return System.getProperty(COVERAGE_KEY);
 	}
 
 	/****************************************************************************************
-	 * If a custom CSS file has been specified, returns the path. Otherwise
-	 * returns null.
+	 * If a custom CSS file has been specified, returns the path. Otherwise returns null.
 	 * 
-	 * @return A {@link File} pointing to the stylesheet, or null if no
-	 *         stylesheet is specified.
+	 * @return A {@link File} pointing to the stylesheet, or null if no stylesheet is specified.
 	 ****************************************************************************************/
 	public File getStylesheetPath() {
 		String path = System.getProperty(STYLESHEET_KEY);
@@ -84,43 +81,38 @@ public final class ReportMetadata {
 	}
 
 	/****************************************************************************************
-	 * Returns false (the default) if stack traces should not be shown for
-	 * expected exceptions.
+	 * Returns false (the default) if stack traces should not be shown for expected exceptions.
 	 * 
-	 * @return True if stack traces should be shown even for expected
-	 *         exceptions, false otherwise.
+	 * @return True if stack traces should be shown even for expected exceptions, false otherwise.
 	 ****************************************************************************************/
 	public boolean shouldShowExpectedExceptions() {
 		return System.getProperty(EXCEPTIONS_KEY, "false").equalsIgnoreCase("true");
 	}
 
 	/****************************************************************************************
-	 * Returns true (the default) if log text should be escaped when displayed
-	 * in a report. Turning off escaping allows you to do something link
-	 * inserting link tags into HTML reports, but it also means that other
-	 * output could accidentally corrupt the mark-up.
+	 * Returns true (the default) if log text should be escaped when displayed in a report. Turning
+	 * off escaping allows you to do something link inserting link tags into HTML reports, but it
+	 * also means that other output could accidentally corrupt the mark-up.
 	 * 
-	 * @return True if reporter log output should be escaped when displayed in a
-	 *         report, false otherwise.
+	 * @return True if reporter log output should be escaped when displayed in a report, false
+	 *         otherwise.
 	 ****************************************************************************************/
 	public boolean shouldEscapeOutput() {
 		return System.getProperty(OUTPUT_KEY, "true").equalsIgnoreCase("true");
 	}
 
 	/****************************************************************************************
-	 * If the XML dialect has been set to "junit", we will render all skipped
-	 * tests as failed tests in the XML. Otherwise we use TestNG's extended
-	 * version of the XML format that allows for "<skipped>" elements.
+	 * If the XML dialect has been set to "junit", we will render all skipped tests as failed tests
+	 * in the XML. Otherwise we use TestNG's extended version of the XML format that allows for
+	 * "<skipped>" elements.
 	 ****************************************************************************************/
 	public boolean allowSkippedTestsInXML() {
 		return !System.getProperty(XML_DIALECT_KEY, "testng").equalsIgnoreCase("junit");
 	}
 
 	/****************************************************************************************
-	 * @return The user account used to run the tests and the host name of the
-	 *         test machine.
-	 * @throws UnknownHostException
-	 *             If there is a problem accessing the machine's host name.
+	 * @return The user account used to run the tests and the host name of the test machine.
+	 * @throws UnknownHostException If there is a problem accessing the machine's host name.
 	 ****************************************************************************************/
 	public String getUser() throws UnknownHostException {
 		String user = System.getProperty("user.name");
@@ -134,13 +126,13 @@ public final class ReportMetadata {
 	}
 
 	public String getPlatform() {
-		return String.format("%s %s (%s)", System.getProperty("os.name"), System.getProperty("os.version"),
-				System.getProperty("os.arch"));
+		return String.format("%s %s (%s)", System.getProperty("os.name"),
+				System.getProperty("os.version"), System.getProperty("os.arch"));
 	}
 
 	/****************************************************************************************
-	 * @return The locale specified by the System properties, or the platform
-	 *         default locale if none is specified.
+	 * @return The locale specified by the System properties, or the platform default locale if none
+	 *         is specified.
 	 ****************************************************************************************/
 	public Locale getLocale() {
 		if (System.getProperties().containsKey(LOCALE_KEY)) {

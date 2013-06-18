@@ -11,8 +11,8 @@ import java.util.Map;
 import com.star.logging.frame.LoggingManager;
 import com.star.tools.ReadConfiguration;
 
-public class HTMLLogWritter {
-	private final LoggingManager LOG = new LoggingManager(HTMLLogWritter.class.getName());
+public class HTMLFormatter {
+	private final LoggingManager LOG = new LoggingManager(HTMLFormatter.class.getName());
 	private final ReadConfiguration config = new ReadConfiguration(
 			"/com/star/logging/webdriver/style.properties");
 	private final ReadConfiguration config_tool = new ReadConfiguration(
@@ -30,7 +30,7 @@ public class HTMLLogWritter {
 	private final String HTML_START_PASS = config.get("HTML_START_PASS");
 	private final String HTML_MID = config.get("HTML_MID");
 	private final String HTML_END = config.get("HTML_END");
-	private final String MESSAGE_HEAD = config.get("MESSAGE_HEAD");   
+	private final String MESSAGE_HEAD = config.get("MESSAGE_HEAD");
 	private final String ERROR_MARK = "\">【点击查看场景截图】</a>";
 	private long startTime;
 	private String startedTime;
@@ -40,9 +40,9 @@ public class HTMLLogWritter {
 	/**
 	 * Description: class construction with html head write.
 	 * 
-	 * @param fileName the log file name. 
+	 * @param fileName the log file name.
 	 */
-	public HTMLLogWritter(String fileName) {              
+	public HTMLFormatter(String fileName) {
 		file = new File(fileName);
 		try {
 			if (!file.exists()) {
@@ -56,7 +56,7 @@ public class HTMLLogWritter {
 
 	/**
 	 * Description: set encoding for log files.
-	 *
+	 * 
 	 * @param charSet the charset name.
 	 */
 	public void setEncoding(String charSet) {
@@ -65,7 +65,7 @@ public class HTMLLogWritter {
 
 	/**
 	 * Description: init the log files.
-	 *
+	 * 
 	 * @param className the class name to be logged.
 	 * @param startTime the time when test starts.
 	 */
@@ -73,14 +73,14 @@ public class HTMLLogWritter {
 		this.startTime = startTime;
 		startedTime = DFORMAT.format(startTime);
 		String html = config.get("HTML_BODY");
-		String htmlBody = MessageFormat.format(html, new Object[] { className, startedTime, "finishedTime",
-				"totalExpensed" });
+		String htmlBody = MessageFormat.format(html, new Object[] { className, startedTime,
+				"finishedTime", "totalExpensed" });
 		fileWrite(HTML_HEADER + htmlBody, false);
 	}
 
 	/**
 	 * Description: write html log info line by line.
-	 *
+	 * 
 	 * @param logMap the log info logMap.
 	 */
 	public void write(Map<String, String> logMap) {
@@ -89,7 +89,7 @@ public class HTMLLogWritter {
 			String method = logMap.get("method");
 			String status = logMap.get("status");
 			String message = logMap.get("message");
-			String className = logMap.get("classname");
+			String className = logMap.get("class_name");
 			String html;
 			String htmlStatus = HTML_START_PASS;
 			if (status.contains("warn")) {
@@ -97,14 +97,14 @@ public class HTMLLogWritter {
 			} else if (status.contains("fail")) {
 				htmlStatus = HTML_START_FAIL;
 				if (logMap.get("message").contains("." + CAPTURE_FORMAT)) {
-					String []files = logMap.get("message").split(CAPTURE_MESSAGE, 2);
+					String[] files = logMap.get("message").split(CAPTURE_MESSAGE, 2);
 					String fileName = files[1].trim().replace("[", "").replace("]", "");
 					fileName = new File(fileName).getName();
 					message = files[0] + CAPTURE_MESSAGE + MESSAGE_HEAD + fileName + ERROR_MARK;
 				}
 			}
-			html = htmlStatus + time + HTML_MID + method + HTML_MID + status + HTML_MID + message + HTML_MID
-					+ className + HTML_END;
+			html = htmlStatus + time + HTML_MID + method + HTML_MID + status + HTML_MID + message
+					+ HTML_MID + className + HTML_END;
 			fileWrite(html, true);
 		} catch (Exception e) {
 			LOG.error(e);
@@ -114,7 +114,7 @@ public class HTMLLogWritter {
 
 	/**
 	 * Description: modify the end time at last.
-	 *
+	 * 
 	 * @param endTime the time when test stops.
 	 */
 	public void changeTime(long endTime) {
@@ -145,7 +145,7 @@ public class HTMLLogWritter {
 
 	/**
 	 * Description: write the tail of html log files.
-	 *
+	 * 
 	 */
 	public void destory() {
 		fileWrite(HTML_FOOTER, true);
@@ -153,7 +153,7 @@ public class HTMLLogWritter {
 
 	/**
 	 * Description: write html files.
-	 *
+	 * 
 	 * @param string the content to be put to log file.
 	 * @param isAppend wether append mode used.
 	 */

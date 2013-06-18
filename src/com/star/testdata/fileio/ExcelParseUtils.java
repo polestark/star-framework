@@ -39,7 +39,7 @@ public class ExcelParseUtils {
 	/**
 	 * class construct with initlize to set filename for excel file operations.
 	 * 
-	 * @param	fileName the excel file name with whole path
+	 * @param fileName the excel file name with whole path
 	 */
 	public ExcelParseUtils(String filepath, String fileName) {
 		this.fileName = filepath + "/" + fileName;
@@ -48,7 +48,7 @@ public class ExcelParseUtils {
 	/**
 	 * class construct with initlize to set filename for excel file operations.
 	 * 
-	 * @param	subFolder the excel file path under public file path, named testdata.xls
+	 * @param subFolder the excel file path under public file path, named testdata.xls
 	 */
 	public ExcelParseUtils(String subFolder) {
 		subFolder = subFolder.endsWith("\\") ? subFolder : subFolder + "\\";
@@ -58,11 +58,11 @@ public class ExcelParseUtils {
 	/**
 	 * write excel sheet, specified value to specified cell.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @param	row row index which to be changed
-	 * @param	col column index which to be changed
-	 * @param	value value to be put into cell
-	 * @throws	RuntimeException
+	 * @param sheetName excel sheet name
+	 * @param row row index which to be changed
+	 * @param col column index which to be changed
+	 * @param value value to be put into cell
+	 * @throws RuntimeException
 	 */
 	public void setExcelValue(String sheetName, int row, int col, String value) {
 		FileOutputStream fileOut = null;
@@ -102,23 +102,24 @@ public class ExcelParseUtils {
 				LOG.error(e);
 				throw new RuntimeException(e);
 			}
+			System.gc();
 		}
 	}
 
 	/**
 	 * put dataList to excel sheets.
 	 * 
-	 * @param	sheetName excel sheet name.
-	 * @param	dataList data list to be parsed and put into excel sheets.
-	 * @param	rowNum row count of the sheet to be modified.
-	 * @param	ignoreRows rows to skip when put value.
-	 * @param	ignoreColumns columns to skip when put value.
+	 * @param sheetName excel sheet name.
+	 * @param dataList data list to be parsed and put into excel sheets.
+	 * @param rowNum row count of the sheet to be modified.
+	 * @param ignoreRows rows to skip when put value.
+	 * @param ignoreColumns columns to skip when put value.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 * @throws IllegalArgumentException
 	 */
-	public void putListToExcelWithFullIgnore(String sheetName, List<String> dataList,
-											 int rowNum, int ignoreRows, int ignoreColumns) {
+	public void putListToExcelWithFullIgnore(String sheetName, List<String> dataList, int rowNum,
+			int ignoreRows, int ignoreColumns) {
 		if (dataList.size() % rowNum != 0) {
 			LOG.error("dataList has wrong element count for excel!");
 			throw new IllegalArgumentException("dataList has wrong element count for excel!");
@@ -159,7 +160,7 @@ public class ExcelParseUtils {
 					if (value != null) {
 						xlCell.setCellValue(value);
 					}
-					index ++;
+					index++;
 				}
 			}
 
@@ -177,33 +178,34 @@ public class ExcelParseUtils {
 				LOG.error(e);
 				throw new RuntimeException(e);
 			}
+			System.gc();
 		}
 	}
 
 	/**
 	 * put dataList to excel sheets.
 	 * 
-	 * @param	sheetName excel sheet name.
-	 * @param	dataList data list to be parsed and put into excel sheets.
-	 * @param	rowNum row count of the sheet to be modified.
-	 * @param	ignoreRows rows to skip when put value.
+	 * @param sheetName excel sheet name.
+	 * @param dataList data list to be parsed and put into excel sheets.
+	 * @param rowNum row count of the sheet to be modified.
+	 * @param ignoreRows rows to skip when put value.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 * @throws IllegalArgumentException
 	 */
-	public void putListToExcelWithNoColumnIgnore(String sheetName, List<String> dataList, 
-				int rowNum, int ignoreRows) {
+	public void putListToExcelWithNoColumnIgnore(String sheetName, List<String> dataList,
+			int rowNum, int ignoreRows) {
 		putListToExcelWithFullIgnore(sheetName, dataList, rowNum, ignoreRows, 0);
 	}
 
 	/**
 	 * put dataList to excel sheets.
 	 * 
-	 * @param	sheetName excel sheet name.
-	 * @param	dataList data list to be parsed and put into excel sheets.
-	 * @param	rowNum row count of the sheet to be modified.
+	 * @param sheetName excel sheet name.
+	 * @param dataList data list to be parsed and put into excel sheets.
+	 * @param rowNum row count of the sheet to be modified.
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 * @throws IllegalArgumentException
 	 */
 	public void putListToExcelWithNoIgnore(String sheetName, List<String> dataList, int rowNum) {
@@ -213,12 +215,12 @@ public class ExcelParseUtils {
 	/**
 	 * get excel cell value of specified cell.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @param	row row index which to be changed
-	 * @param	col column index which to be changed
-	 * @return	excel cell value string
+	 * @param sheetName excel sheet name
+	 * @param row row index which to be changed
+	 * @param col column index which to be changed
+	 * @return excel cell value string
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	public String getExcelValue(String sheetName, int row, int col) {
 		String text = null;
@@ -248,6 +250,7 @@ public class ExcelParseUtils {
 				LOG.error(e);
 				throw new RuntimeException(e);
 			}
+			System.gc();
 		}
 		return text;
 	}
@@ -255,35 +258,35 @@ public class ExcelParseUtils {
 	/**
 	 * put data into map.
 	 * 
-	 * @param	keys map key names
-	 * @param	parms map key values
+	 * @param keys map key names
+	 * @param parms map key values
 	 * 
-	 * @throws	RuntimeException
+	 * @throws RuntimeException
 	 */
 	public Map<String, String> creatMap(List<String> keys, List<String> parms) {
-		if (keys.size() != parms.size()){
+		if (keys.size() != parms.size()) {
 			LOG.error("incorrect parameters, the size of list not equals!");
-			throw new RuntimeException("incorrect parameters, the size of list not equals!");	
+			throw new RuntimeException("incorrect parameters, the size of list not equals!");
 		}
-		Map<String, String> paraMap = new HashMap<String, String>();				
-		for (int i = 0; i < keys.size(); i ++){
+		Map<String, String> paraMap = new HashMap<String, String>();
+		for (int i = 0; i < keys.size(); i++) {
 			paraMap.put(keys.get(i), parms.get(i));
-		}		
+		}
 		return paraMap;
 	}
 
 	/**
 	 * get the specified excel sheet and put its value string to list.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @param	ignoreRows first several rows not to read.
-	 * @param	ignoreCols first several cols not to read.
-	 * @param	readRows specified row count to read.
-	 * @param	readColumns specified column count to read.
-	 * @throws	RuntimeException
+	 * @param sheetName excel sheet name
+	 * @param ignoreRows first several rows not to read.
+	 * @param ignoreCols first several cols not to read.
+	 * @param readRows specified row count to read.
+	 * @param readColumns specified column count to read.
+	 * @throws RuntimeException
 	 */
-	public List<String> excelToList(String sheetName, int ignoreRows, int ignoreCols, 
-													   int readRows, int readColumns) {
+	public List<String> excelToList(String sheetName, int ignoreRows, int ignoreCols, int readRows,
+			int readColumns) {
 		FileInputStream fso = null;
 		List<String> paraList = new ArrayList<String>();
 
@@ -300,15 +303,16 @@ public class ExcelParseUtils {
 				LOG.error("sheet [" + sheetName + "] does not exist!");
 				throw new RuntimeException("sheet [" + sheetName + "] does not exist!");
 			}
-			readRows = (readRows == 0)? xlSheet.getPhysicalNumberOfRows(): readRows;
+			readRows = (readRows == 0) ? xlSheet.getPhysicalNumberOfRows() : readRows;
 			for (int i = ignoreRows; i < ignoreRows + readRows; i++) {
 				xlRow = xlSheet.getRow(i);
-				readColumns = (readColumns == 0)? xlRow.getPhysicalNumberOfCells(): readColumns;
+				readColumns = (readColumns == 0) ? xlRow.getPhysicalNumberOfCells() : readColumns;
 				if (xlRow != null) {
 					for (int j = ignoreCols; j < ignoreCols + readColumns; j++) {
 						xlCell = xlRow.getCell(j);
 						if (xlCell == null) {
-							paraList.add("");;
+							paraList.add("");
+							;
 						} else {
 							paraList.add(xlCell.toString());
 						}
@@ -325,6 +329,7 @@ public class ExcelParseUtils {
 				LOG.error(e);
 				throw new RuntimeException(e);
 			}
+			System.gc();
 		}
 		return paraList;
 	}
@@ -332,46 +337,47 @@ public class ExcelParseUtils {
 	/**
 	 * get the specified excel sheet and put its value string to list, with no ignores.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @param	readRows specified row count to read.
-	 * @param	readColumns specified column count to read.
-	 * @throws	RuntimeException
+	 * @param sheetName excel sheet name
+	 * @param readRows specified row count to read.
+	 * @param readColumns specified column count to read.
+	 * @throws RuntimeException
 	 */
 	public List<String> excelToListHasNoIgnore(String sheetName, int readRows, int readColumns) {
 		return excelToList(sheetName, 0, 0, readRows, readColumns);
 	}
 
 	/**
-	 * get the specified excel sheet and put its value string to list.</BR>
-	 * with no ignores rows and columns, read all the sheet area.
+	 * get the specified excel sheet and put its value string to list.</BR> with no ignores rows and
+	 * columns, read all the sheet area.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @throws	RuntimeException
+	 * @param sheetName excel sheet name
+	 * @throws RuntimeException
 	 */
 	public List<String> excelToListWithAllArea(String sheetName) {
 		return excelToList(sheetName, 0, 0, 0, 0);
 	}
 
 	/**
-	 * get the specified excel sheet and put its value string to list.</BR>
-	 * ignores several rows and columns, then read all the rest sheet area.
+	 * get the specified excel sheet and put its value string to list.</BR> ignores several rows and
+	 * columns, then read all the rest sheet area.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @param	ignoreRows first several rows not to read.
-	 * @param	ignoreCols first several cols not to read.
-	 * @throws	RuntimeException
+	 * @param sheetName excel sheet name
+	 * @param ignoreRows first several rows not to read.
+	 * @param ignoreCols first several cols not to read.
+	 * @throws RuntimeException
 	 */
-	public List<String> excelToListAllAreaAfterIgnore(String sheetName, int ignoreRows, int ignoreCols) {
+	public List<String> excelToListAllAreaAfterIgnore(String sheetName, int ignoreRows,
+			int ignoreCols) {
 		return excelToList(sheetName, ignoreRows, ignoreCols, 0, 0);
 	}
 
 	/**
-	 * get the specified excel sheet and put its value string to list.</BR>
-	 * ignores several rows and no columns, then read all the rest sheet area.
+	 * get the specified excel sheet and put its value string to list.</BR> ignores several rows and
+	 * no columns, then read all the rest sheet area.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @param	ignoreRows first several rows not to read.
-	 * @throws	RuntimeException
+	 * @param sheetName excel sheet name
+	 * @param ignoreRows first several rows not to read.
+	 * @throws RuntimeException
 	 */
 	public List<String> excelToListAllAreaAfterIgnore(String sheetName, int ignoreRows) {
 		return excelToList(sheetName, ignoreRows, 0, 0, 0);
@@ -380,8 +386,8 @@ public class ExcelParseUtils {
 	/**
 	 * read excel Xls and add the result into arraylist.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @throws	RuntimeException
+	 * @param sheetName excel sheet name
+	 * @throws RuntimeException
 	 */
 	public List<Map<String, String>> excelToList(String sheetName) {
 		Row firstxlRow = null;
@@ -423,12 +429,12 @@ public class ExcelParseUtils {
 					if (xlCell == null) {
 						valueList.add(null);
 						continue;
-					}else{
+					} else {
 						valueList.add(xlCell.toString());
 					}
 				}
-				paraList.add(creatMap(keyList,valueList));
-			}			
+				paraList.add(creatMap(keyList, valueList));
+			}
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException("read excel failed:" + e.getMessage());
@@ -439,6 +445,7 @@ public class ExcelParseUtils {
 				LOG.error(e);
 				throw new RuntimeException(e);
 			}
+			System.gc();
 		}
 		return paraList;
 	}
@@ -446,9 +453,9 @@ public class ExcelParseUtils {
 	/**
 	 * get the specified excel Xls sheet with specified row data into map.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @param	index index of the row you want to use
-	 * @throws	RuntimeException
+	 * @param sheetName excel sheet name
+	 * @param index index of the row you want to use
+	 * @throws RuntimeException
 	 */
 	public Map<String, String> excelDataMap(String sheetName, int index) {
 		Iterator<Map<String, String>> it = excelToList(sheetName).iterator();
@@ -465,8 +472,8 @@ public class ExcelParseUtils {
 	/**
 	 * override the excelDataMapXls method, using default rownum 1.
 	 * 
-	 * @param	sheetName excel sheet name
-	 * @throws	RuntimeException
+	 * @param sheetName excel sheet name
+	 * @throws RuntimeException
 	 */
 	public Map<String, String> excelDataMap(String sheetName) {
 		return excelDataMap(sheetName, 1);
