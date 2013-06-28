@@ -93,7 +93,7 @@
 	
 	<target name="failcollect" description="失败汇总">
 		<echo message="……失败案例汇总开始……" />
-		<java classname="com.star.support.collect.TestNGFailedCollect" fork="true">
+		<java classname="com.star.runtime.result.TestNGFailedCollect" fork="true">
 			<classpath refid="compile.cp">
 			</classpath>
 			<arg value="${task.file}"/>
