@@ -1,4 +1,4 @@
-package com.star.core.webdriver.helper;
+package com.star.core.webdriver.support;
 
 /**
  * WebTable测试类：

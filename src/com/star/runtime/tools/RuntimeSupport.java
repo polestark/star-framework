@@ -1,4 +1,4 @@
-package com.star.core.webdriver.helper;
+package com.star.runtime.tools;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
@@ -9,8 +9,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
+
+import com.star.core.webdriver.support.JScriptCollection;
 import com.star.logging.frame.LoggingManager;
-import com.star.support.externs.Win32GuiByAu3;
+import com.star.externs.wingui.Win32GuiByAu3;
 
 public class RuntimeSupport {
 

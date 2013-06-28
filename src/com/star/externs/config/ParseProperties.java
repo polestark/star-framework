@@ -1,4 +1,4 @@
-package com.star.support.config;
+package com.star.externs.config;
 
 /**
  * 说明：

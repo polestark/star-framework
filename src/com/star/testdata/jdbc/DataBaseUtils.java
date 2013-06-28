@@ -18,7 +18,7 @@ import java.util.Properties;
 import com.paic.dbproxy.client.DB;
 import com.paic.dbproxy.client.DBHelper;
 import com.star.logging.frame.LoggingManager;
-import com.star.support.config.ParseProperties;
+import com.star.externs.config.ParseProperties;
 
 public class DataBaseUtils {
 

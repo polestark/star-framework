@@ -19,8 +19,8 @@ import static org.testng.AssertJUnit.assertTrue;
 
 import com.star.core.selenium.SeleniumController;
 import com.star.logging.frame.LoggingManager;
-import com.star.support.externs.Win32GuiByAu3;
-import com.star.support.externs.Win32GuiByVbs;
+import com.star.externs.wingui.Win32GuiByAu3;
+import com.star.externs.wingui.Win32GuiByVbs;
 import com.thoughtworks.selenium.SeleniumException;
 
 public class SeleniumWebPublic extends SeleniumController {

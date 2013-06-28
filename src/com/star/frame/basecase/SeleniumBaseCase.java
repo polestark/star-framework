@@ -4,7 +4,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
 import com.star.core.selenium.SeleniumWebPublic;
-import com.star.support.externs.Win32GuiByVbs;
+import com.star.externs.wingui.Win32GuiByVbs;
 import com.star.testdata.string.StringBufferUtils;
 
 public class SeleniumBaseCase extends SeleniumWebPublic {

@@ -1,4 +1,4 @@
-package com.star.demo.common;
+package com.star.udemo.common;
 
 import org.openqa.selenium.By;
 import com.star.core.webdriver.WebDriverWebPublic;

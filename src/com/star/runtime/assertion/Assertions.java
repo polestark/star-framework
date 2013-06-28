@@ -1,11 +1,11 @@
-package com.star.frame.assertion;
+package com.star.runtime.assertion;
 
 import java.util.Map;
 import java.util.HashMap;
 import org.openqa.selenium.WebDriver;
 import com.star.tools.ReadConfiguration;
 import com.star.tools.StackTraceUtils;
-import com.star.support.externs.Win32GuiByAu3;
+import com.star.externs.wingui.Win32GuiByAu3;
 import com.star.logging.webdriver.HTMLLogWriter;
 
 /**

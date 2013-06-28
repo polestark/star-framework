@@ -5,16 +5,13 @@ package com.star.core.webdriver;
  */
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-import java.util.logging.Handler;
+import java.net.MalformedURLException;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.ie.InternetExplorerDriverService.Builder;
 import org.openqa.selenium.interactions.Actions;
@@ -24,55 +21,45 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 
-import com.star.core.webdriver.helper.WebDriverListener;
-import com.star.frame.assertion.Assertions;
+import com.star.tools.StackTraceUtils;
+import com.star.runtime.assertion.Assertions;
 import com.star.logging.frame.LoggingManager;
-import com.star.support.config.ParseProperties;
-import com.star.support.externs.BrowserGuiAuto;
-import com.star.support.externs.Win32GuiByAu3;
-import com.star.support.externs.Win32GuiByVbs;
+import com.star.runtime.tools.WebDriverListener;
+import com.star.externs.config.ParseProperties;
+import com.star.externs.ieau3.BrowserGuiAuto;
+import com.star.externs.wingui.Win32GuiByAu3;
+import com.star.externs.wingui.Win32GuiByVbs;
 import com.star.logging.webdriver.HTMLLogWriter;
 import com.star.testdata.string.StringBufferUtils;
-import com.star.tools.ReadConfiguration;
-import com.star.tools.StackTraceUtils;
 
 public class WebDriverController {
 	protected static final ParseProperties CONFIG = new ParseProperties("config/config.properties");
-	private final static ReadConfiguration config = new ReadConfiguration(
-			"/com/star/core/webdriver/webdirver_config.properties");
 
 	protected static InternetExplorerDriverService service;
 	protected static WebDriver driver;
 	protected static Actions actionDriver;
 	protected static SeleniumServer server;
-	protected static Handler handler;
-	protected static Logger logger;
 	protected static Assertions ASSERT;
 
 	protected static final StringBufferUtils STRUTIL = new StringBufferUtils();
 	protected static final Win32GuiByVbs VBS = new Win32GuiByVbs();
 	protected static final Win32GuiByAu3 AU3 = new Win32GuiByAu3();
 	protected static final BrowserGuiAuto IEAU3 = new BrowserGuiAuto();
-	protected static final String FORMATTER = config.get("DATE_FORMATTER");
-
-	protected int maxWaitfor = Integer.parseInt(config.get("STEP_TIMEOUT"));// 单步操作超时时间
-	protected int maxLoadTime = Integer.parseInt(config.get("PAGE_LOAD_TIMEOUT"));// 页面加载超时时间
-	protected int stepTimeUnit = Integer.parseInt(config.get("SLEEP_INTERVAL"));// 单次循环思考时间
+	protected static final String FORMATTER = "_yyyyMMdd_HHmmssSSS";
 
 	protected final String LOG_NAME = new File(CONFIG.get("log")).getName();
 	protected final String LOG_REL = ".\\" + LOG_NAME + "\\";
 	protected final String LOG_ABS = System.getProperty("user.dir") + "\\" + LOG_NAME + "\\";
 	protected final String EXECUTOR = VBS.getEnvironment("USERNAME");
 	protected final String COMPUTER = VBS.getEnvironment("COMPUTERNAME");
-	private final InternetExplorerDriverLogLevel level = InternetExplorerDriverLogLevel
-			.valueOf(config.get("SERVER_LOG_LEVEL"));
-	// 是否打开server端详细文本日志的配置项
-	private final Boolean SERVER_OUTPUT_ON = Boolean.parseBoolean(config.get("SERVER_OUTPUT_ON"));
-	// 是否使用selenium2.22.0版本以上的IEDriverServer模式的配置项
-	private final Boolean USE_DRIVERSERVER = Boolean.parseBoolean(config.get("USE_DRIVERSERVER"));
 
 	private final StackTraceUtils stack = new StackTraceUtils();
+	private final WebDriverSettings WD_CONFIG = new WebDriverSettings();
 	private final LoggingManager LOG = new LoggingManager(WebDriverController.class.getName());
+
+	protected int maxWaitfor = WD_CONFIG.MAX_WAIT;// 单步操作超时时间
+	protected int maxLoadTime = WD_CONFIG.MAX_LOAD_WAIT;// 页面加载超时时间
+	protected int stepTimeUnit = WD_CONFIG.SLEEP_UNIT;// 单次循环思考时间
 
 	private RemoteControlConfiguration remote;
 	private static DesiredCapabilities capabilities;
@@ -151,7 +138,7 @@ public class WebDriverController {
 		logHelper.logInit(startTime);
 		File log = new File(LOG_ABS + className + "_" + STRUTIL.getMilSecNow() + ".log");
 
-		if (USE_DRIVERSERVER) {
+		if (WD_CONFIG.USE_DRIVERSERVER) {
 			useDriverServer(log);
 		} else {
 			String[] portStr = CONFIG.get("serverPort").split(";");
@@ -222,7 +209,7 @@ public class WebDriverController {
 	 * Description: stop the selenium server</BR> 内容描述：停止WebDriver的服务，无论什么模式。
 	 */
 	protected void stopServer() throws Exception {
-		if (USE_DRIVERSERVER) {
+		if (WD_CONFIG.USE_DRIVERSERVER) {
 			terminateService();
 		} else {
 			terminateServer();
@@ -301,8 +288,7 @@ public class WebDriverController {
 	 * @param message the message to be recroded to logs
 	 */
 	protected void pass(String message) {
-		logHelper.logWrite(stack.logRecord(Thread.currentThread().getStackTrace(), "passed",
-				message));
+		logHelper.logWrite(stack.logRecord(Thread.currentThread().getStackTrace(), "passed", message));
 	}
 
 	/**
@@ -311,8 +297,7 @@ public class WebDriverController {
 	 * @param message the message to be recroded to logs
 	 */
 	protected void fail(String message) {
-		logHelper.logWrite(stack.logRecord(Thread.currentThread().getStackTrace(), "failed",
-				message));
+		logHelper.logWrite(stack.logRecord(Thread.currentThread().getStackTrace(), "failed", message));
 	}
 
 	/**
@@ -322,8 +307,7 @@ public class WebDriverController {
 	 * @param message the message to be recroded to logs
 	 */
 	protected void failAndExit(String message) {
-		logHelper.logWrite(stack.logRecord(Thread.currentThread().getStackTrace(), "failed",
-				message));
+		logHelper.logWrite(stack.logRecord(Thread.currentThread().getStackTrace(), "failed", message));
 		throw new RuntimeException(message);
 	}
 
@@ -333,8 +317,7 @@ public class WebDriverController {
 	 * @param message the message to be recroded to logs
 	 */
 	protected void warn(String message) {
-		logHelper.logWrite(stack.logRecord(Thread.currentThread().getStackTrace(), "warned",
-				message));
+		logHelper.logWrite(stack.logRecord(Thread.currentThread().getStackTrace(), "warned", message));
 	}
 
 	/**
@@ -394,7 +377,7 @@ public class WebDriverController {
 	 */
 	private void useDriverServer(File logFile) throws Exception {
 		try {
-			startService(SERVER_OUTPUT_ON, logFile);
+			startService(WD_CONFIG.SERVER_OUTPUT_ON, logFile);
 			consolePrint("server on " + EXECUTOR + "@" + COMPUTER + " has started at: "
 					+ service.getUrl().toString());
 		} catch (Exception e) {
@@ -414,9 +397,10 @@ public class WebDriverController {
 		setExecutableIEDriverServer();
 		Builder builder = new InternetExplorerDriverService.Builder();
 		if (needLog) {
-			service = builder.usingAnyFreePort().withLogFile(logFile).withLogLevel(level).build();
+			service = builder.usingAnyFreePort().withLogFile(logFile)
+					.withLogLevel(WD_CONFIG.SERVER_LOG_LEVEL).build();
 		} else {
-			service = builder.usingAnyFreePort().withLogLevel(level).build();
+			service = builder.usingAnyFreePort().withLogLevel(WD_CONFIG.SERVER_LOG_LEVEL).build();
 		}
 		service.start();
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -460,7 +444,7 @@ public class WebDriverController {
 			setRemoteControl(remote, logFile, port);
 			server = new SeleniumServer(false, remote);
 			server.start();
-			consolePrint("server on " + EXECUTOR + "@" + COMPUTER + " has started at: "
+			consolePrint("server on " + EXECUTOR + "@" + COMPUTER + " has started at: " 
 					+ "http://localhost:" + server.getPort() + "/wd/hub");
 			return null;
 		} catch (Exception e) {
@@ -469,20 +453,20 @@ public class WebDriverController {
 	}
 
 	/**
-	 * Description: config the remote server options.</BR> 内容描述：为RemoteWebDriver Server做服务端选项么配置。
+	 * Description: config the remote server options.</BR> 
+	 * 内容描述：为RemoteWebDriver Server做服务端选项么配置。
 	 * 
 	 * @param logFile the log file File.
 	 * @param port the port to be used for server.
 	 * @throws Exception
 	 */
-	private void setRemoteControl(RemoteControlConfiguration rcc, File logFile, int port)
-			throws Exception {
+	private void setRemoteControl(RemoteControlConfiguration rcc, File logFile, int port) throws Exception {
 		rcc.setPort(port);
 		rcc.setDebugMode(false);
 		rcc.setSingleWindow(false);
 		rcc.setEnsureCleanSession(true);
 		rcc.setReuseBrowserSessions(false);
-		if (SERVER_OUTPUT_ON) {
+		if (WD_CONFIG.SERVER_OUTPUT_ON) {
 			rcc.setDontTouchLogging(false);
 			rcc.setBrowserSideLogEnabled(true);
 			rcc.setLogOutFile(logFile);
@@ -496,14 +480,13 @@ public class WebDriverController {
 	 */
 	private void initalizeWebDriver() {
 		WebDriverListener listener = new WebDriverListener(LOG_ABS, className);
-		if (USE_DRIVERSERVER) {// 是否使用IEDirverServer
+		if (WD_CONFIG.USE_DRIVERSERVER) {// 是否使用IEDirverServer
 			driver = new EventFiringWebDriver(new RemoteWebDriver(service.getUrl(), capabilities))
 					.register(listener);
 		} else {
 			try {
 				URL url = new URL("http://localhost:" + server.getPort() + "/wd/hub");
-				driver = new EventFiringWebDriver(new RemoteWebDriver(url, capabilities))
-						.register(listener);
+				driver = new EventFiringWebDriver(new RemoteWebDriver(url, capabilities)).register(listener);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException("illegal url!");
 			}
@@ -535,8 +518,7 @@ public class WebDriverController {
 			}
 			if (thread_start.isAlive() && i == redoCount) {// 如果最终没能启动成功则抛出错误
 				thread_start.interrupt();
-				throw new RuntimeException(
-						"can not start webdriver, check your platform configurations!");
+				throw new RuntimeException("can not start webdriver, check your platform configurations!");
 			}
 		}
 	}
@@ -558,7 +540,7 @@ public class WebDriverController {
 	 * @return the url of the webdriver server/service.
 	 */
 	private String getServerAddress() throws Exception {
-		if (USE_DRIVERSERVER) {// 是否使用IEDirverServer
+		if (WD_CONFIG.USE_DRIVERSERVER) {// 是否使用IEDirverServer
 			return service.getUrl().toString();
 		} else {
 			return "http://localhost:" + server.getPort() + "/wd/hub";
@@ -594,8 +576,7 @@ public class WebDriverController {
 	 * @param actionCount max time to test driver status.
 	 * @throws Exception
 	 */
-	private void ensureWebDriverStatus(String browserMode, String testUrl, int actionCount)
-			throws Exception {
+	private void ensureWebDriverStatus(String browserMode, String testUrl, int actionCount) throws Exception {
 		int index = 0;
 		boolean suspended = true;
 		while (index <= actionCount && suspended) {
@@ -614,12 +595,10 @@ public class WebDriverController {
 	 * @throws Exception
 	 */
 	private void setBrowserMode(String browser) throws Exception {
-		if (browser.toLowerCase().contains("ie")
-				|| browser.toLowerCase().contains("internetexplorer")) {
+		if (browser.toLowerCase().contains("ie") || browser.toLowerCase().contains("internetexplorer")) {
 			capabilities = DesiredCapabilities.internetExplorer();
 			VBS.killWin32Process("iexplore");
-		} else if (browser.toLowerCase().contains("ff")
-				|| browser.toLowerCase().contains("firefox")) {
+		} else if (browser.toLowerCase().contains("ff") || browser.toLowerCase().contains("firefox")) {
 			capabilities = DesiredCapabilities.firefox();
 			VBS.killWin32Process("firefox");
 		} else if (browser.toLowerCase().contains("chrome")) {
@@ -645,17 +624,19 @@ public class WebDriverController {
 	 * @param capabilities the DesiredCapabilities object.
 	 */
 	private void setCapabilities(DesiredCapabilities capabilities) throws Exception {
-		capabilities.setCapability("ignoreProtectedModeSettings", true);
-		capabilities.setCapability("ignoreZoomSetting", true);
-		capabilities.setCapability("javascriptEnabled", true);
-		capabilities.setCapability("allowAsynchronousJavaScript", true);
-		capabilities.setCapability("enableElementCacheCleanup", true);
-		capabilities.setCapability("handlesAlerts", true);
-		capabilities.setCapability("unexpectedAlertBehaviour", "dismiss");
-		capabilities.setCapability("cssSelectorsEnabled", true);
-		capabilities.setCapability("takesScreenshot", true);
-		capabilities.setCapability("nativeEvents", true);
-		capabilities.setCapability("enablePersistentHover", true);
+		capabilities.setCapability("ignoreProtectedModeSettings", WD_CONFIG.IGNORE_PROTECTED_MODE);
+		capabilities.setCapability("ignoreZoomSetting", WD_CONFIG.IGNORE_ZOOM_SETTING);
+		capabilities.setCapability("javascriptEnabled", WD_CONFIG.JAVASCRIPT_ENABLED);
+		capabilities.setCapability("allowAsynchronousJavaScript", WD_CONFIG.ASYNC_JS_ENABLED);
+		capabilities.setCapability("enableElementCacheCleanup", WD_CONFIG.ELEMENT_CACHE_CLEAN);
+		capabilities.setCapability("handlesAlerts", WD_CONFIG.HANDLES_ALERTS);
+		capabilities.setCapability("unexpectedAlertBehaviour", WD_CONFIG.UNEXPECTED_ALERT_BEHAVIOUR);
+		capabilities.setCapability("cssSelectorsEnabled", WD_CONFIG.CSSS_ELECTORS_ENABLED);
+		capabilities.setCapability("takesScreenshot", WD_CONFIG.TAKES_SCREENSHOT);
+		capabilities.setCapability("nativeEvents", WD_CONFIG.NATIVE_EVENTS_ENABLED);
+		capabilities.setCapability("enablePersistentHover", WD_CONFIG.ENABLE_PERSIST_ENTHOVER);
+		capabilities.setCapability("requireWindowFocus", WD_CONFIG.REQUIRE_WINDOW_FOCUS);
+		capabilities.setCapability("browserAttachTimeout", WD_CONFIG.BROWSER_ATTACHT_IMEOUT);
 	}
 
 	/**

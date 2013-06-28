@@ -1,4 +1,4 @@
-package com.star.core.webdriver.helper;
+package com.star.runtime.tools;
 
 import java.util.Map;
 import org.openqa.selenium.By;

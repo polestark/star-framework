@@ -1,6 +1,6 @@
-package com.star.support.externs;
+package com.star.externs.ieau3;
 
-import com.star.frame.executor.ThreadExecutor;
+import com.star.tools.executor.ThreadExecutor;
 
 public class BrowserGuiAuto {
 

@@ -1,4 +1,4 @@
-package com.star.support.externs;
+package com.star.externs.wingui;
 
 /**
  * 说明：
@@ -18,10 +18,10 @@ import java.io.InputStreamReader;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.MessageFormat;
-import com.star.support.externs.Win32GuiByVbs;
-import com.star.frame.executor.ThreadExecutor;
+
 import com.star.logging.frame.LoggingManager;
 import com.star.testdata.string.StringBufferUtils;
+import com.star.tools.executor.ThreadExecutor;
 
 public class Win32GuiByVbs {
 

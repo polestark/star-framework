@@ -1,4 +1,4 @@
-package com.star.demo.testcase;
+package com.star.udemo.testcase;
 
 import org.openqa.selenium.By;
 import org.testng.annotations.Test;

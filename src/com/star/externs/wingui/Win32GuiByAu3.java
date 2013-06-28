@@ -1,8 +1,8 @@
-package com.star.support.externs;
+package com.star.externs.wingui;
 
-import com.star.frame.executor.ThreadExecutor;
 import com.star.logging.frame.LoggingManager;
 import com.star.testdata.string.StringBufferUtils;
+import com.star.tools.executor.ThreadExecutor;
 
 /**
  * 说明： 1、依赖AUTOIT实现的GUI操作，必须编译为可知性程序； 2、含上载、下载、关闭Dialog、点击Dialog、在Dialog上输入文本等操作。

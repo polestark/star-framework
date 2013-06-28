@@ -25,7 +25,7 @@ import com.star.logging.selenium.LoggingDefaultSelenium;
 import com.star.logging.selenium.LoggingSelenium;
 import com.star.logging.selenium.LoggingUtils;
 import com.star.logging.selenium.ResultsFormatter;
-import com.star.support.config.ParseProperties;
+import com.star.externs.config.ParseProperties;
 import com.star.testdata.string.StringBufferUtils;
 
 public class SeleniumController {

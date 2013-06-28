@@ -11,25 +11,27 @@ package com.star.testdata.fileio;
  * @author 测试仔刘毅
  */
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import com.star.support.config.ParseProperties;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.star.externs.config.ParseProperties;
 import com.star.logging.frame.LoggingManager;
 
 public class ExcelParseUtils {
 
 	private String fileName;
-	private Workbook xlWBook = null;
 	private Sheet xlSheet = null;
 	private Row xlRow = null;
 	private Cell xlCell = null;
@@ -41,8 +43,8 @@ public class ExcelParseUtils {
 	 * 
 	 * @param fileName the excel file name with whole path
 	 */
-	public ExcelParseUtils(String filepath, String fileName) {
-		this.fileName = filepath + "/" + fileName;
+	public ExcelParseUtils(String filePath, String fileName) {
+		this.fileName = filePath + "\\" + fileName;
 	}
 
 	/**
@@ -53,6 +55,44 @@ public class ExcelParseUtils {
 	public ExcelParseUtils(String subFolder) {
 		subFolder = subFolder.endsWith("\\") ? subFolder : subFolder + "\\";
 		this.fileName = PROPERTY.get("datapath") + subFolder + "testdata.xls";
+	}
+	
+	private Workbook getWorkBookStyle(String fileFormat){
+		if (fileFormat.equals("xls")) {
+			return new HSSFWorkbook();
+		} else {
+			return new XSSFWorkbook();
+		}
+	}
+	
+	private void readFileOnNotExist(Boolean readOnly){
+		if (readOnly){
+			LOG.error("file [" + fileName + "] does not exist!");
+			throw new RuntimeException("file [" + fileName + "] does not exist!");
+		}
+	}
+	
+	private Workbook getWorkBookStyle(FileInputStream fso) throws Exception{
+		if (null != fso){
+			return WorkbookFactory.create(fso);
+		} else {
+			throw new IllegalArgumentException("file input stream can not be null!");
+		}
+	}
+	
+	private Workbook getWorkBook(FileInputStream fso, Boolean readOnly) {
+		String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
+		try {
+			if (new File(fileName).exists()) {
+				return getWorkBookStyle(fso);
+			} else {
+				readFileOnNotExist(readOnly);
+				return getWorkBookStyle(fileExt);
+			}
+		} catch (Exception e) {
+			LOG.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -65,18 +105,16 @@ public class ExcelParseUtils {
 	 * @throws RuntimeException
 	 */
 	public void setExcelValue(String sheetName, int row, int col, String value) {
-		FileOutputStream fileOut = null;
-		FileInputStream fso = null;
+		Workbook workBook = null;
 		try {
-			fso = new FileInputStream(fileName);
-			xlWBook = WorkbookFactory.create(fso);
-			if (xlWBook == null) {
-				LOG.error("file [" + fileName + "] does not exist!");
-				return;
+			if (new File(fileName).exists()) {
+				workBook = getWorkBook(new FileInputStream(fileName), false);	
+			}else{
+				workBook = getWorkBook(null, false);				
 			}
-			xlSheet = xlWBook.getSheet(sheetName);
+			xlSheet = workBook.getSheet(sheetName);
 			if (xlSheet == null) {
-				xlSheet = xlWBook.createSheet(sheetName);
+				xlSheet = workBook.createSheet(sheetName);
 			}
 			xlRow = xlSheet.getRow(row - 1);
 			if (xlRow == null) {
@@ -88,20 +126,14 @@ public class ExcelParseUtils {
 			}
 			xlCell.setCellType(1);// set cell type as string
 			xlCell.setCellValue(value);
-			fileOut = new FileOutputStream(fileName);
-			xlWBook.write(fileOut);
+			FileOutputStream fileOut = new FileOutputStream(fileName);
+			workBook.write(fileOut);
 			fileOut.flush();
+			fileOut.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException("set excel value failed:" + e.getMessage());
 		} finally {
-			try {
-				fileOut.close();
-				fso.close();
-			} catch (Exception e) {
-				LOG.error(e);
-				throw new RuntimeException(e);
-			}
 			System.gc();
 		}
 	}
@@ -125,23 +157,20 @@ public class ExcelParseUtils {
 			throw new IllegalArgumentException("dataList has wrong element count for excel!");
 		}
 
-		FileOutputStream fileOut = null;
-		FileInputStream fso = null;
 		String value = null;
 		int index = 0;
 		final int colCount = dataList.size() / rowNum;
-
+		Workbook workBook = null;
+		
 		try {
-			fso = new FileInputStream(fileName);
-			xlWBook = WorkbookFactory.create(fso);
-			if (xlWBook == null) {
-				LOG.error("file [" + fileName + "] does not exist!");
-				return;
+			if (new File(fileName).exists()) {
+				workBook = getWorkBook(new FileInputStream(fileName), false);	
+			}else{
+				workBook = getWorkBook(null, false);				
 			}
-
-			xlSheet = xlWBook.getSheet(sheetName);
+			xlSheet = workBook.getSheet(sheetName);
 			if (xlSheet == null) {
-				xlSheet = xlWBook.createSheet(sheetName);
+				xlSheet = workBook.createSheet(sheetName);
 			}
 
 			for (int j = ignoreRows; j < ignoreRows + rowNum; j++) {
@@ -164,20 +193,14 @@ public class ExcelParseUtils {
 				}
 			}
 
-			fileOut = new FileOutputStream(fileName);
-			xlWBook.write(fileOut);
+			FileOutputStream fileOut = new FileOutputStream(fileName);
+			workBook.write(fileOut);
 			fileOut.flush();
+			fileOut.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException("set excel value failed:" + e.getMessage());
 		} finally {
-			try {
-				fileOut.close();
-				fso.close();
-			} catch (Exception e) {
-				LOG.error(e);
-				throw new RuntimeException(e);
-			}
 			System.gc();
 		}
 	}
@@ -227,12 +250,8 @@ public class ExcelParseUtils {
 		FileInputStream fso = null;
 		try {
 			fso = new FileInputStream(fileName);
-			xlWBook = WorkbookFactory.create(fso);
-			if (xlWBook == null) {
-				LOG.error("file [" + fileName + "] does not exist!");
-				throw new RuntimeException("file [" + fileName + "] does not exist!");
-			}
-			xlSheet = xlWBook.getSheet(sheetName);
+			Workbook workBook = getWorkBook(fso, true);
+			xlSheet = workBook.getSheet(sheetName);
 			if (xlSheet == null) {
 				LOG.error("sheet [" + sheetName + "] does not exist!");
 				throw new RuntimeException("sheet [" + sheetName + "] does not exist!");
@@ -240,16 +259,11 @@ public class ExcelParseUtils {
 			xlRow = xlSheet.getRow(row - 1);
 			xlCell = (xlRow == null) ? null : xlRow.getCell(col - 1);
 			text = (xlCell == null) ? "" : xlCell.toString();
+			fso.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException("read excel failed:" + e.getMessage());
 		} finally {
-			try {
-				fso.close();
-			} catch (Exception e) {
-				LOG.error(e);
-				throw new RuntimeException(e);
-			}
 			System.gc();
 		}
 		return text;
@@ -292,13 +306,8 @@ public class ExcelParseUtils {
 
 		try {
 			fso = new FileInputStream(fileName);
-			xlWBook = WorkbookFactory.create(fso);
-			if (xlWBook == null) {
-				LOG.error("file [" + fileName + "] does not exist!");
-				throw new RuntimeException("file [" + fileName + "] does not exist!");
-			}
-
-			xlSheet = xlWBook.getSheet(sheetName);
+			Workbook workBook = getWorkBook(fso, true);
+			xlSheet = workBook.getSheet(sheetName);
 			if (xlSheet == null) {
 				LOG.error("sheet [" + sheetName + "] does not exist!");
 				throw new RuntimeException("sheet [" + sheetName + "] does not exist!");
@@ -312,23 +321,17 @@ public class ExcelParseUtils {
 						xlCell = xlRow.getCell(j);
 						if (xlCell == null) {
 							paraList.add("");
-							;
 						} else {
 							paraList.add(xlCell.toString());
 						}
 					}
 				}
 			}
+			fso.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException("read excel failed:" + e.getMessage());
 		} finally {
-			try {
-				fso.close();
-			} catch (Exception e) {
-				LOG.error(e);
-				throw new RuntimeException(e);
-			}
 			System.gc();
 		}
 		return paraList;
@@ -396,12 +399,8 @@ public class ExcelParseUtils {
 
 		try {
 			fso = new FileInputStream(fileName);
-			xlWBook = WorkbookFactory.create(fso);
-			if (xlWBook == null) {
-				LOG.error("file [" + fileName + "] does not exist!");
-				return null;
-			}
-			xlSheet = xlWBook.getSheet(sheetName);
+			Workbook workBook = getWorkBook(fso, true);
+			xlSheet = workBook.getSheet(sheetName);
 			if (xlSheet == null) {
 				LOG.error("sheet [" + sheetName + "] does not exist!");
 				return null;
@@ -435,16 +434,11 @@ public class ExcelParseUtils {
 				}
 				paraList.add(creatMap(keyList, valueList));
 			}
+			fso.close();
 		} catch (Exception e) {
 			LOG.error(e);
 			throw new RuntimeException("read excel failed:" + e.getMessage());
 		} finally {
-			try {
-				fso.close();
-			} catch (Exception e) {
-				LOG.error(e);
-				throw new RuntimeException(e);
-			}
 			System.gc();
 		}
 		return paraList;

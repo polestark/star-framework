@@ -18,10 +18,10 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import com.star.core.webdriver.helper.JScriptCollection;
-import com.star.core.webdriver.helper.RuntimeSupport;
-import com.star.core.webdriver.helper.WebDriverTable;
+import com.star.core.webdriver.support.JScriptCollection;
+import com.star.core.webdriver.support.WebDriverTable;
 import com.star.logging.frame.LoggingManager;
+import com.star.runtime.tools.RuntimeSupport;
 
 public class WebDriverWebPublic extends WebDriverController {
 
@@ -1196,7 +1196,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * @return if the window exists.
 	 */
 	protected boolean waitForWindowPresent(String browserTitle, int seconds) {
-		ASSERT.assertTrue("window is not present after " + seconds + "seconds!",
+		ASSERT.assertTrue("window is not present after " + seconds + " seconds!",
 				browserExists(browserTitle, seconds));
 		return true;
 	}
@@ -1205,7 +1205,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * wait for window appears in the time unit seconds</BR> 在指定时间内等待新窗口出现，超时则报错，用以缓冲运行，增加健壮性。
 	 */
 	protected boolean waitForNewWindowOpened(int oldCount, int seconds) {
-		ASSERT.assertTrue("new window did not opened in " + seconds + "seconds!",
+		ASSERT.assertTrue("new window did not opened in " + seconds + " seconds!",
 				isNewWindowExits(oldCount, seconds));
 		return true;
 	}
@@ -1214,7 +1214,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 * wait for window appears in the time unit seconds</BR> 在指定时间内等待新窗口出现，超时则报错，用以缓冲运行，增加健壮性。
 	 */
 	protected boolean waitForNewWindowOpened(Set<String> oldHandles, int seconds) {
-		ASSERT.assertTrue("new window did not opened in " + seconds + "seconds!",
+		ASSERT.assertTrue("new window did not opened in " + seconds + " seconds!",
 				isNewWindowExits(oldHandles, seconds));
 		return true;
 	}
@@ -1257,7 +1257,7 @@ public class WebDriverWebPublic extends WebDriverController {
 			loadCompleted = pageLoadSucceed();
 			pause(stepTimeUnit);
 		}
-		ASSERT.assertTrue("the page did not load complete in " + timeout + "seconds!",
+		ASSERT.assertTrue("the page did not load complete in " + timeout + " seconds!",
 				loadCompleted);
 		return true;
 	}
@@ -1555,7 +1555,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected String getWindowTitle() {
 		String title = driver.getTitle();
-		pass("current window title is :" + title);
+		pass("current window title is : " + title);
 		return title;
 	}
 
@@ -1567,7 +1567,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected String getCurrentUrl() {
 		String url = driver.getCurrentUrl();
-		pass("current session url is :" + url);
+		pass("current session url is : " + url);
 		return url;
 	}
 
@@ -1592,7 +1592,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected String getWindowHandle() {
 		String handle = driver.getWindowHandle();
-		pass("current window handle is:" + handle);
+		pass("current window handle is: " + handle);
 		return handle;
 	}
 
@@ -1616,7 +1616,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected String getSessionId() {
 		String sessionId = ((RemoteWebDriver) driver).getSessionId().toString();
-		pass("current sessionid is:" + sessionId);
+		pass("current sessionid is: " + sessionId);
 		return sessionId;
 	}
 
@@ -1730,7 +1730,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected String getText(WebElement element) {
 		String text = element.getText();
-		pass("element text is:" + text);
+		pass("element text is: " + text);
 		return text;
 	}
 
@@ -1781,7 +1781,7 @@ public class WebDriverWebPublic extends WebDriverController {
 	 */
 	protected String getCssValue(WebElement element, String propertyName) {
 		String cssValue = element.getCssValue(propertyName);
-		pass("element's css [" + propertyName + "] value is:" + cssValue);
+		pass("element's css [" + propertyName + "] value is: " + cssValue);
 		return cssValue;
 	}
 

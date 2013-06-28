@@ -1,10 +1,10 @@
-package com.star.demo.framework;
+package com.star.udemo.framework;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.AfterClass;
 import com.star.frame.basecase.WebDriverBaseCase;
-import com.star.demo.common.DemoSignControl;
+import com.star.udemo.common.DemoSignControl;
 
 public class DemoBaseCase extends WebDriverBaseCase {
 
